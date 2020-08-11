@@ -1,0 +1,94 @@
+
+const CONSTANTS = {};
+
+CONSTANTS.DB = {
+  LOGIN_TYPE: {
+    EDUSEEKER: 0,
+    GOOGLE: 1,
+    FACEBOOK: 2
+  },
+  QUIZ_PLAY_STATUS: {
+    NOT_STARTED: 'not_started',
+    IN_PROGRESS: 'in_progress',
+    HOLD:'on_hold',
+    COMPLETED: 'completed'
+  },
+  ANSWER_ACTION: {
+    NOT_VISITED: 0,
+    NOT_ANSWERED: 1,
+    ANSWERED: 2,
+    MARK_FOR_REVIEW: 3,
+    SAVE_MARK_FOR_REVIEW: 4
+  },
+  ANSWER_RESULT:{
+    CORRECT:'correct',
+    INCORRECT:'incorrect',
+    NOT_ATTEMPT:'not_attempt'
+  }
+}
+
+
+CONSTANTS.PRODUCT_TYPE = {
+  QUIZ: 'quiz'
+}
+
+CONSTANTS.PAYMENT_PURPOSE = {
+  Quiz: 'Purchase Eduseeker Quiz'
+}
+
+CONSTANTS.INSTRUCTIONAL_LEVEL = {
+  BEGINNER: 'Biginner',
+  INTERMEDIATE: 'Intermediate',
+  EXPERT: 'Expert'
+}
+
+CONSTANTS.ERROR_TYPE = {
+  DATA_NOT_FOUND: 'DATA_NOT_FOUND',
+  BAD_REQUEST: 'BAD_REQUEST',
+  MONGO_EXCEPTION: 'MONGO_EXCEPTION',
+  ALREADY_EXISTS: 'ALREADY_EXISTS',
+  FORBIDDEN: 'FORBIDDEN',
+  UNAUTHORIZED: 'UNAUTHORIZED',
+  SUCCESS: 'SUCCESS'
+}
+
+CONSTANTS.DEFAULT = {
+  INDEX: 0,
+  LIMIT: 10
+}
+
+CONSTANTS.AVAILABLE_AUTH = {
+  ADMIN: 1,
+  USER: 2
+}
+
+CONSTANTS.EMAIL_STATUS = {
+  SIGNUP: 'Registration alert.',
+  FORGOT_PASSWORD: 'Forgot password alert.'
+};
+
+// CONSTANTS.EMAIL_TYPES = {
+//   REGISTER_USER: 1,
+//   FORGOT_PASSWORD: 2
+// }
+
+CONSTANTS.MONGO_ERROR = {
+  DUPLICATE: 11000
+}
+
+CONSTANTS.EMAIL_TEMPLATE = {
+  FORGOT_PASSWORD: '../public/forgot-password.html'
+}
+
+CONSTANTS.USER_ROLE = {
+  TEACHER: 1,
+  STUDENT: 2,
+  ADMIN: 3,
+}
+
+CONSTANTS.SECURITY = {
+  JWT_SIGN_KEY: 'fasdkfjklandfkdsfjladsfodfafjalfadsfkads',
+  BCRYPT_SALT: 8
+};
+
+module.exports = CONSTANTS;

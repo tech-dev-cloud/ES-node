@@ -1,0 +1,19 @@
+ body {font-family: 'Open Sans', sans-serif;}
+
+header { margin-top: 20px;text-align: center;}
+header img {width: 275px;height: 150px;  }
+header h1 { margin: 0; color: #403b3b; }
+
+section { display: flex; justify-content: center; margin: 21px;  }
+footer{text-align: center; font-size: 14px;}
+
+.mute {color: grey;  }
+
+label {display: block; color: #333e58; font-weight: bold;}
+.form-control { height: 34px; width: 400px; border-radius: 20px;outline: none; border: 1px solid gray;  padding: 5px 28px; }
+.group { margin-top: 20px; }
+.form { padding: 46px 79px;  box-shadow: 0 0px 8px 2px grey; }
+
+
+.btn { padding: 10px; border: none; border-radius: 4px; cursor: pointer;  }
+.btn-success { background: green;color: white; }

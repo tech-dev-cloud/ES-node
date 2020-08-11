@@ -1,0 +1,132 @@
+const JOI = require('joi');
+const Mongoose = require('mongoose');
+const swaggerUI = require('swagger-ui-express');
+const { swagerInfo } = require('../../config');
+const swJson = require('../services/swaggerService');
+const { authService } = require('../services/authService');
+
+
+const routeUtils = {};
+
+routeUtils.initRoutes = async (app, routes = []) => {
+  routes.forEach(route => {
+    const middlewares = [dataValidation(route)]
+    try {
+      if (route.auth) {
+        middlewares.push(authService.userValidate(route.auth));
+      }
+      middlewares.push(getHandlerMethod(route));
+      app.route(route.path)[route.method.toLowerCase()](...middlewares)
+    } catch (err) {
+      console.log('error---->>>>', err);
+    }
+  })
+  createSwaggerUIForRoutes(app, routes)
+}
+
+const joiValidation = async (req, route) => {
+  if (route.joiSchemaForSwagger.query && Object.keys(route.joiSchemaForSwagger.query).length > 0) {
+    req.query = await JOI.validate(req.query, route.joiSchemaForSwagger.query);
+  }
+  if (route.joiSchemaForSwagger.params && Object.keys(route.joiSchemaForSwagger.params).length > 0) {
+    req.params = await JOI.validate(req.params, route.joiSchemaForSwagger.params);
+
+  }
+  if (route.joiSchemaForSwagger.body && Object.keys(route.joiSchemaForSwagger.body).length > 0) {
+    req.body = await JOI.validate(req.body, route.joiSchemaForSwagger.body);
+
+  }
+  if (route.joiSchemaForSwagger.headers && Object.keys(route.joiSchemaForSwagger.headers).length > 0) {
+    const headerObject = await JOI.validate(req.headers, route.joiSchemaForSwagger.headers);
+    req.headers.authorization = headerObject.authorization;
+  }
+}
+
+
+
+let setMongooseId = () => {
+  let joiObject = JOI.string()
+  joiObject.mongooseId = function () {
+    return this._test('mongodbId', undefined, function (value, state, options) {
+      return Mongoose.Types.ObjectId(value);
+    })
+  }
+  return joiObject.mongooseId();
+}
+
+routeUtils.validation = {
+  // titleCase: setTitleCase(),
+  mongooseId: setMongooseId().error(new Error('invalid mongoose id')),
+  // resourceMongooseId: setMongooseId().required().error(new Error('invalid resource id')).description('mongodb Id of resource to get/update/delete'),
+  // numberConvert: Joi.number().options({ convert: true }),
+  // statusSetter: Joi.bool().optional().description('true - enable resource, false - deactivate resource (soft delete)'),
+  // arrayWithEnumStrings: (enums, minItems, maxItems) => {
+  //   let validArray = Joi.array().items(Joi.string().valid(commonFunctions.getEnumArray(enums))).description(stringArrayDescription(enums, minItems, maxItems))
+  //   if (minItems) { validArray = validArray.min(minItems) };
+  //   if (maxItems) { validArray = validArray.max(maxItems) };
+  //   return validArray;
+  // },
+  // numberEnums: enums => Joi.number().valid(commonFunctions.getEnumArray(enums)).options({ convert: true }).description(getEnumDescription(enums)),
+  // get paginator() {
+  //   return {
+  //     sortDirection: this.numberEnums(CONSTANTS.SORTDIRECTION),
+  //     sortKey: Joi.string().optional().description('specify key to sort on basis of e.g. "keyname" for ascending,"-keyname" for descending '),
+  //     index: this.numberConvert.optional().default(0).description('start index of records to fetch'),
+  //     limit: this.numberConvert.optional().default(20).description('limit of number of records to fetch'),
+  //   }
+  // },
+  // emptyString: Joi.string().allow('').optional()
+}
+
+
+const dataValidation = (route) => {
+  return (req, res, next) => {
+    joiValidation(req, route)
+      .then(result => {
+        next()
+      }).catch(err => {
+        res.status(400).json({ error: err.message });
+      });
+
+  }
+}
+const getHandlerMethod = (route) => {
+  const { handler } = route;
+  return (req, res) => {
+    let payload = {
+      ...(req || {}).body,
+      ...(req || {}).query,
+      ...(req || {}).params,
+      user: (req || {}).user
+    }
+    handler(payload)
+      .then(result => {
+        if (result) {
+          res.status(200).json(result);
+        } else {
+          res.sendStatus(200);
+        }
+      }).catch(error => {
+        console.error(error);
+        res.status(400).json(error)
+      });
+  }
+}
+
+let createSwaggerUIForRoutes = (app, routes = []) => {
+  const swaggerInfo = swagerInfo
+
+  swJson.swaggerDoc.createJsonDoc(swaggerInfo);
+  routes.forEach(route => {
+    swJson.swaggerDoc.addNewRoute(route.joiSchemaForSwagger, route.path, route.method.toLowerCase());
+  });
+  try {
+    const swaggerDocument = require('../../../swagger.json');
+    app.use('/documentation', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
+  } catch (err) {
+    console.log(err.message);
+  }
+
+};
+
+module.exports = routeUtils;
