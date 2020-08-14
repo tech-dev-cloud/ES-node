@@ -100,6 +100,7 @@ service.submitQuiz=async(payload)=>{
   })
   let dataToUpdate={
     status: DB.QUIZ_PLAY_STATUS.COMPLETED,
+    userAnswers,
     ...counts
   }
   data=await PerformanceModel.findOneAndUpdate(criteria, dataToUpdate, { new: true }).lean();
