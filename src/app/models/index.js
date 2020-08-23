@@ -8,4 +8,5 @@ module.exports = {
   ...require('./paymentModel'),
   ...require('./userProductModel'),
   ...require('./performanceModel'),
+  ...require('./difficultLevel'),
 }

@@ -7,10 +7,6 @@ let service = {};
 
 /**Function to save Question in DB */
 service.createResource = async (payload) => {
-  // const exist = await QuestionModel.findOne({ createdBy: payload.user.userId, question: payload.question }).lean();
-  // if (exist) {
-  //   throw responseHelper.createErrorResponse(MESSAGES.QUESTION.DUPLICATE, ERROR_TYPE.BAD_REQUEST);
-  // }
   payload.createdBy = payload.user.userId;
   const question = new QuestionModel(payload);
   return await question.save();
@@ -30,14 +26,14 @@ service.updateResource = async (payload) => {
 
 /** Function to get questions */
 service.findResource = async (payload) => {
-  let match = { createdBy: payload.user.userId };
+  let match = { createdBy: payload.user.userId, subjectId:payload.subjectId };
   let subjectLookup = { from: 'subjects', localField: 'subjectId', foreignField: '_id', as: 'subjectData' };
   let topicLookup = { from: 'topics', localField: 'topicId', foreignField: '_id', as: 'topicData' };
   let skip = (payload.index || DEFAULT.INDEX) * (payload.limit || DEFAULT.LIMIT);
   let limit = payload.limit || DEFAULT.LIMIT;
 
   let query = [
-    { $match: {} },
+    { $match: match },
     { $lookup: subjectLookup },
     { $unwind: `$${subjectLookup.as}` },
     // { $lookup: topicLookup },

@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "async": "^3.2.0",
     "axios": "^0.19.2",
     "bcrypt": "^4.0.1",
     "body-parser": "^1.19.0",
@@ -24,6 +25,7 @@
     "mongoose": "^5.9.9",
     "nodemailer": "^6.4.6",
     "swagger-json": "^2.0.0",
-    "swagger-ui-express": "^4.1.4"
+    "swagger-ui-express": "^4.1.4",
+    "winston": "^3.3.3"
   }
 }

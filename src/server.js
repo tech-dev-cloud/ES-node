@@ -1,9 +1,14 @@
 require('dotenv').config();
 const { startExpress, DB } = require('./config');
+const migration=require('./app/migration/dbMigration')
 
-(async function () {
-  startExpress();
-  await DB.start();
 
-})()
+  DB.start().then(res=>{
+    migration().then(res=>{
+      startExpress();
+    }).catch(err=>{
+      startExpress();
+    })
+  });
+
 

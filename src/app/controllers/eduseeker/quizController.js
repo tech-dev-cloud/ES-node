@@ -1,8 +1,14 @@
 const responseHelper = require('../../utils/responseHelper');
 const MESSAGES = require('../../utils/messages');
 const { quizService } = require('../../services');
+const { QuizModel } = require('../../models');
 
 let controller = {}
+
+controller.createQuiz =async (payload)=>{
+  let quiz= new QuizModel(payload);
+  return await quiz.save();
+}
 
 controller.findResource = async (payload) => {
   const data = await quizService.findResource(payload);

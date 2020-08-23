@@ -16,7 +16,7 @@ const routes = [
       }).unknown(),
       body: {
         subjectId: routeUtils.validation.mongooseId,
-        topicId: routeUtils.validation.mongooseId,
+        // topicId: routeUtils.validation.mongooseId,
         question: JOI.string().required(),
         options: JOI.array().items(JOI.string().required()).required(),
         correctOption: JOI.array().items(JOI.number().required()),
@@ -62,6 +62,7 @@ const routes = [
         'authorization': JOI.string().required()
       }).unknown(),
       query: {
+        subjectId:routeUtils.validation.mongooseId,
         index: JOI.number().default(DEFAULT.INDEX).min(DEFAULT.INDEX),
         limit: JOI.number().min(DEFAULT.LIMIT).min(0)
       },
