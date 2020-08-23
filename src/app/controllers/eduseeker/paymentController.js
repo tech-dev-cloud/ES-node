@@ -33,8 +33,8 @@ controller.createPayment = async (payload) => {
     }
 
     // Add URLs
-    paymentObject.redirect_url = `http://192.168.43.246:4200/order-confirm/${product._id}`;
-    paymentObject.webhook = "http://9fca928da642.ngrok.io/api/payment/webhook";
+    paymentObject.redirect_url = `http://35.208.23.170:4200/order-confirm/${product._id}`;
+    paymentObject.webhook = "http://35.208.23.170:4000/api/payment/webhook";
     const data = await paymentService.createPayment(paymentObject, payload);
     return responseHelper.createSuccessResponse(MESSAGES.PAYMENT.SUCCESS, data);
   } catch (err) {
