@@ -1,0 +1,55 @@
+{
+    "apps": [
+      {
+        "name": "es1",
+        "script": "src/server.js",
+        "instances": "1",
+        "exec_mode": "cluster",
+        "args": ["color"],
+        "node_args": [],
+        "watch": false,
+        "ignore_watch": [
+          "pids",
+          "logs",
+          "node_modules",
+          "bower_components",
+          ".idea",
+          "s3images",
+          "thumb_images",
+          "webp_images",
+          ".git"
+        ],
+        "merge_logs": true,
+        "cwd": ".",
+        "error_file": "./logs/es1errlog.log",
+        "out_file": "./logs/es1.log",
+        "pid_file": "./pids/es1.pid",
+        "log_date_format": "YYYY-MM-DD HH:mm Z",
+        "max_memory_restart": "1G",
+        "env_development": {
+          "NODE_ENV": "development",
+          "PORT": 3000,
+          "VAULT" : "dev"
+        },
+        "env_production": {
+          "NODE_ENV": "production",
+          "PORT": 3001,
+          "VAULT": "pr"
+        },
+        "env" : {
+          "NODE_ENV": "development",
+          "PORT" : 4000,
+          "VAULT" : "loc",
+          "CLIENT_ID" : "",
+          "CLIENT_SECRET" : "",
+          "TENANT_ID" : ""
+        },
+        "env_staging": {
+          "NODE_ENV": "production",
+          "PORT": 3000,
+          "VAULT": "pr"
+        }
+      }
+    ]
+  }
+  

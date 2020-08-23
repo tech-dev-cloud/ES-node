@@ -7,7 +7,7 @@ const MODEL=require('../models');
 module.exports=(mainCB)=>{
     return new Promise((resolve, reject)=>{
         async.auto({
-            difficultLevel:async(callback)=>{
+            difficultLevel:function(callback){
                 MODEL.DifficultLevel.deleteMany({}).then(res=>{
                     let payload=Object.values(CONSTANTS.DIFFICULT_LEVEL).map(val=>({level:val}));
                     WINSTON.info('DifficultLevel removed!')
@@ -23,7 +23,7 @@ module.exports=(mainCB)=>{
                     callback(err,false);
                 })
             },
-            subjects:async(callback)=>{
+            subjects:function (callback){
                 MODEL.SubjectModel.deleteMany({}).then(()=>{
                     let payload=CONSTANTS.SUBJECT.map(val=>({name:val, status:true, isDeleted:false}));
                     MODEL.SubjectModel.insertMany(payload).then(()=>{
