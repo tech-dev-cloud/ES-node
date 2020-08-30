@@ -10,7 +10,8 @@ const responseHelper = require('../utils/responseHelper');
 let service = {};
 
 service.createPayment = async (paymentObject, payload) => {
-  InstaMojo.setKeys(paymentGateway.API_KEY, paymentGateway.TOKEN);
+  // InstaMojo.setKeys(paymentGateway.API_KEY, paymentGateway.TOKEN);
+  InstaMojo.setKeys(process.env.PRIVATE_API_KEY, process.env.PRIVATE_AUTH_TOKEN);
   InstaMojo.isSandboxMode(true);
   return new Promise((resolve, reject) => {
     InstaMojo.createPayment(paymentObject, async (err, res) => {
