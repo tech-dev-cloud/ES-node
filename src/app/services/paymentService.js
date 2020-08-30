@@ -16,6 +16,7 @@ service.createPayment = async (paymentObject, payload) => {
   return new Promise((resolve, reject) => {
     InstaMojo.createPayment(paymentObject, async (err, res) => {
       if (!err) {
+        console.log(res);
         const response = JSON.parse(res);
         let payment = new PaymentModel({
           ...response,
