@@ -25,7 +25,6 @@ service.createPayment = async (paymentObject, payload) => {
           userId: payload.user.userId
         });
         const data = await payment.save();
-
         resolve({ url: response.payment_request.longurl });
       }
       else {
@@ -40,6 +39,7 @@ service.createPayment = async (paymentObject, payload) => {
 service.webhook = async (payload) => {
   const payment = await PaymentModel.findOne({ payment_request_id: payload.payment_request_id });
   if (payment) {
+    console.log('===>>payment object found');
     let providedMac = payload.mac;
     delete payload.mac;
     delete payload.user;
@@ -56,6 +56,7 @@ service.webhook = async (payload) => {
       throw responseHelper.createErrorResponse(ERROR_TYPE.BAD_REQUEST)
     }
   }
+  console.log('===>>>payment object not found');
   throw responseHelper.createErrorResponse(ERROR_TYPE.BAD_REQUEST)
 }
 
