@@ -11,7 +11,7 @@ service.createResorce = async (payload) => {
     return await subject.save();
   } catch (err) {
     if (err.code == MONGO_ERROR.DUPLICATE) {
-      throw responseHelper.createErrorResponse(MESSAGES.SUBJECT.DUPLICATE, ERROR_TYPE.ALREADY_EXISTS);
+      throw responseHelper.createErrorResponse(ERROR_TYPE.ALREADY_EXISTS, MESSAGES.SUBJECT.DUPLICATE);
     }
     throw err;
   }
@@ -33,7 +33,7 @@ service.updateResource = async (payload) => {
     return await SubjectModel.findByIdAndUpdate(payload.id, payload).lean;
   } catch (err) {
     if (err.code == MONGO_ERROR.DUPLICATE) {
-      throw responseHelper.createErrorResponse(MESSAGES.SUBJECT.DUPLICATE, ERROR_TYPE.ALREADY_EXISTS);
+      throw responseHelper.createErrorResponse(ERROR_TYPE.ALREADY_EXISTS, MESSAGES.SUBJECT.DUPLICATE);
     }
     throw err;
   }

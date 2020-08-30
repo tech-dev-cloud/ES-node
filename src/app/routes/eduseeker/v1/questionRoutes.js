@@ -62,7 +62,7 @@ const routes = [
         'authorization': JOI.string().required()
       }).unknown(),
       query: {
-        subjectId:routeUtils.validation.mongooseId,
+        subjectId:routeUtils.validation.mongooseId.required(),
         index: JOI.number().default(DEFAULT.INDEX).min(DEFAULT.INDEX),
         limit: JOI.number().min(DEFAULT.LIMIT).min(0)
       },

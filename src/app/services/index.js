@@ -7,4 +7,5 @@ module.exports = {
   ...require('./paymentService'),
   ...require('./userService'),
   ...require('./performanceService'),
+  ...require('./aws'),
 }

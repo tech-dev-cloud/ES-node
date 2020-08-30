@@ -22,7 +22,8 @@ let schema = new Schema({
   correct:{type:Number},
   incorrect:{type:Number},
   notAnswered:{type:Number},
-  totalScore:{type:Number}
+  totalScore:{type:Number},
+  finalScore:{type:Number}
 });
 schema.set('timestamps', true);
 let PerformanceModel = MONGOOSE.model('performance', schema);

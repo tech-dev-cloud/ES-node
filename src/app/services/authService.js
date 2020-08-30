@@ -1,4 +1,4 @@
-const { SECURITY, ERROR_TYPE, USER_ROLE, AVAILABLE_AUTHS } = require('../utils/constants');
+const { SECURITY, ERROR_TYPE, USER_ROLE, AVAILABLE_AUTHS, MONGO_ERROR } = require('../utils/constants');
 const MESSAGES = require('../utils/messages');
 const responseHelper = require("../utils/responseHelper")
 const { SessionModel, UserModel } = require(`../models`);
@@ -109,7 +109,7 @@ authService.userRegister = async (payload) => {
     return await user.save();
   } catch (err) {
     if (err.code == MONGO_ERROR.DUPLICATE) {
-      throw responseHelper.createErrorResponse(MESSAGES.USER.EXIST, ERROR_TYPE.BAD_REQUEST);
+      throw responseHelper.createErrorResponse(ERROR_TYPE.BAD_REQUEST, MESSAGES.USER.EXIST);
     }
     throw err;
   }

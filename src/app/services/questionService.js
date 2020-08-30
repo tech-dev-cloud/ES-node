@@ -16,10 +16,10 @@ service.createResource = async (payload) => {
 service.updateResource = async (payload) => {
   const exist = await QuestionModel.findById(payload.questionID).lean();
   if (!exist) {
-    throw responseHelper.createErrorResponse(MESSAGES.QUESTION.NOT_FOUND, ERROR_TYPE.BAD_REQUEST);
+    throw responseHelper.createErrorResponse( ERROR_TYPE.BAD_REQUEST, MESSAGES.QUESTION.NOT_FOUND);
   }
   if (exist.createdBy != payload.user.userId) {
-    throw responseHelper.createErrorResponse(MESSAGES.USER.UNAUTHORIZED, ERROR_TYPE.UNAUTHORIZED);
+    throw responseHelper.createErrorResponse(ERROR_TYPE.UNAUTHORIZED, MESSAGES.USER.UNAUTHORIZED);
   }
   return await QuestionModel.updateOne({ _id: payload.questionID }, payload);
 }
@@ -47,6 +47,7 @@ service.findResource = async (payload) => {
     },
     { $addFields: { items: { $slice: ['$items', skip, limit] } } }
   ];
+  console.log(JSON.stringify(query))
   return (await QuestionModel.aggregate(query))[0] || { totalCounts: 0, items: [] };
 }
 
@@ -65,7 +66,7 @@ service.findResourceByID = async (payload) => {
   ];
   const data = (await QuestionModel.aggregate(query))[0];
   if (!data) {
-    throw responseHelper.createErrorResponse(MESSAGES.QUESTION.NOT_FOUND, ERROR_TYPE.BAD_REQUEST);
+    throw responseHelper.createErrorResponse(ERROR_TYPE.BAD_REQUEST, MESSAGES.QUESTION.NOT_FOUND);
   }
   return data;
 }
@@ -74,10 +75,10 @@ service.findResourceByID = async (payload) => {
 service.deleteResource = async (payload) => {
   const question = await QuestionModel.findById(payload.questionID).lean();
   if (!question) {
-    throw responseHelper.createErrorResponse(MESSAGES.QUESTION.NOT_FOUND, ERROR_TYPE.BAD_REQUEST);
+    throw responseHelper.createErrorResponse(ERROR_TYPE.BAD_REQUEST, MESSAGES.QUESTION.NOT_FOUND);
   }
   if (question.createdBy != payload.user.userId) {
-    throw responseHelper.createErrorResponse(MESSAGES.USER.UNAUTHORIZED, ERROR_TYPE.UNAUTHORIZED);
+    throw responseHelper.createErrorResponse(ERROR_TYPE.UNAUTHORIZED, MESSAGES.USER.UNAUTHORIZED);
   }
   if (!payload.hardDelete) {
     return await QuestionModel.findByIdAndUpdate(payload.questionID, { isDeleted: true }).lean();

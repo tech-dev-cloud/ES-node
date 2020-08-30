@@ -1,4 +1,5 @@
-require('dotenv').config();
+let env=require('dotenv');
+env.config();
 const { startExpress, DB } = require('./config');
 const migration=require('./app/migration/dbMigration')
 

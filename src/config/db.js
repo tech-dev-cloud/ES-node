@@ -1,5 +1,5 @@
 const MONGOOSE = require('mongoose');
-require('dotenv').config();
+// require('dotenv').config();
 
 module.exports = {
   URL: `mongodb://localhost:27017/${process.env.DB_NAME || 'eduseeker'}`,

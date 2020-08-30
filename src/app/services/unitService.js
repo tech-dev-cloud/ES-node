@@ -8,7 +8,7 @@ let service = {};
 service.createResource = async (payload) => {
   const exist = await UnitModel.findOne({ subjectId: payload.subjectId, name: payload.name }).lean();
   if (exist) {
-    throw responseHelper.createErrorResponse(MESSAGES.UNIT.DUPLICATE, ERROR_TYPE.ALREADY_EXISTS);
+    throw responseHelper.createErrorResponse(ERROR_TYPE.ALREADY_EXISTS, MESSAGES.UNIT.DUPLICATE);
   }
   const unit = new UnitModel(payload);
   return await unit.save();

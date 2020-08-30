@@ -1,6 +1,6 @@
 let _ = require('lodash');
 let { QuizModel, PaymentModel } = require('../models');
-const { MONGO_ERROR, ERROR_TYPE, DEFAULT, DB } = require('../utils/constants');
+const { USER_ROLE, ERROR_TYPE, DEFAULT, DB } = require('../utils/constants');
 const MESSAGES = require('../utils/messages');
 const dbUtils = require('../utils/utils');
 const responseHelper = require('../utils/responseHelper');
@@ -14,43 +14,57 @@ service.getQuiz = async (payload) => {
 /**
  * Function to get the quiz list
  */
-service.findResource = async (payload) => {
+service.findResource = async (payload, quizIds=[]) => {
   let subjectLookup = { from: 'subjects', localField: 'subjectId', foreignField: '_id', as: 'subjectData' };
-  // let examTypeLookup = { from: 'examtypes', localField: 'examType', foreignField: '_id', as: 'examTypeData' };
   let instructorLookup = { from: 'users', localField: 'instructor', foreignField: '_id', as: 'instructor' };
   let skip = (payload.index || DEFAULT.INDEX) * (payload.limit || DEFAULT.LIMIT);
+  
+  let match={}
+  // if(payload.user.role==USER_ROLE.TEACHER){
+  //   match.instructor=payload.user.userId
+  // }
+  if(quizIds.length){
+    match={_id: {$in:quizIds}}
+  }
+
   let query = [
-    // { $match: { isDeleted: false, status: true } },
+    { $match: match },
     { $lookup: subjectLookup },
     { $unwind: `$${subjectLookup.as}` },
     // { $lookup: examTypeLookup },
     { $lookup: instructorLookup },
     { $unwind: `$${instructorLookup.as}` },
     { $project: { questionList: 0, isDeleted: 0 } },
-    {
-      $group: {
-        _id: null, items: { $push: '$$ROOT' }, totalCounts: { $sum: 1 }
-      }
-    },
+    { $group: { _id: null, items: { $push: '$$ROOT' }, totalCounts: { $sum: 1 } } },
     { $addFields: { items: { $slice: ['$items', skip, payload.limit || DEFAULT.LIMIT] } } }
   ]
-  return (await QuizModel.aggregate(query))[0];
+  return (await QuizModel.aggregate(query))[0] || [];
 }
 
 service.findResourceById = async (payload) => {
   let subjectLookup = { from: 'subjects', localField: 'subjectId', foreignField: '_id', as: 'subjectData' };
-  let instructorLookup = { from: 'users', localField: 'instructor', foreignField: '_id', as: 'instructor' };
+  // let instructorLookup = { from: 'users', localField: 'instructor', foreignField: '_id', as: 'instructor' };
+  let questionLookup = { from: 'questions', localField: 'questionList', foreignField: '_id', as: 'questions' };
+  let match={
+    _id: payload.quizId
+  };
 
   let query = [
-    { $match: { isDeleted: false, _id: payload.quizId } },
+    { $match: match },
     { $lookup: subjectLookup },
     { $unwind: `$${subjectLookup.as}` },
-    { $lookup: instructorLookup },
-    { $unwind: `$${instructorLookup.as}` },
-    { $project: { questionList: 0, isDeleted: 0, 'instructor.password': 0 } }
+    // { $lookup: instructorLookup },
+    // { $unwind: `$${instructorLookup.as}` },
+    { $lookup: questionLookup},
+    { $project: { isDeleted: 0, 'instructor.password': 0 } }
   ]
   return (await QuizModel.aggregate(query))[0];
 
+}
+
+service.upldateQuiz = async (payload) => {
+  
+  return QuizModel.findOneAndUpdate({_id:payload.quizId,instructor:payload.user.userId}, payload).lean();
 }
 
 service.getDataToPlay = async (payload) => {

@@ -1,10 +1,18 @@
 const JOI = require('joi');
 const Mongoose = require('mongoose');
 const swaggerUI = require('swagger-ui-express');
-const { swagerInfo } = require('../../config');
+const multer = require('multer');
+
+const  swaggerJson  = require('../../config/swagger');
 const swJson = require('../services/swaggerService');
 const { authService } = require('../services/authService');
+const {file}=require('../controllers');
 
+const storage = multer.diskStorage({
+  destination : 'uploads/',
+  filename: file.rename
+});
+const upload = multer({ storage: storage });
 
 const routeUtils = {};
 
@@ -15,6 +23,12 @@ routeUtils.initRoutes = async (app, routes = []) => {
       if (route.auth) {
         middlewares.push(authService.userValidate(route.auth));
       }
+      if (route.joiSchemaForSwagger.formData) {
+        const keys = Object.keys(route.joiSchemaForSwagger.formData);
+        keys.forEach((key) => {
+          middlewares.push(upload.single(key));
+        });
+      };
       middlewares.push(getHandlerMethod(route));
       app.route(route.path)[route.method.toLowerCase()](...middlewares)
     } catch (err) {
@@ -39,6 +53,9 @@ const joiValidation = async (req, route) => {
   if (route.joiSchemaForSwagger.headers && Object.keys(route.joiSchemaForSwagger.headers).length > 0) {
     const headerObject = await JOI.validate(req.headers, route.joiSchemaForSwagger.headers);
     req.headers.authorization = headerObject.authorization;
+  }
+  if (route.joiSchemaForSwagger.formData && Object.keys(route.joiSchemaForSwagger.formData).length > 0) {
+    req.formData = await JOI.validate(req.formData, route.joiSchemaForSwagger.formData);
   }
 }
 
@@ -97,7 +114,8 @@ const getHandlerMethod = (route) => {
       ...(req || {}).body,
       ...(req || {}).query,
       ...(req || {}).params,
-      user: (req || {}).user
+      user: (req || {}).user,
+      file: req.file
     }
     handler(payload)
       .then(result => {
@@ -114,7 +132,7 @@ const getHandlerMethod = (route) => {
 }
 
 let createSwaggerUIForRoutes = (app, routes = []) => {
-  const swaggerInfo = swagerInfo
+  const swaggerInfo = swaggerJson.info;
 
   swJson.swaggerDoc.createJsonDoc(swaggerInfo);
   routes.forEach(route => {

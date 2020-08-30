@@ -9,4 +9,5 @@ module.exports = {
   ...require('./userProductModel'),
   ...require('./performanceModel'),
   ...require('./difficultLevel'),
+  ...require('./file'),
 }

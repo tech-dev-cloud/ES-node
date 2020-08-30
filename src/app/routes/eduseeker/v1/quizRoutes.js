@@ -4,6 +4,7 @@ const { USER_ROLE, DEFAULT } = require('../../../utils/constants');
 const { quizController } = require('../../../controllers');
 const routeUtils = require('../../../utils/routeUtils');
 const { Router } = require('express');
+const CONSTANTS = require('../../../utils/constants');
 
 let MODULE = {
   name: 'quiz',
@@ -14,19 +15,22 @@ const routes = [
     path: `/api/${MODULE.name}`,
     method: 'POST',
     joiSchemaForSwagger: {
+      headers: JOI.object({
+        'authorization': JOI.string().required()
+      }).unknown(),
       body:{
         title: JOI.string().required(),
         subjectId: routeUtils.validation.mongooseId,
         imageURL: JOI.string(),
         isPaid:JOI.boolean().required(),
         amount:JOI.number().required(),
-        instructor:routeUtils.validation.mongooseId,
         headline:JOI.string(),
+        difficultLevel:JOI.string().valid(Object.values(CONSTANTS.DIFFICULT_LEVEL)),
         questionList:JOI.array().items(routeUtils.validation.mongooseId),
         attemptTime:JOI.number().required(),
-        description:JOI.string(),
+        description:JOI.string().required(),
         requirements:JOI.string(),
-        objectivesSummary:JOI.string()
+        benifits:JOI.string().required()
       },
       group: `${MODULE.group}`,
       description: 'Api to create Quiz',
@@ -36,9 +40,41 @@ const routes = [
     handler: quizController.createQuiz
   },
   {
+    path: `/api/${MODULE.name}/:quizId`,
+    method: 'PUT',
+    joiSchemaForSwagger: {
+      headers: JOI.object({
+        'authorization': JOI.string().required()
+      }).unknown(),
+      params:{
+        quizId: routeUtils.validation.mongooseId.required()
+      },
+      body:{
+        title: JOI.string(),
+        subjectId: routeUtils.validation.mongooseId,
+        imageURL: JOI.string(),
+        isPaid:JOI.boolean(),
+        amount:JOI.number(),
+        headline:JOI.string(),
+        difficultLevel:JOI.string().valid(Object.values(CONSTANTS.DIFFICULT_LEVEL)),
+        questionList:JOI.array().items(routeUtils.validation.mongooseId),
+        attemptTime:JOI.number(),
+        description:JOI.string(),
+        requirements:JOI.string(),
+        benifits:JOI.string()
+      },
+      group: `${MODULE.group}`,
+      description: 'Api to create Quiz',
+      model: 'CreateQuiz'
+    },
+    auth:[USER_ROLE.TEACHER, USER_ROLE.ADMIN],
+    handler: quizController.upldateQuiz
+  },
+  {
     path: `/api/${MODULE.name}`,
     method: 'GET',
     joiSchemaForSwagger: {
+      
       query: {
         index: JOI.number().default(DEFAULT.INDEX).min(DEFAULT.INDEX),
         limit: JOI.number().min(DEFAULT.LIMIT).min(0)
@@ -47,21 +83,24 @@ const routes = [
       description: 'Api to get Quiz List',
       model: 'GetQuiz'
     },
+    // auth: [USER_ROLE.TEACHER, USER_ROLE.ADMIN],
     handler: quizController.findResource
   },
   {
-    path: `/api/${MODULE.name}/:quizId`,
+    path: `/api/${MODULE.name}/enrolled`,
     method: 'GET',
     joiSchemaForSwagger: {
-      params: JOI.object({
-        quizId: routeUtils.validation.mongooseId
-      }),
+      headers: JOI.object({
+        'authorization': JOI.string().required()
+      }).unknown(),
       group: `${MODULE.group}`,
       description: 'Api to get Quiz List',
-      model: 'GetQuiz'
+      model: 'GetEnrolledQuiz'
     },
-    handler: quizController.findResourceById
-  }, {
+    auth: [USER_ROLE.STUDENT],
+    handler: quizController.getEnrolledQuiz
+  },
+  {
     path: `/api/${MODULE.name}/:quizId`,
     method: 'GET',
     joiSchemaForSwagger: {

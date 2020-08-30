@@ -42,14 +42,15 @@ service.webhook = async (payload) => {
     let providedMac = payload.mac;
     delete payload.mac;
     delete payload.user;
+    delete payload.file;
     const data = Object.keys(payload).sort().map(key => payload[key]).join('|');
     let calculatedMac = CryptoJS.HmacSHA1(data, paymentGateway.SALT);
+    payment.status = payload.status;
+    payment.save();
     if (providedMac == calculatedMac.toString()) {
-      payment.status = payload.status;
-      payment.save();
       return true;
     } else {
-      payment.doc.status = 'Failed';
+      payment.status = 'Failed';
       payment.save();
       throw responseHelper.createErrorResponse(ERROR_TYPE.BAD_REQUEST)
     }

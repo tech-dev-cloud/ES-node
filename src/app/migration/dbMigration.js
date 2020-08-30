@@ -23,21 +23,21 @@ module.exports=(mainCB)=>{
                     callback(err,false);
                 })
             },
-            subjects:function (callback){
-                MODEL.SubjectModel.deleteMany({}).then(()=>{
-                    let payload=CONSTANTS.SUBJECT.map(val=>({name:val, status:true, isDeleted:false}));
-                    MODEL.SubjectModel.insertMany(payload).then(()=>{
-                        WINSTON.info('Subjects migrated!');
-                        callback(null,true);
-                    }).catch(err=>{
-                        WINSTON.error('Unable to insert subjects ', err);
-                        callback(err,false);
-                    })
-                }).catch(err=>{
-                    WINSTON.error('Unable to remove subjects ', err);
-                    callback(err,false);
-                })
-            }
+            // subjects:function (callback){
+            //     MODEL.SubjectModel.deleteMany({}).then(()=>{
+            //         let payload=CONSTANTS.SUBJECT.map(val=>({name:val, status:true, isDeleted:false}));
+            //         MODEL.SubjectModel.insertMany(payload).then(()=>{
+            //             WINSTON.info('Subjects migrated!');
+            //             callback(null,true);
+            //         }).catch(err=>{
+            //             WINSTON.error('Unable to insert subjects ', err);
+            //             callback(err,false);
+            //         })
+            //     }).catch(err=>{
+            //         WINSTON.error('Unable to remove subjects ', err);
+            //         callback(err,false);
+            //     })
+            // }
         }, (err, result)=>{
             if(err){
                 reject(err)

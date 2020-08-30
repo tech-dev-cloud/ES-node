@@ -8,22 +8,17 @@ let schema = new Schema({
   status: { type: Boolean, default: false },
   examType: [{ type: Schema.Types.ObjectId, ref: 'examtype' }],
 
-  imageURL: { type: String, required: true },
+  imageURL: { type: String },
   isPaid: { type: Boolean, required: true },
   amount: { type: Number },
   instructor: { type: Schema.Types.ObjectId, ref: 'user' },
   headline: { type: String },
-  // numSubscribers: { type: Number },
-  // avgRating: { type: Number },
-  // numReviews: { type: Number },
   difficultLevel: { type: String, enum: Object.values(DIFFICULT_LEVEL) },
-  // objectivesSummary: [{ type: String }],
-  // requirements: [{ type: String }],
+  benifits: { type: String },
+  requirements: { type: String },
   description: { type: String },
   productType: { type: String, enum: Object.values(PRODUCT_TYPE), default: PRODUCT_TYPE.QUIZ },
-
   questionList: [{ type: Schema.Types.ObjectId, ref: 'question' }],
-  // numQuestions: { type: Number },
   attemptTime: { type: Number },
   isDeleted: { type: Boolean, default: false }
 });

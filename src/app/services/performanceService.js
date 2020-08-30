@@ -98,10 +98,13 @@ service.submitQuiz=async(payload)=>{
       counts.notAnswered++;
     }
   })
+  
   let dataToUpdate={
     status: DB.QUIZ_PLAY_STATUS.COMPLETED,
     userAnswers,
-    ...counts
+    ...counts,
+    finalScore: counts.correct*2,
+    totalScore: data.questions.length * 2
   }
   data=await PerformanceModel.findOneAndUpdate(criteria, dataToUpdate, { new: true }).lean();
   return {...dataToUpdate, questionsWithAns: {...quizQuestions} };

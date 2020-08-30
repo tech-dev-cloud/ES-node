@@ -35,7 +35,4 @@ commonFunctions.decryptJwt = (token) => {
   return JWT.verify(token, CONSTANTS.SECURITY.JWT_SIGN_KEY, { algorithm: 'HS256' })
 }
 
-commonFunctions.calculateQuizResult=(questionArr, userAnsArr )=>{
-  
-}
 module.exports = commonFunctions;

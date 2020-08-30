@@ -189,6 +189,7 @@ let RESPONSE = {
 }
 
 responseHelper.createErrorResponse = (errorType, message) => {
+  console.log(errorType);
   return RESPONSE[errorType](message);
 }
 
