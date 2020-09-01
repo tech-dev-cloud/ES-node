@@ -17,15 +17,18 @@ controller.findResource = async (payload) => {
 
 controller.getEnrolledQuiz=async(payload)=>{
   let enrolledData=await PaymentModel.find({userId:payload.user.userId, status: 'Credit'}).lean();
-  let quizIds=enrolledData.map(obj=>obj.productId);
-  let data=await quizService.findResource(payload, quizIds);
+  if(enrolledData.length>0){
+    let quizIds=enrolledData.map(obj=>obj.productId);
+    let data=await quizService.findResource(payload, quizIds);
+    return data;
+  }
   // let data=await PaymentModel.aggregate([
-  //   {$match: {userId:payload.user.userId, status: 'Credit'}},
-  //   {$lookup: {from:'quizzes', localField:'productId', foreignField: '_id', as: 'enrolled'}},
-  //   {$lookup: {from:'users', localField:'enrolled.instructor', foreignField: '_id', as: 'instructor'}},
-  //   {$project:{payment_request_id:0, status:0, payment_id:0}}
-  // ]);
-  return data;
+    //   {$match: {userId:payload.user.userId, status: 'Credit'}},
+    //   {$lookup: {from:'quizzes', localField:'productId', foreignField: '_id', as: 'enrolled'}},
+    //   {$lookup: {from:'users', localField:'enrolled.instructor', foreignField: '_id', as: 'instructor'}},
+    //   {$project:{payment_request_id:0, status:0, payment_id:0}}
+    // ]);
+    return {items:[]}
 }
 
 controller.findResourceById = async (payload) => {

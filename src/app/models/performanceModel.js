@@ -13,7 +13,7 @@ let schema = new Schema({
   status: { type: String, enum: Object.values(DB.QUIZ_PLAY_STATUS), default: DB.QUIZ_PLAY_STATUS.IN_PROGRESS },
   userAnswers: [
     {
-      questionId: { type: Schema.Types.ObjectId, unique: true, ref: 'question' },
+      questionId: { type: Schema.Types.ObjectId, ref: 'question' },
       answer: [{ type: String }],
       status: { type: Number, enum: Object.values(DB.ANSWER_ACTION) },
       resultStatus:{type:String, enum: Object.values(DB.ANSWER_RESULT)},
