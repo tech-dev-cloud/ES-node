@@ -1,4 +1,5 @@
 const app = require('express')();
+const cors=require('cors');
 const bodyParser = require('body-parser');
 const utils = require('../app/utils/routeUtils');
 const routes = require('../app/routes');
@@ -21,10 +22,12 @@ const expressStartup = async () => {
   /********************************
   ***** For handling CORS Error ***
   *********************************/
+  app.use(cors());
   app.all('/*', (request, response, next) => {
     response.header('Access-Control-Allow-Origin', '*');
     response.header('Access-Control-Allow-Headers', 'Content-Type, api_key, Authorization, x-requested-with, Total-Count, Total-Pages, Error-Message');
-    response.header('Access-Control-Allow-Methods', 'POST, GET, DELETE, PUT, OPTIONS');
+    response.header('Access-Control-Allow-Methods', 'POST, GET, DELETE, PUT, OPTION');
+    response.header('Access-Control-Allow-Credentials', 'true');
     response.header('Access-Control-Max-Age', 1800);
     next();
   });
