@@ -72,21 +72,21 @@ service.getDataToPlay = async (payload) => {
   if (isPurchased) {
     let questionLookup = { from: 'questions', localField: 'questionList', foreignField: '_id', as: 'questions' };
     let subjectLookup = { from: 'subjects', localField: 'subjectId', foreignField: '_id', as: 'subjectData' };
-    let performanceLookup = { from: 'performances', localField: '_id', foreignField: 'quizId', as: 'playStatus' };
+    // let performanceLookup = { from: 'performances', localField: '_id', foreignField: 'quizId', as: 'playStatus' };
     let match = { $match: { _id: payload.quizId } };
     let query = [
       match,
       { $lookup: questionLookup },
       { $lookup: subjectLookup },
       { $unwind: `$${subjectLookup.as}` },
-      { $lookup: performanceLookup},
-      { $unwind: {path:`$${performanceLookup.as}`, preserveNullAndEmptyArrays:true }},
+      // { $lookup: performanceLookup},
+      // { $unwind: {path:`$${performanceLookup.as}`, preserveNullAndEmptyArrays:true }},
       { $project: { questionList: 0 } }
     ]
     let data = (await QuizModel.aggregate(query))[0];
-    if(data.playStatus && data.playStatus.status==DB.QUIZ_PLAY_STATUS.COMPLETED){
-      data.playStatus['questionWithAns'] = _.keyBy(data.questions,'_id');
-    }
+    // if(data.playStatus && data.playStatus.status==DB.QUIZ_PLAY_STATUS.COMPLETED){
+    //   data.playStatus['questionWithAns'] = _.keyBy(data.questions,'_id');
+    // }
     return data;
   }
   throw responseHelper.createErrorResponse(ERROR_TYPE.UNAUTHORIZED)
