@@ -1,4 +1,5 @@
-const app = require('express')();
+const EXPRESS=require('express');
+const app = EXPRESS();
 const cors=require('cors');
 const bodyParser = require('body-parser');
 const utils = require('../app/utils/routeUtils');

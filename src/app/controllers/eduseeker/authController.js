@@ -6,7 +6,7 @@ let controller = {}
 
 controller.userRegister = async (payload) => {
   const data = await authService.userRegister(payload);
-  return responseHelper.createSuccessResponse(MESSAGE.CREATE_SUCCESS, { data });
+  return responseHelper.createSuccessResponse(MESSAGE.LOGGED_IN_SUCCESSFULLY, { data })
 }
 
 controller.userLogin = async (payload) => {
@@ -21,7 +21,7 @@ controller.forgotPassword = async (payload) => {
 }
 
 controller.resetTokenVerification = async (payload) => {
-  const data = await authService.resetTokenVerification(payload);
+  const data = await authService.resetPassword(payload);
   return responseHelper.createSuccessResponse(MESSAGE.LOGGED_IN_SUCCESSFULLY, { data });
 }
 

@@ -69,17 +69,17 @@ CONSTANTS.EMAIL_STATUS = {
   FORGOT_PASSWORD: 'Forgot password alert.'
 };
 
-// CONSTANTS.EMAIL_TYPES = {
-//   REGISTER_USER: 1,
-//   FORGOT_PASSWORD: 2
-// }
+CONSTANTS.EMAIL_TYPES = {
+  REGISTER_USER: 1,
+  FORGOT_PASSWORD: 2
+}
 
 CONSTANTS.MONGO_ERROR = {
   DUPLICATE: 11000
 }
 
 CONSTANTS.EMAIL_TEMPLATE = {
-  FORGOT_PASSWORD: '../public/forgot-password.html'
+  FORGOT_PASSWORD: 'src/public/forgot-password.html'
 }
 
 CONSTANTS.USER_ROLE = {

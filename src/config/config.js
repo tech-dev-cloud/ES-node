@@ -10,10 +10,10 @@ module.exports = {
         secure: false,
         auth: {
           user: 'tamit9509@gmail.com', // generated ethereal user
-          pass: '95@akknlvhtdscb', // generated ethereal password
+          pass: 'asdkncasd', // generated ethereal password
         },
       },
-      sender: `Amit Thakur <tamit9509@gmail.com>`
+      sender: `tamit9509@gmail.com`
     },
     nodeMailer: {
       code: 'Gmail',

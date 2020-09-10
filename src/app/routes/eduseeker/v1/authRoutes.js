@@ -48,11 +48,12 @@ const routes = [
     handler: authController.forgotPassword
   },
   {
-    path: '/verify-reset-token/',
+    path: '/verify-reset-token',
     method: 'POST',
     joiSchemaForSwagger: {
       body: {
-        token: JOI.string().required()
+        token: JOI.string().required(),
+        password: JOI.string().required()
       },
       group: 'Authentication',
       description: 'Api to rest password',

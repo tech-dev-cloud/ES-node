@@ -1,10 +1,13 @@
 'use strict';
 
 const BCRYPT = require('bcrypt');
+const fs = require('fs');
 const CONFIG = require('../../config/config');
 const transporter = require('nodemailer').createTransport(CONFIG.Development.NODE_MAILER.transporter);
 const JWT = require('jsonwebtoken');
 const handleBar = require('handlebars');
+const {aws}=require('../services/aws');
+const path=require('path');
 
 
 //apiKeys for Mailjet
@@ -33,31 +36,45 @@ utils.compareHash = (payloadPassword, userPassword) => {
  * Send emaildetails object in params
  * @param {*} email 
  */
-utils.sendEmailNodeMailer = (user, type) => {
-  return new Promise((resolve, reject) => {
+utils.sendEmailSES = (user, type) => {
     /* Todo - setup email data with unicode symbols */
     const mailData = utils.emailTypes(user, type);
-    let template = handleBar.compile(mailData.template);
+    console.log(path.resolve(mailData.template))
+    let source=fs.readFileSync(path.resolve(mailData.template), 'utf8').toString();
+    let template = handleBar.compile(source);
 
     let content = template(mailData.data);
-
-    let mailOptions = {
-      from: CONFIG.Development.NODE_MAILER.sender,
-      to: user.email,
-      subject: mailData.Subject,
-      html: content
-    };
+    let obj={ 
+      Destination:{
+        ToAddresses:[user.email]
+      },
+      Source:CONFIG.Development.NODE_MAILER.sender,
+      Message:{
+        Body:{
+          Html:{Data:content}
+        },
+        Subject:{
+          Data:mailData.Subject
+        }
+      }
+    }
+    // let mailOptions = {
+    //   from: CONFIG.Development.NODE_MAILER.sender,
+    //   to: user.email,
+    //   subject: mailData.Subject,
+    //   html: content
+    // };
 
     /* Todo - send mail with defined transport object */
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.log('Message error: ', error);
-        reject(error);
-      }
-      console.log('Message sent: %s', (info || {}).messageId);
-      resolve(null);
-    });
-  });
+    return aws.sendEmail(obj);
+    // transporter.sendMail(mailOptions, (error, info) => {
+    //   if (error) {
+    //     console.log('Message error: ', error);
+    //     reject(error);
+    //   }
+    //   console.log('Message sent: %s', (info || {}).messageId);
+    //   resolve(null);
+    // });
 };
 
 utils.emailTypes = (user, type) => {
@@ -77,14 +94,14 @@ utils.emailTypes = (user, type) => {
       EmailStatus.Subject = CONSTANTS.EMAIL_STATUS.FORGOT_PASSWORD;
       EmailStatus.template = CONSTANTS.EMAIL_TEMPLATE.FORGOT_PASSWORD;
       EmailStatus.data['fullName'] = user.name;
-      EmailStatus.data['resetPasswordLink'] = user.resetPasswordToken;
+      EmailStatus.data['resetPasswordLink'] = `http://localhost:4200/reset-password/${user.resetPasswordToken}`;
       break;
     default:
       EmailStatus['Subject'] = 'Welcome Email!';
       break;
 
   }
-  EmailStatus.data['fullName'] = user.userName;
+  // EmailStatus.data['fullName'] = user.userName;
   return EmailStatus;
 };
 

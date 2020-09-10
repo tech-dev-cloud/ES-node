@@ -3,6 +3,7 @@ module.exports = {
   CREATE_SUCCESS: 'Record created successfully',
   DELETE_SUCCESS: 'Record deleted successfully',
   UPDATE_SUCCESS: 'Record updated successfully',
+  INVALID_TOKEN: 'Session expired',
   ERROR: 'action failed',
   ACCOUNT_NOT_EXIST: 'Account doesn\'t exist ',
   ACCOUNT_ALREADY_EXIST: 'Account already exist',

@@ -25,4 +25,14 @@ service.uploadFileToBucket=async (params, cb)=>{
     });
 }
 
+service.sendEmail=async (params)=>{
+    const ses = new AWS.SES({
+        accessKeyId: process.env.AWS_ACCESS_KEY,
+        secretAccessKey: process.env.AWS_SECRET_KEY,
+        region:'ap-south-1'
+    });
+    let sendMail=ses.sendEmail(params).promise();
+    return sendMail; 
+}
+
 module.exports={aws:service}

@@ -1,9 +1,11 @@
-const { SECURITY, ERROR_TYPE, USER_ROLE, AVAILABLE_AUTHS, MONGO_ERROR } = require('../utils/constants');
+const { EMAIL_TYPES, ERROR_TYPE, USER_ROLE, AVAILABLE_AUTHS, MONGO_ERROR } = require('../utils/constants');
 const MESSAGES = require('../utils/messages');
-const responseHelper = require("../utils/responseHelper")
+const responseHelper = require("../utils/responseHelper");
 const { SessionModel, UserModel } = require(`../models`);
-const commonFunctions = require('../utils/commonFunctions')
+const commonFunctions = require('../utils/commonFunctions');
+const util=require('../utils/utils');
 const jwt = require("jsonwebtoken");
+const { error } = require('winston');
 
 let authService = {};
 /**
@@ -55,45 +57,6 @@ authService.validateToken = async (token) => {
   return isValidToken;
 };
 
-// authService.authentication = async (payload) => {
-//   let tokenPayload = { key: payload._id, role: payload.role }
-
-//   let userAgency;
-//   if (payload.role == USER_ROLE.AGENCY) {
-//     userAgency = await agencyService.getUserAgency({ userId: payload._id });
-//     if (!userAgency) {
-//       if (payload.socialId && payload.role == USER_ROLE.AGENCY) {
-//         userAgency = await agencyService.newAgency({ createdBy: payload._id });
-//       } else {
-//         throw responseHelper.createErrorResponse(MESSAGES.USER.AGENCY_NOT_EXIST, ERROR_TYPE.BAD_REQUEST);
-//       }
-//     }
-//     tokenPayload.agencyID = userAgency._id;
-//   }
-//   const token = await jwt.sign({ key: payload._id, role: payload.role }, SECURITY.JWT_SIGN_KEY, { expiresIn: '120ms' });
-//   /** -- user can do multiple login */
-//   let dataToUpdate = {
-//     userId: payload._id,
-//     role: payload.role,
-//     token: token,
-//     deviceToken: payload.deviceToken
-//   }
-//   if (userAgency) {
-//     dataToUpdate.agencyID = userAgency._id;
-//   }
-//   await SessionModel.updateOne({
-//     deviceToken: payload.deviceToken
-//   },
-//     { $set: dataToUpdate },
-//     { upsert: true, setDefaultsOnInsert: true, new: true }
-//   );
-//   let response = { token };
-//   if (userAgency) {
-//     response.userAgency = userAgency;
-//     response.agencyId = userAgency._id
-//   }
-//   return response;
-// }
 
 /**function to logout the user session */
 authService.unauthentication = async (user) => {
@@ -106,7 +69,7 @@ authService.userRegister = async (payload) => {
   payload.password = commonFunctions.hashPassword(payload.password);
   const user = new UserModel(payload);
   try {
-    return await user.save();
+    await user.save();
   } catch (err) {
     if (err.code == MONGO_ERROR.DUPLICATE) {
       throw responseHelper.createErrorResponse(ERROR_TYPE.BAD_REQUEST, MESSAGES.USER.EXIST);
@@ -144,15 +107,17 @@ authService.userLogin = async (payload) => {
   } else {
     session = await (new SessionModel(sessionPayload).save());
   }
-  delete user.password;
-  user.accessToken = session.accessToken;
-  return user;
+  let response={
+    accessToken:session.accessToken,
+    name: user.name
+  }
+  return response;
 }
 
 authService.forgotPassword = async (payload) => {
   const user = await UserModel.findOne({ email: payload.email });
   if (!user) {
-    throw responseHelper.createErrorResponseUND(MESSAGES.NO_USER_FOUND);
+    throw responseHelper.createErrorResponse(MESSAGES.NO_USER_FOUND);
   }
   let expireTime = new Date();
   let resetPayload = {
@@ -161,10 +126,13 @@ authService.forgotPassword = async (payload) => {
   }
   user.resetPasswordToken = commonFunctions.encryptJwt(resetPayload);
   await user.save();
-  util.sendEmailNodeMailer(user, EMAIL_TYPES.FORGOT_PASSWORD)
-  // await sendMail(`http://locahost:4000/v1/verify-reset-token/${resetPasswordToken}`);
-  console.log('email sent')
-  return
+  try{
+    await util.sendEmailSES(user, EMAIL_TYPES.FORGOT_PASSWORD);
+    return "Please check you email to reset password"
+  }catch(err){
+    console.error(err); 
+    return false;
+  }
 }
 
 
@@ -182,11 +150,18 @@ authService.isValidResetPasswordLink = async (payload) => {
   }
 }
 
-authService.changePassword = async (payload) => {
-  let _id = commonFunctions.decryptJwt(payload.token)._id;
+authService.resetPassword = async (payload) => {
+  let user=await UserModel.findOne({resetPasswordToken:payload.token}).lean()
+  if(!user){
+    throw responseHelper.createErrorResponse(ERROR_TYPE.BAD_REQUEST,MESSAGES.INVALID_TOKEN);
+  }
+  let obj = commonFunctions.decryptJwt(user.resetPasswordToken);
+  if(obj.expireTime<Date.now()){
+    throw responseHelper.createErrorResponse(ERROR_TYPE.BAD_REQUEST,MESSAGES.INVALID_TOKEN);
+  }
   let updateData = { password: commonFunctions.hashPassword(payload.password), resetPasswordToken: null };
-  let user = UserModel.findByIdAndUpdate(_id, { $set: updateData }, { new: true });
-  return user;
+  let data = UserModel.findByIdAndUpdate(obj._id, { $set: updateData }, { new: true });
+  return data;
 }
 
 authService.emailVerification = async (token) => {
