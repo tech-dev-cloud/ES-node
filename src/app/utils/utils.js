@@ -94,7 +94,7 @@ utils.emailTypes = (user, type) => {
       EmailStatus.Subject = CONSTANTS.EMAIL_STATUS.FORGOT_PASSWORD;
       EmailStatus.template = CONSTANTS.EMAIL_TEMPLATE.FORGOT_PASSWORD;
       EmailStatus.data['fullName'] = user.name;
-      EmailStatus.data['resetPasswordLink'] = `http://localhost:4200/reset-password/${user.resetPasswordToken}`;
+      EmailStatus.data['resetPasswordLink'] = `https://eduseeker.in/reset-password/${user.resetPasswordToken}`;
       break;
     default:
       EmailStatus['Subject'] = 'Welcome Email!';

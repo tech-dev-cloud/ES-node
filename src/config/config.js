@@ -13,7 +13,7 @@ module.exports = {
           pass: 'asdkncasd', // generated ethereal password
         },
       },
-      sender: `tamit9509@gmail.com`
+      sender: `theeduseeker@gmail.com`
     },
     nodeMailer: {
       code: 'Gmail',
