@@ -45,7 +45,8 @@ service.findResource = async (payload) => {
         items: { $push: "$$ROOT" }
       }
     },
-    { $addFields: { items: { $slice: ['$items', skip, limit] } } }
+    { $addFields: { items: '$items' } }
+    // { $addFields: { items: { $slice: ['$items', skip, limit] } } }
   ];
   console.log(JSON.stringify(query))
   return (await QuestionModel.aggregate(query))[0] || { totalCounts: 0, items: [] };

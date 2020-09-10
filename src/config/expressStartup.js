@@ -31,7 +31,6 @@ const expressStartup = async () => {
     response.header('Access-Control-Allow-Headers', 'Content-Type, api_key, Authorization, x-requested-with, Total-Count, Total-Pages, Error-Message');
     response.header('Access-Control-Allow-Methods', 'POST, GET, DELETE, PUT, OPTION');
     response.header('Access-Control-Allow-Credentials', 'true');
-    // response.header('Accept-Encoding', 'gzip, compress, br');
     response.header('Access-Control-Max-Age', 1800);
     next();
   });
