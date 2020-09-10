@@ -1,5 +1,6 @@
 const EXPRESS=require('express');
 const app = EXPRESS();
+const compression = require('compression'); 
 const cors=require('cors');
 const bodyParser = require('body-parser');
 const utils = require('../app/utils/routeUtils');
@@ -18,6 +19,7 @@ const expressStartup = async () => {
   app.use(bodyParser.json({ limit: '50mb' }));
   app.use(bodyParser.urlencoded({ limit: '50mb', extended: false }));
   // app.use(EXPRESS.static(__dirname));
+  app.use(compression());
 
 
   /********************************
@@ -29,6 +31,7 @@ const expressStartup = async () => {
     response.header('Access-Control-Allow-Headers', 'Content-Type, api_key, Authorization, x-requested-with, Total-Count, Total-Pages, Error-Message');
     response.header('Access-Control-Allow-Methods', 'POST, GET, DELETE, PUT, OPTION');
     response.header('Access-Control-Allow-Credentials', 'true');
+    // response.header('Accept-Encoding', 'gzip, compress, br');
     response.header('Access-Control-Max-Age', 1800);
     next();
   });
