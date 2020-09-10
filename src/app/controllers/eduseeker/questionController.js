@@ -11,7 +11,7 @@ controller.createResource = async (payload) => {
 
 /** Function to Update Question */
 controller.updateResource = async (payload) => {
-  const data = await questionService.updatecreateResource(payload);
+  const data = await questionService.updateResource(payload);
   return responseHelper.createSuccessResponse(MESSAGES.QUESTION.CREATE, { data })
 }
 

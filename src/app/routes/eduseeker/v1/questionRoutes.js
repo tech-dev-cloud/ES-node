@@ -87,8 +87,25 @@ const routes = [
       description: 'Api to get questions By ID',
       model: 'GetQuestionByID'
     },
-    auth: [USER_ROLE.TEACHER, USER_ROLE.STUDENT],
+    auth: [USER_ROLE.TEACHER],
     handler: questionController.findResourceByID
+  },
+  {
+    path: `/api/${MODULE.name}/:questionID`,
+    method: 'DELETE',
+    joiSchemaForSwagger: {
+      headers: JOI.object({
+        'authorization': JOI.string().required()
+      }).unknown(),
+      params: {
+        questionID: routeUtils.validation.mongooseId
+      },
+      group: 'Question',
+      description: 'Api to get questions By ID',
+      model: 'DeleteQuestionByID'
+    },
+    auth: [USER_ROLE.TEACHER],
+    handler: questionController.deleteResource
   },
 
 ]

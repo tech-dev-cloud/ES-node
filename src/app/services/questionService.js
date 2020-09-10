@@ -18,7 +18,7 @@ service.updateResource = async (payload) => {
   if (!exist) {
     throw responseHelper.createErrorResponse( ERROR_TYPE.BAD_REQUEST, MESSAGES.QUESTION.NOT_FOUND);
   }
-  if (exist.createdBy != payload.user.userId) {
+  if (exist.createdBy.toString() != payload.user.userId.toString()) {
     throw responseHelper.createErrorResponse(ERROR_TYPE.UNAUTHORIZED, MESSAGES.USER.UNAUTHORIZED);
   }
   return await QuestionModel.updateOne({ _id: payload.questionID }, payload);
@@ -26,7 +26,7 @@ service.updateResource = async (payload) => {
 
 /** Function to get questions */
 service.findResource = async (payload) => {
-  let match = { createdBy: payload.user.userId, subjectId:payload.subjectId };
+  let match = { createdBy: payload.user.userId, subjectId:payload.subjectId, isDeleted:false };
   let subjectLookup = { from: 'subjects', localField: 'subjectId', foreignField: '_id', as: 'subjectData' };
   let topicLookup = { from: 'topics', localField: 'topicId', foreignField: '_id', as: 'topicData' };
   let skip = (payload.index || DEFAULT.INDEX) * (payload.limit || DEFAULT.LIMIT);
@@ -56,14 +56,14 @@ service.findResource = async (payload) => {
 service.findResourceByID = async (payload) => {
   let match = { _id: payload.questionID, createdBy: payload.user.userId };
   let subjectLookup = { from: 'subjects', localField: 'subjectId', foreignField: '_id', as: 'subjectData' };
-  let topicLookup = { from: 'topics', localField: 'topicId', foreignField: '_id', as: 'topicData' };
+  // let topicLookup = { from: 'topics', localField: 'topicId', foreignField: '_id', as: 'topicData' };
 
   let query = [
     { $match: match },
     { $lookup: subjectLookup },
     { $unwind: `$${subjectLookup.as}` },
-    { $lookup: topicLookup },
-    { $unwind: `$${topicLookup.as}` },
+    // { $lookup: topicLookup },
+    // { $unwind: `$${topicLookup.as}` },
   ];
   const data = (await QuestionModel.aggregate(query))[0];
   if (!data) {
@@ -78,7 +78,7 @@ service.deleteResource = async (payload) => {
   if (!question) {
     throw responseHelper.createErrorResponse(ERROR_TYPE.BAD_REQUEST, MESSAGES.QUESTION.NOT_FOUND);
   }
-  if (question.createdBy != payload.user.userId) {
+  if (question.createdBy.toString() != payload.user.userId.toString()) {
     throw responseHelper.createErrorResponse(ERROR_TYPE.UNAUTHORIZED, MESSAGES.USER.UNAUTHORIZED);
   }
   if (!payload.hardDelete) {
