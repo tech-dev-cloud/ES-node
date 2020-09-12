@@ -62,6 +62,7 @@ module.exports = {
   QUIZ: {
     CREATE: 'Quiz created successfully',
     FETCH: 'Quiz fetched successfully',
+    DUPLICATE: 'Already enrolled for quiz'
   },
   PAYMENT: {
     SUCCESS: 'Payment Request Sent',

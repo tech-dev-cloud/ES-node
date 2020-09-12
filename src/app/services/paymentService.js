@@ -35,7 +35,15 @@ service.createPayment = async (paymentObject, payload) => {
   })
 }
 
-
+service.freeEnrolled=async (payload, product)=>{
+  const alreadyEnrolled=await PaymentModel.findOne({userId: payload.user.userId, productId:product._id}).lean();
+  if(alreadyEnrolled){
+    responseHelper.createErrorResponse(ERROR_TYPE.ALREADY_EXISTS, MESSAGES.QUIZ.DUPLICATE);
+  }
+  let obj=new PaymentModel({userId: payload.user.userId, productId:product._id, status:'Credit'});
+  let data=await obj.save();
+  return data;
+}
 // Payment webhook handler
 service.webhook = async (payload) => {
   const payment = await PaymentModel.findOne({ payment_request_id: payload.payment_request_id });

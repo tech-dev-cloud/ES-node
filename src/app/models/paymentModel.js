@@ -5,7 +5,7 @@ let schema = new Schema({
   userId: { type: Schema.Types.ObjectId, required: true, ref: 'users' },
   productId: { type: Schema.Types.ObjectId, required: true, ref: 'quiz' },
   productType: { type: String },
-  payment_request_id: { type: String, required: true, unique: true },
+  payment_request_id: { type: String },
   status: { type: String, default: 'Pending' },
   payment_id: { type: String },
   created_at: { type: Date },

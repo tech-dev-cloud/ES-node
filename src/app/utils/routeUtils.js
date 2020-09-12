@@ -125,7 +125,6 @@ const getHandlerMethod = (route) => {
           res.sendStatus(200);
         }
       }).catch(error => {
-        console.error(error);
         res.status(400).json(error)
       });
   }
