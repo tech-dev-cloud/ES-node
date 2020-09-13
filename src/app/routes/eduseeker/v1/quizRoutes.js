@@ -59,9 +59,7 @@ const routes = [
         difficultLevel:JOI.string().valid(Object.values(CONSTANTS.DIFFICULT_LEVEL)),
         questionList:JOI.array().items(routeUtils.validation.mongooseId),
         attemptTime:JOI.number(),
-        // description:JOI.string(),
-        // requirements:JOI.string(),
-        benifits:JOI.string()
+        benefits:JOI.array().items(JOI.string())
       },
       group: `${MODULE.group}`,
       description: 'Api to create Quiz',
@@ -129,6 +127,23 @@ const routes = [
     },
     auth: [USER_ROLE.STUDENT],
     handler: quizController.getDataToPlay
+  },
+  {
+    path: `/api/${MODULE.name}/:quizId`,
+    method: 'DELETE',
+    joiSchemaForSwagger: {
+      headers: JOI.object({
+        'authorization': JOI.string().required()
+      }).unknown(),
+      params: JOI.object({
+        quizId: routeUtils.validation.mongooseId
+      }),
+      group: `${MODULE.group}`,
+      description: 'Api to delete Quiz',
+      model: 'DeleteQuiz'
+    },
+    auth: [USER_ROLE.TEACHER, USER_ROLE.ADMIN],
+    handler: quizController.deleteQuiz
   }
 ]
 module.exports = routes;

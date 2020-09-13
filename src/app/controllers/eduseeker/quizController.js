@@ -45,4 +45,9 @@ controller.getDataToPlay = async (payload) => {
   const data = await quizService.getDataToPlay(payload);
   return data;
 }
+
+controller.deleteQuiz = async(payload)=>{
+  const data=await quizService.deleteQuiz(payload);
+  return data;
+}
 module.exports = { quizController: controller };
