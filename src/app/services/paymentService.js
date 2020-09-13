@@ -1,6 +1,6 @@
 const InstaMojo = require('instamojo-nodejs');
 var CryptoJS = require("crypto-js");
-
+const MESSAGES = require('../utils/messages');
 const paymentGateway = require('../../config/config')[process.env.ACTIVE_MODE || 'Development'].PAYMENT_GATEWAY;
 const { PaymentModel } = require('../models');
 const { ERROR_TYPE } = require('../utils/constants');
@@ -38,7 +38,7 @@ service.createPayment = async (paymentObject, payload) => {
 service.freeEnrolled=async (payload, product)=>{
   const alreadyEnrolled=await PaymentModel.findOne({userId: payload.user.userId, productId:product._id}).lean();
   if(alreadyEnrolled){
-    responseHelper.createErrorResponse(ERROR_TYPE.ALREADY_EXISTS, MESSAGES.QUIZ.DUPLICATE);
+    throw responseHelper.createErrorResponse(ERROR_TYPE.ALREADY_EXISTS, MESSAGES.QUIZ.DUPLICATE);
   }
   let obj=new PaymentModel({userId: payload.user.userId, productId:product._id, status:'Credit'});
   let data=await obj.save();
