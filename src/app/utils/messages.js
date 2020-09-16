@@ -62,7 +62,8 @@ module.exports = {
   QUIZ: {
     CREATE: 'Quiz created successfully',
     FETCH: 'Quiz fetched successfully',
-    DUPLICATE: 'Already enrolled for quiz'
+    DUPLICATE: 'Already enrolled for quiz',
+    CLEAR_CACHE:"Cache clear successfull"
   },
   PAYMENT: {
     SUCCESS: 'Payment Request Sent',

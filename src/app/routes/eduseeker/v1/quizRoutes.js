@@ -144,6 +144,20 @@ const routes = [
     },
     auth: [USER_ROLE.TEACHER, USER_ROLE.ADMIN],
     handler: quizController.deleteQuiz
+  },
+  {
+    path: `/api/flushCache/${MODULE.name}`,
+    method: 'get',
+    joiSchemaForSwagger: {
+      headers: JOI.object({
+        'authorization': JOI.string().required()
+      }).unknown(),
+      group: `${MODULE.group}`,
+      description: 'Api to flush all Quiz from Cache',
+      model: 'FlushQuizCache'
+    },
+    auth: [USER_ROLE.ADMIN],
+    handler: quizController.flushCache
   }
 ]
 module.exports = routes;

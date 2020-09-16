@@ -169,4 +169,8 @@ authService.emailVerification = async (token) => {
   const user = await UserModel.findByIdAndUpdate(id, { $set: { emailVerificationStatus: true } }, { new: true }).lean();
   return user;
 }
+
+authService.logoutSession=async(payload)=>{
+  return await SessionModel.deleteOne({_id:payload.user._id});
+}
 module.exports = { authService };
