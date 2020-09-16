@@ -106,7 +106,10 @@ service.submitQuiz=async(payload)=>{
     finalScore: counts.correct*2,
     totalScore: data.questions.length * 2
   }
-  data=await PerformanceModel.findOneAndUpdate(criteria, dataToUpdate, { new: true }).lean();
+  // data=await PerformanceModel.findOneAndUpdate(criteria, dataToUpdate, { new: true }).lean();
+  data=await PerformanceModel.findOneAndDelete(criteria);
+
+
   return {...dataToUpdate, questionsWithAns: {...quizQuestions} };
 }
 module.exports = { performanceService: service }
