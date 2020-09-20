@@ -1,12 +1,15 @@
 const MONGOOSE = require('mongoose');
+const {DB}=require('../utils/constants');
 const Schema = MONGOOSE.Schema;
 
 let schema = new Schema({
   subjectId: { type: Schema.Types.ObjectId, ref: 'subjects', required: true },
   // topicId: { type: Schema.Types.ObjectId, ref: 'topics', required: true },
-  question: { type: String, required: true, unique: true },
+  type:{type: Number, enum:Object.values(DB.QUESTION_TYPE)},
+  image:{type:String},
+  question: { type: String },
   description: { type: String },
-  options: [{ type: String, required: true }],
+  options: [{ type: String }],
   correctOption: [{ type: Number, required: true }],
   createdBy: { type: Schema.Types.ObjectId, ref: 'users' },
   status: { type: Boolean, default: false },

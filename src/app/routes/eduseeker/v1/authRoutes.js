@@ -1,5 +1,6 @@
 const JOI = require('joi');
 const { authController } = require('../../../controllers');
+const {USER_ROLE}=require('../../../utils/constants');
 
 const routes = [
   {
@@ -8,7 +9,7 @@ const routes = [
     joiSchemaForSwagger: {
       body: JOI.object({
         name: JOI.string().required().description('User name'),
-        role: JOI.number().valid([1, 2]).required(),
+        // role: JOI.array().items(JOI.number().valid(Object.values(USER_ROLE))).required(),
         email: JOI.string().email().required().description('User email for registration'),
         phoneNumber: JOI.string().optional('Phone number'),
         password: JOI.string().description('Password')

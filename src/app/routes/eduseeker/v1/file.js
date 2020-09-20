@@ -19,7 +19,7 @@ let routes=[
             description: 'Route to upload file.',
             model: 'adminFileUpload'
           },
-          auth: [USER_ROLE.TEACHER],
+          auth: [USER_ROLE.TEACHER, USER_ROLE.ADMIN],
           handler: file.uploadFile
     }
 ]

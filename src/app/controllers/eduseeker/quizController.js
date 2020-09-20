@@ -6,7 +6,7 @@ const { QuizModel, PaymentModel } = require('../../models');
 let controller = {}
 
 controller.createQuiz =async (payload)=>{
-  let quiz= new QuizModel({...payload, instructor:payload.user.userId});
+  let quiz= new QuizModel({...payload, instructor:payload.user.userId,totalQuestions:payload.questionList.length});
   return await quiz.save();
 }
 

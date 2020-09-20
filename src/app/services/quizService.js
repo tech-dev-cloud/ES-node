@@ -38,6 +38,7 @@ service.findResource = async (payload, quizIds=[]) => {
     { $group: { _id: null, items: { $push: '$$ROOT' }, totalCounts: { $sum: 1 } } },
     { $addFields: { items: { $slice: ['$items', skip, payload.limit || DEFAULT.LIMIT] } } }
   ]
+  
   return (await QuizModel.aggregate(query))[0] || [];
 }
 
@@ -64,7 +65,7 @@ service.findResourceById = async (payload) => {
 
 service.upldateQuiz = async (payload) => {
   
-  return QuizModel.findOneAndUpdate({_id:payload.quizId,instructor:payload.user.userId}, payload).lean();
+  return QuizModel.findOneAndUpdate({_id:payload.quizId,instructor:payload.user.userId}, {...payload,totalQuestions:questionList.length}).lean();
 }
 
 service.getDataToPlay = async (payload) => {

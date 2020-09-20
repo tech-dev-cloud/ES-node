@@ -115,7 +115,8 @@ const getHandlerMethod = (route) => {
       ...(req || {}).query,
       ...(req || {}).params,
       user: (req || {}).user,
-      file: req.file
+      file: req.file,
+      web_app:req.headers['web-app']
     }
     handler(payload)
       .then(result => {

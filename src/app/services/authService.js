@@ -1,11 +1,10 @@
-const { EMAIL_TYPES, ERROR_TYPE, USER_ROLE, AVAILABLE_AUTHS, MONGO_ERROR } = require('../utils/constants');
+const { EMAIL_TYPES, ERROR_TYPE, MONGO_ERROR, USER_ROLE } = require('../utils/constants');
 const MESSAGES = require('../utils/messages');
 const responseHelper = require("../utils/responseHelper");
 const { SessionModel, UserModel } = require(`../models`);
+let _ = require('lodash');
 const commonFunctions = require('../utils/commonFunctions');
 const util=require('../utils/utils');
-const jwt = require("jsonwebtoken");
-const { error } = require('winston');
 
 let authService = {};
 /**
@@ -67,6 +66,9 @@ authService.unauthentication = async (user) => {
 /**Function to register user */
 authService.userRegister = async (payload) => {
   payload.password = commonFunctions.hashPassword(payload.password);
+  if(payload.web_app){
+    payload.role=[USER_ROLE.STUDENT]
+  }
   const user = new UserModel(payload);
   try {
     await user.save();

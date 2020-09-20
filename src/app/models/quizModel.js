@@ -19,6 +19,7 @@ let schema = new Schema({
   // description: { type: String },
   productType: { type: String, enum: Object.values(PRODUCT_TYPE), default: PRODUCT_TYPE.QUIZ },
   questionList: [{ type: Schema.Types.ObjectId, ref: 'question' }],
+  totalQuestions: { type:Number },
   attemptTime: { type: Number },
   isDeleted: { type: Boolean, default: false }
 });

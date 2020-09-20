@@ -24,6 +24,10 @@ CONSTANTS.DB = {
     CORRECT:'correct',
     INCORRECT:'incorrect',
     NOT_ATTEMPT:'not_attempt'
+  },
+  QUESTION_TYPE:{
+    IMAGE:1,
+    TEXT:2
   }
 }
 

@@ -1,5 +1,5 @@
 const JOI = require('joi');
-const { USER_ROLE, DEFAULT } = require('../../../utils/constants');
+const { USER_ROLE, DEFAULT,DB } = require('../../../utils/constants');
 const { questionController } = require('../../../controllers');
 const routeUtils = require('../../../utils/routeUtils');
 
@@ -17,8 +17,10 @@ const routes = [
       body: {
         subjectId: routeUtils.validation.mongooseId,
         // topicId: routeUtils.validation.mongooseId,
+        type:JOI.number().valid(Object.values(DB.QUESTION_TYPE)),
+        image:JOI.string(),
         question: JOI.string().required(),
-        options: JOI.array().items(JOI.string().required()).required(),
+        options: JOI.array().items(JOI.string().required()),
         correctOption: JOI.array().items(JOI.number().required()),
         description: JOI.string()
       },
@@ -41,7 +43,8 @@ const routes = [
       },
       body: {
         subjectId: routeUtils.validation.mongooseId,
-        topicId: routeUtils.validation.mongooseId,
+        type:JOI.number().valid(Object.values(DB.QUESTION_TYPE)),
+        image:JOI.string(),
         question: JOI.string(),
         options: JOI.array().items(JOI.string()),
         correctOption: JOI.array().items(JOI.number()),

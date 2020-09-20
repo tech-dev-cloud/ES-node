@@ -6,7 +6,7 @@ const user = new schema({
   name: { type: String, require: true, trim: true },
   email: { type: String, require: true, unique: true, trim: true },
   phoneNumber: { type: String },
-  role: { type: Number, enum: Object.values(USER_ROLE) },
+  role: [{ type: Number, enum: Object.values(USER_ROLE) }],
   password: { type: String, require: true },
   resetPasswordToken: { type: String },
   createdAt: { type: Date, default: Date.now() }

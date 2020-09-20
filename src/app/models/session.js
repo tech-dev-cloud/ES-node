@@ -7,7 +7,7 @@ const schema = new Schema({
   userId: { type: Schema.Types.ObjectId, ref: 'users' },
   accessToken: { type: String, required: true },
   deviceToken: { type: String },
-  role: { type: Number, enum: Object.values(USER_ROLE) }
+  role: [{ type: Number, enum: Object.values(USER_ROLE) }]
 })
 
 schema.set("timestamps", true);
