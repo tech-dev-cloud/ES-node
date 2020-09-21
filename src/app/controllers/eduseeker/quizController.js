@@ -1,5 +1,6 @@
 const responseHelper = require('../../utils/responseHelper');
 const MESSAGES = require('../../utils/messages');
+const redis=require('../../../config/redisConnection');
 const { quizService } = require('../../services');
 const { QuizModel, PaymentModel } = require('../../models');
 
@@ -12,7 +13,12 @@ controller.createQuiz =async (payload)=>{
 
 controller.findResource = async (payload) => {
   const data = await quizService.findResource(payload);
-  return responseHelper.createSuccessResponse(MESSAGES.QUESTION.CREATE, data);
+  return responseHelper.createSuccessResponse(MESSAGES.QUIZ.FETCH, data);
+}
+
+controller.flushCache = async(payload)=>{
+  const data = await quizService.flushCache(payload);
+  return responseHelper.createSuccessResponse(MESSAGES.QUIZ.CLEAR_CACHE, data);
 }
 
 controller.getEnrolledQuiz=async(payload)=>{

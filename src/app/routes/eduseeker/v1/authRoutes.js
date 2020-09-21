@@ -1,4 +1,5 @@
 const JOI = require('joi');
+const {USER_ROLE}=require('../../../utils/constants');
 const { authController } = require('../../../controllers');
 const {USER_ROLE}=require('../../../utils/constants');
 
@@ -61,6 +62,20 @@ const routes = [
       model: 'ResetPassword'
     },
     handler: authController.resetTokenVerification
+  },
+  {
+    path: '/logout',
+    method: 'GET',
+    joiSchemaForSwagger: {
+      headers: JOI.object({
+        'authorization': JOI.string().required()
+      }).unknown(),
+      group: 'Authentication',
+      description: 'Api to logout password',
+      model: 'logout'
+    },
+    auth: [USER_ROLE.TEACHER, USER_ROLE.STUDENT, USER_ROLE.ADMIN],
+    handler: authController.logoutSession
   }
 ];
 

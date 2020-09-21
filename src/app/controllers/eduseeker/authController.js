@@ -25,8 +25,9 @@ controller.resetTokenVerification = async (payload) => {
   return responseHelper.createSuccessResponse(MESSAGE.LOGGED_IN_SUCCESSFULLY, { data });
 }
 
-controller.OTPValidation = async (payload) => {
-
+controller.logoutSession = async (payload) => {
+  const data = await authService.logoutSession(payload);
+  return responseHelper.createSuccessResponse(MESSAGE.USER.LOGGED_OUT_SUCCESSFULLY, { data });
 }
 
 controller.resetPassword = async (payload) => {

@@ -7,11 +7,9 @@ let schema = new Schema({
   productType: { type: String },
   payment_request_id: { type: String },
   status: { type: String, default: 'Pending' },
-  payment_id: { type: String },
-  created_at: { type: Date },
-  modified_at: { type: Date }
+  payment_id: { type: String }
 })
 
-// schema.set('timestamps', true);
+schema.set('timestamps', true);
 const PaymentModel = MONGOOSE.model('payment', schema);
 module.exports = { PaymentModel };
