@@ -87,7 +87,7 @@ service.findResourceById = async (payload) => {
           // { $lookup: instructorLookup },
           // { $unwind: `$${instructorLookup.as}` },
           { $lookup: questionLookup},
-          { $project: { isDeleted: 0, 'instructor.password': 0 } }
+          { $project: { isDeleted: 0, 'instructor.password': 0, } }
         ]
         let data=(await QuizModel.aggregate(query))[0];
         redis.set(cacheKey, JSON.stringify(data), err=>{
