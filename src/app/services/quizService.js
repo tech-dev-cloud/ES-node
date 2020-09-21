@@ -22,7 +22,7 @@ service.findResource = async (payload, quizIds=[]) => {
   return await  new Promise((resolve, reject)=>{
     redis.get(params.dev_quiz_list_key,async (err, someData)=>{
       if(err || !someData ){
-        let subjectLookup = { from: 'subjects', localField: 'subjectId', foreignField: '_id', as: 'subjectData' };
+        // let subjectLookup = { from: 'subjects', localField: 'subjectId', foreignField: '_id', as: 'subjectData' };
         let instructorLookup = { from: 'users', localField: 'instructor', foreignField: '_id', as: 'instructor' };
         let skip = (payload.index || DEFAULT.INDEX) * (payload.limit || DEFAULT.LIMIT);
         
@@ -36,12 +36,12 @@ service.findResource = async (payload, quizIds=[]) => {
 
         let query = [
           { $match: match },
-          { $lookup: subjectLookup },
-          { $unwind: `$${subjectLookup.as}` },
+          // { $lookup: subjectLookup },
+          // { $unwind: `$${subjectLookup.as}` },
           // { $lookup: examTypeLookup },
           { $lookup: instructorLookup },
           { $unwind: `$${instructorLookup.as}` },
-          { $project: { questionList: 0, isDeleted: 0 } },
+          { $project: { questionList: 0, isDeleted: 0, status:0,examType:0,subjectId:0,difficultLevel:0,createdAt:0,updatedAt:0,__v:0 } },
           { $group: { _id: null, items: { $push: '$$ROOT' }, totalCounts: { $sum: 1 } } },
           { $addFields: { items: { $slice: ['$items', skip, payload.limit || DEFAULT.LIMIT] } } }
         ]
