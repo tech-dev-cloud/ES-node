@@ -66,9 +66,9 @@ service.flushCache=async(payload)=>{
   return new Promise((resolve, reject)=>{
     redis.del(params.dev_quiz_list_key, (err, someData)=>{
       if(err){
-        throw "Unable to clear cache"
+        reject("Unable to clear cache")
       }
-      resolve(null);
+      resolve(true);
     })
   })
 }

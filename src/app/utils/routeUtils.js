@@ -39,6 +39,7 @@ routeUtils.initRoutes = async (app, routes = []) => {
 }
 
 const joiValidation = async (req, route) => {
+
   if (route.joiSchemaForSwagger.query && Object.keys(route.joiSchemaForSwagger.query).length > 0) {
     req.query = await JOI.validate(req.query, route.joiSchemaForSwagger.query);
   }
