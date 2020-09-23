@@ -15,6 +15,11 @@ service.getQuiz = async (payload) => {
   return QuizModel.findOne(payload).lean();
 }
 
+service.createQuiz =async (payload)=>{
+  let quiz= new QuizModel({...payload, instructor:payload.user.userId,totalQuestions:payload.questionList.length});
+  return await quiz.save(); 
+}
+
 /**
  * Function to get the quiz list
  */
@@ -103,7 +108,7 @@ service.findResourceById = async (payload) => {
 
 }
 
-service.upldateQuiz = async (payload) => {
+service.updateQuiz = async (payload) => {
   
   return QuizModel.findOneAndUpdate({_id:payload.quizId,instructor:payload.user.userId}, {...payload,totalQuestions:questionList.length}).lean();
 }

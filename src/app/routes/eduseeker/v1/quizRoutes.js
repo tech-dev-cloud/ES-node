@@ -66,7 +66,7 @@ const routes = [
       model: 'CreateQuiz'
     },
     auth:[USER_ROLE.TEACHER, USER_ROLE.ADMIN],
-    handler: quizController.upldateQuiz
+    handler: quizController.updateQuiz
   },
   {
     path: `/api/${MODULE.name}`,
