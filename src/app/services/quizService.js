@@ -110,7 +110,7 @@ service.findResourceById = async (payload) => {
 
 service.updateQuiz = async (payload) => {
   
-  return QuizModel.findOneAndUpdate({_id:payload.quizId,instructor:payload.user.userId}, {...payload,totalQuestions:questionList.length}).lean();
+  return QuizModel.findOneAndUpdate({_id:payload.quizId,instructor:payload.user.userId}, {...payload,totalQuestions:payload.questionList.length}).lean();
 }
 
 service.getDataToPlay = async (payload) => {

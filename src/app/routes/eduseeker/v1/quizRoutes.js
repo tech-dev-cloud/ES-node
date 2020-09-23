@@ -156,7 +156,7 @@ const routes = [
       description: 'Api to flush all Quiz from Cache',
       model: 'FlushQuizCache'
     },
-    auth: [USER_ROLE.ADMIN],
+    auth: [USER_ROLE.ADMIN, USER_ROLE.TEACHER],
     handler: quizController.flushCache
   }
 ]
