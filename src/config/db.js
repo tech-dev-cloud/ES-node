@@ -1,4 +1,5 @@
 const MONGOOSE = require('mongoose');
+const logger=require('./winston');
 // require('dotenv').config();
 
 module.exports = {
@@ -10,6 +11,6 @@ module.exports = {
   },
   start: async function () {
     await MONGOOSE.connect(this.URL, this.options);
-    console.log('mongodb is connected on ', this.URL)
+    logger.info(`mongodb is connected on ${this.URL}` )
   }
 }

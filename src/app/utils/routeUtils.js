@@ -7,6 +7,7 @@ const  swaggerJson  = require('../../config/swagger');
 const swJson = require('../services/swaggerService');
 const { authService } = require('../services/authService');
 const {file}=require('../controllers');
+const logger=require('../../config/winston');
 
 const storage = multer.diskStorage({
   destination : 'uploads/',
@@ -111,6 +112,7 @@ const dataValidation = (route) => {
 const getHandlerMethod = (route) => {
   const { handler } = route;
   return (req, res) => {
+    logger.info(`${route.method}: ${route.path}`)
     let payload = {
       ...(req || {}).body,
       ...(req || {}).query,
@@ -124,9 +126,11 @@ const getHandlerMethod = (route) => {
         if (result) {
           res.status(200).json(result);
         } else {
-          res.sendStatus(200);
+          res.sendStatus(num);
         }
       }).catch(error => {
+        logger.error('API Error'+error);
+        console.log(error);
         res.status(400).json(error)
       });
   }

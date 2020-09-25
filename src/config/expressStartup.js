@@ -5,6 +5,7 @@ const cors=require('cors');
 const bodyParser = require('body-parser');
 const utils = require('../app/utils/routeUtils');
 const routes = require('../app/routes');
+const logger=require('../config/winston')
 
 const expressStartup = async () => {
 
@@ -46,7 +47,8 @@ const expressStartup = async () => {
 
   await utils.initRoutes(app, routes);
   app.listen(process.env.PORT || 4000, () => {
-    console.log('server is start at ', process.env.PORT || 4000);
+    logger.info('server is start at port ', process.env.PORT || 4000)
+    // console.log('server is start at ', process.env.PORT || 4000);
 
   })
 

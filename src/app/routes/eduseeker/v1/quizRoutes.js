@@ -147,7 +147,7 @@ const routes = [
   },
   {
     path: `/api/flushCache/${MODULE.name}`,
-    method: 'get',
+    method: 'GET',
     joiSchemaForSwagger: {
       headers: JOI.object({
         'authorization': JOI.string().required()
