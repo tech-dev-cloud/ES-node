@@ -28,10 +28,10 @@ controller.flushCache = async(payload)=>{
 }
 
 controller.getEnrolledQuiz=async(payload)=>{
-  let enrolledData=await PaymentModel.find({userId:payload.user.userId, status: 'Credit'}).lean();
-  if(enrolledData.length>0){
-    let quizIds=enrolledData.map(obj=>obj.productId);
-    let data=await quizService.findResource(payload, quizIds);
+  let enrolledData=await PaymentModel.find({userId:payload.user.userId, status: 'Credit'},{productId:1}).lean();
+  if(enrolledData && enrolledData.length>0){
+    let quizIds=enrolledData.map(obj=>obj.productId.toString());
+    const data=await quizService.findResource(payload, quizIds);
     return data;
   }
   // let data=await PaymentModel.aggregate([

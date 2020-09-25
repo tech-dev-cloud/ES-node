@@ -24,7 +24,7 @@ let common={
                   { $lookup: instructorLookup },
                   { $unwind: `$${instructorLookup.as}` },
                   { $lookup: questionLookup},
-                  { $project: { questionList: 0, isDeleted: 0, status:0,examType:0,subjectId:0,difficultLevel:0,createdAt:0,updatedAt:0,__v:0 } },
+                  { $project: { questionList: 0, isDeleted: 0, status:0,examType:0,subjectId:0,createdAt:0,updatedAt:0,__v:0 } },
                 //   { $group: { _id: null, items: { $push: '$$ROOT' } } },
                 //   { $addFields: { items: { $slice: ['$items', skip, payload.limit || DEFAULT.LIMIT] } } }
                 ];

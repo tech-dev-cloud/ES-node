@@ -27,7 +27,7 @@ service.findResource = async (payload, quizIds=[]) => {
   let items=[];
   if(quizIds.length==0){
     try{
-      quizIds=await QuizModel.find({status:true},{project:{_id:1}}).lean();
+      quizIds=await QuizModel.find({status:true},{_id:1}).lean();
 
     }catch(err){
       console.log(err);
@@ -55,38 +55,6 @@ service.flushCache=async(payload)=>{
 
 service.findResourceById = async (payload) => {
   return await common.getQuizData(payload.quizId);
-  // return new Promise((resolve,reject)=>{
-  //   let cacheKey=params.dev_quiz+payload.quizId;
-  //   redis.get(cacheKey, async (err, someData)=>{
-  //     if(err || ! someData){
-  //       let subjectLookup = { from: 'subjects', localField: 'subjectId', foreignField: '_id', as: 'subjectData' };
-  //       // let instructorLookup = { from: 'users', localField: 'instructor', foreignField: '_id', as: 'instructor' };
-  //       let questionLookup = { from: 'questions', localField: 'questionList', foreignField: '_id', as: 'questions' };
-  //       let match={
-  //         _id: payload.quizId
-  //       };
-      
-  //       let query = [
-  //         { $match: match },
-  //         { $lookup: subjectLookup },
-  //         { $unwind: `$${subjectLookup.as}` },
-  //         // { $lookup: instructorLookup },
-  //         // { $unwind: `$${instructorLookup.as}` },
-  //         { $lookup: questionLookup},
-  //         { $project: { isDeleted: 0, 'instructor.password': 0, } }
-  //       ]
-  //       let data=(await QuizModel.aggregate(query))[0];
-  //       redis.set(cacheKey, JSON.stringify(data), err=>{
-  //         redis.expire(cacheKey, params.quiz_expiry)
-  //       })
-  //       resolve(data);
-  //     }else{
-  //       resolve(JSON.parse(someData));
-  //     }
-  //   })
-  // })
-
-
 }
 
 service.updateQuiz = async (payload) => {
