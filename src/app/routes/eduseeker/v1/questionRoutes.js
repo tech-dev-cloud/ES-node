@@ -73,7 +73,7 @@ const routes = [
       description: 'Api to get questions',
       model: 'GetQuestion'
     },
-    auth: [USER_ROLE.TEACHER],
+    auth: [USER_ROLE.TEACHER, USER_ROLE.ADMIN],
     handler: questionController.findResource
   },
   {

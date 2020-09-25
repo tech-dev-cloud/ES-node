@@ -26,7 +26,7 @@ service.updateResource = async (payload) => {
 
 /** Function to get questions */
 service.findResource = async (payload) => {
-  let match = { createdBy: payload.user.userId, subjectId:payload.subjectId, isDeleted:false };
+  let match = { subjectId:payload.subjectId, isDeleted:false };
   let subjectLookup = { from: 'subjects', localField: 'subjectId', foreignField: '_id', as: 'subjectData' };
   let topicLookup = { from: 'topics', localField: 'topicId', foreignField: '_id', as: 'topicData' };
   let skip = (payload.index || DEFAULT.INDEX) * (payload.limit || DEFAULT.LIMIT);
