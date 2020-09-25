@@ -5,7 +5,7 @@ const Schema = MONGOOSE.Schema;
 let schema = new Schema({
   title: { type: String, required: true },
   subjectId: { type: Schema.Types.ObjectId, required: true, ref: 'subjects' },
-  status: { type: Boolean, default: false },
+  status: { type: Boolean, default: true },
   examType: [{ type: Schema.Types.ObjectId, ref: 'examtype' }],
 
   imageURL: { type: String },

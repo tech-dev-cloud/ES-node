@@ -152,6 +152,9 @@ const routes = [
       headers: JOI.object({
         'authorization': JOI.string().required()
       }).unknown(),
+      query:JOI.object({
+        id:JOI.string()
+      }),
       group: `${MODULE.group}`,
       description: 'Api to flush all Quiz from Cache',
       model: 'FlushQuizCache'

@@ -23,8 +23,8 @@ controller.findResource = async (payload) => {
 }
 
 controller.flushCache = async(payload)=>{
-  await quizService.flushCache(payload);
-  return;
+  const data=await quizService.flushCache(payload);
+  return responseHelper.createSuccessResponse("", data);
 }
 
 controller.getEnrolledQuiz=async(payload)=>{
