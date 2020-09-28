@@ -93,11 +93,9 @@ service.submitQuiz=async(payload)=>{
     }else if(obj.answer[0]){
       obj.resultStatus=DB.ANSWER_RESULT.INCORRECT;
       counts.incorrect++
-    }else{
-      obj.resultStatus=DB.ANSWER_RESULT.NOT_ATTEMPT;
-      counts.notAnswered++;
     }
   })
+  counts.notAnswered=data.questions.length-(counts.correct+counts.incorrect);
   
   let dataToUpdate={
     status: DB.QUIZ_PLAY_STATUS.COMPLETED,

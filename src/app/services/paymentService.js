@@ -66,7 +66,6 @@ service.webhook = async (payload) => {
       throw responseHelper.createErrorResponse(ERROR_TYPE.BAD_REQUEST)
     }
   }
-  console.log('===>>>payment object not found');
   throw responseHelper.createErrorResponse(ERROR_TYPE.BAD_REQUEST)
 }
 
