@@ -18,9 +18,9 @@ service.updateResource = async (payload) => {
   if (!exist) {
     throw responseHelper.createErrorResponse( ERROR_TYPE.BAD_REQUEST, MESSAGES.QUESTION.NOT_FOUND);
   }
-  if (exist.createdBy.toString() != payload.user.userId.toString()) {
-    throw responseHelper.createErrorResponse(ERROR_TYPE.UNAUTHORIZED, MESSAGES.USER.UNAUTHORIZED);
-  }
+  // if (exist.createdBy.toString() != payload.user.userId.toString()) {
+  //   throw responseHelper.createErrorResponse(ERROR_TYPE.UNAUTHORIZED, MESSAGES.USER.UNAUTHORIZED);
+  // }
   return await QuestionModel.updateOne({ _id: payload.questionID }, payload);
 }
 
@@ -48,13 +48,12 @@ service.findResource = async (payload) => {
     { $addFields: { items: '$items' } }
     // { $addFields: { items: { $slice: ['$items', skip, limit] } } }
   ];
-  console.log(JSON.stringify(query))
   return (await QuestionModel.aggregate(query))[0] || { totalCounts: 0, items: [] };
 }
 
 /** Function to get question by ID */
 service.findResourceByID = async (payload) => {
-  let match = { _id: payload.questionID, createdBy: payload.user.userId };
+  let match = { _id: payload.questionID };
   let subjectLookup = { from: 'subjects', localField: 'subjectId', foreignField: '_id', as: 'subjectData' };
   // let topicLookup = { from: 'topics', localField: 'topicId', foreignField: '_id', as: 'topicData' };
 
