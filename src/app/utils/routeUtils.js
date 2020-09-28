@@ -126,7 +126,7 @@ const getHandlerMethod = (route) => {
         if (result) {
           res.status(200).json(result);
         } else {
-          res.sendStatus(num);
+          res.sendStatus(200);
         }
       }).catch(error => {
         logger.error('API Error'+error);

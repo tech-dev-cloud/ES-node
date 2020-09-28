@@ -53,15 +53,16 @@ service.webhook = async (payload) => {
     delete payload.mac;
     delete payload.user;
     delete payload.file;
+    delete payload.web_app;
     const data = Object.keys(payload).sort().map(key => payload[key]).join('|');
     let calculatedMac = CryptoJS.HmacSHA1(data, paymentGateway.SALT);
     payment.status = payload.status;
-    payment.save();
+    await payment.save();
     if (providedMac == calculatedMac.toString()) {
       return true;
     } else {
       payment.status = 'Failed';
-      payment.save();
+     await  payment.save();
       throw responseHelper.createErrorResponse(ERROR_TYPE.BAD_REQUEST)
     }
   }
