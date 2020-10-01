@@ -66,6 +66,7 @@ authService.unauthentication = async (user) => {
 /**Function to register user */
 authService.userRegister = async (payload) => {
   payload.password = commonFunctions.hashPassword(payload.password);
+  payload.email=payload.email.toLowerCase();
   if(payload.web_app){
     payload.role=[USER_ROLE.STUDENT]
   }
@@ -82,7 +83,7 @@ authService.userRegister = async (payload) => {
 
 /** Function to start user session if user is authenticated */
 authService.userLogin = async (payload) => {
-  const user = await UserModel.findOne({ email: payload.email }).lean();
+  const user = await UserModel.findOne({ email: payload.email.toLowerCase() }).lean();
   if (!user) {
     throw responseHelper.createErrorResponse(ERROR_TYPE.BAD_REQUEST, MESSAGES.USER.NO_USER_FOUND);
   }

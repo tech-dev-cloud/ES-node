@@ -1,6 +1,7 @@
 const { PRODUCT_TYPE, PAYMENT_PURPOSE, ERROR_TYPE } = require('../../utils/constants');
 const MESSAGES = require('../../utils/messages');
 const { userService, quizService, paymentService } = require('../../services');
+const {PaymentModel}=require('../../models');
 const responseHelper = require('../../utils/responseHelper');
 
 const controller = {}
@@ -18,6 +19,10 @@ controller.createPayment = async (payload) => {
     // Add Product details
     switch (payload.productType) {
       case PRODUCT_TYPE.QUIZ:
+        const alreadyEnrolled=await PaymentModel.findOne({userId: payload.user.userId, productId:payload.productId}).lean();
+        if(alreadyEnrolled){
+          throw responseHelper.createErrorResponse(ERROR_TYPE.ALREADY_EXISTS, MESSAGES.QUIZ.DUPLICATE);
+        }
         product = await quizService.getQuiz({ _id: payload.productId });
         paymentObject.amount = product.amount;
         paymentObject.purpose = PAYMENT_PURPOSE.Quiz
