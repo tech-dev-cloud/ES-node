@@ -4,7 +4,7 @@ const Schema = MONGOOSE.Schema;
 
 let schema = new Schema({
   subjectId: { type: Schema.Types.ObjectId, ref: 'subjects', required: true },
-  // topicId: { type: Schema.Types.ObjectId, ref: 'topics', required: true },
+  moduleId: { type: Schema.Types.ObjectId, ref: 'modules'},
   type:{type: Number, enum:Object.values(DB.QUESTION_TYPE)},
   image:{type:String},
   question: { type: String },

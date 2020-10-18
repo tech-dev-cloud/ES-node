@@ -16,7 +16,7 @@ const routes = [
       }).unknown(),
       body: {
         subjectId: routeUtils.validation.mongooseId,
-        // topicId: routeUtils.validation.mongooseId,
+        moduleId: routeUtils.validation.mongooseId,
         type:JOI.number().valid(Object.values(DB.QUESTION_TYPE)),
         image:JOI.string(),
         question: JOI.string().required(),
@@ -43,6 +43,7 @@ const routes = [
       },
       body: {
         subjectId: routeUtils.validation.mongooseId,
+        moduleId: routeUtils.validation.mongooseId,
         type:JOI.number().valid(Object.values(DB.QUESTION_TYPE)),
         image:JOI.string(),
         question: JOI.string(),

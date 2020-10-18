@@ -7,5 +7,6 @@ module.exports = {
   ...require('./paymentController'),
   ...require('./userController'),
   ...require('./performanceController'),
-  ...require('./file')
+  ...require('./file'),
+  ...require('./module')
 }

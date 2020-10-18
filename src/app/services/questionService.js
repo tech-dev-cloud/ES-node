@@ -28,7 +28,7 @@ service.updateResource = async (payload) => {
 service.findResource = async (payload) => {
   let match = { subjectId:payload.subjectId, isDeleted:false };
   let subjectLookup = { from: 'subjects', localField: 'subjectId', foreignField: '_id', as: 'subjectData' };
-  let topicLookup = { from: 'topics', localField: 'topicId', foreignField: '_id', as: 'topicData' };
+  let moduleLookup = { from: 'modules', localField: 'moduleId', foreignField: '_id', as: 'module' };
   let skip = (payload.index || DEFAULT.INDEX) * (payload.limit || DEFAULT.LIMIT);
   let limit = payload.limit || DEFAULT.LIMIT;
 
@@ -36,8 +36,8 @@ service.findResource = async (payload) => {
     { $match: match },
     { $lookup: subjectLookup },
     { $unwind: `$${subjectLookup.as}` },
-    // { $lookup: topicLookup },
-    // { $unwind: `$${topicLookup.as}` },
+      // { $lookup: moduleLookup },
+      // { $unwind: `$${moduleLookup.as}` },
     {
       $group: {
         _id: null,
@@ -55,14 +55,14 @@ service.findResource = async (payload) => {
 service.findResourceByID = async (payload) => {
   let match = { _id: payload.questionID };
   let subjectLookup = { from: 'subjects', localField: 'subjectId', foreignField: '_id', as: 'subjectData' };
-  // let topicLookup = { from: 'topics', localField: 'topicId', foreignField: '_id', as: 'topicData' };
+  let moduleLookup = { from: 'modules', localField: 'moduleId', foreignField: '_id', as: 'module' };
 
   let query = [
     { $match: match },
     { $lookup: subjectLookup },
     { $unwind: `$${subjectLookup.as}` },
-    // { $lookup: topicLookup },
-    // { $unwind: `$${topicLookup.as}` },
+    { $lookup: moduleLookup },
+    { $unwind: `$${moduleLookup.as}` },
   ];
   const data = (await QuestionModel.aggregate(query))[0];
   if (!data) {

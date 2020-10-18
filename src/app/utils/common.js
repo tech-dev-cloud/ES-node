@@ -11,22 +11,14 @@ let common={
                 let subjectLookup = { from: 'subjects', localField: 'subjectId', foreignField: '_id', as: 'subjectData' };
                 let instructorLookup = { from: 'users', localField: 'instructor', foreignField: '_id', as: 'instructor' };
                 let questionLookup = { from: 'questions', localField: 'questionList', foreignField: '_id', as: 'questions' };
-                // let skip = (payload.index || DEFAULT.INDEX) * (payload.limit || DEFAULT.LIMIT);
-                
-                // if(payload.user.role==USER_ROLE.TEACHER){
-                //   match.instructor=payload.user.userId
-                // }
                 let query = [
                   { $match: {_id:quiz_id} },
                   { $lookup: subjectLookup },
                   { $unwind: `$${subjectLookup.as}` },
-                  // { $lookup: examTypeLookup },
                   { $lookup: instructorLookup },
                   { $unwind: `$${instructorLookup.as}` },
                   { $lookup: questionLookup},
-                  { $project: { questionList: 0, isDeleted: 0, status:0,examType:0,subjectId:0,createdAt:0,updatedAt:0,__v:0 } },
-                //   { $group: { _id: null, items: { $push: '$$ROOT' } } },
-                //   { $addFields: { items: { $slice: ['$items', skip, payload.limit || DEFAULT.LIMIT] } } }
+                  { $project: { questionList: 0, isDeleted: 0, status:0,examType:0,subjectId:0,createdAt:0,updatedAt:0,__v:0 } }
                 ];
                 let data=(await QuizModel.aggregate(query))[0] || [];
                 // for(let index=0;index<data.items.length; index++){

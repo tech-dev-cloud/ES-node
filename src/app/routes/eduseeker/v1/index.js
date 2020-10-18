@@ -7,5 +7,6 @@ module.exports = [
   ...require('./paymentRoutes'),
   ...require('./userRoutes'),
   ...require('./performanceRoutes'),
-  ...require('./file')
+  ...require('./file'),
+  ...require('./modules')
 ]
