@@ -15,6 +15,8 @@ let schema = new Schema({
   headline: { type: String },
   difficultLevel: { type: String, enum: Object.values(DIFFICULT_LEVEL) },
   benefits: [{ type: String }],
+  exam: { type: String },
+  validity: { type: Number },
   // requirements: { type: String },
   // description: { type: String },
   productType: { type: String, enum: Object.values(PRODUCT_TYPE), default: PRODUCT_TYPE.QUIZ },
