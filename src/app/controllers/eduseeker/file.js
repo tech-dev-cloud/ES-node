@@ -2,38 +2,45 @@ const fs=require('fs');
 const {File}=require('../../models')
 const webp=require('webp-converter');
 const {aws}=require('../../services');
+const config=require('../../../config/config')
 const responseHelper = require('../../utils/responseHelper');
 
 let file={};
 
 
 
-file.uploadFile=async(payload)=>{
+file.uploadFile=async(request, response)=>{
 
-  let outputPath=`${Date.now()}${payload.file.originalname.split('.')[0]}.webp`;
-  await webp.cwebp(payload.file.path, outputPath, '-q 100');
-  let imageURL=await new Promise((resolve, reject)=>{
+  let outputPath=`${Date.now()}${request.file.originalname.split('.')[0]}.webp`;
+  await webp.cwebp(request.file.path, outputPath, '-q 100');
     fs.readFile(outputPath, function(error, fileContent){
       if (!error && fileContent && fileContent != undefined) {
         fs.unlinkSync(outputPath);
-        fs.unlinkSync(payload.file.path);
+        fs.unlinkSync(request.file.path);
+        // Key:'s1/'+outputPath,
         let params={
           Bucket: process.env.BUCKET_NAME,
-          Key:'s1/'+outputPath,
           Body: fileContent,
           ContentType: 'image/webp',
           ACL: 'public-read'
         }
-        
+        params['Key']=(config.NODE_ENV=='development')?'dev/'+outputPath:'s1/'+outputPath;
         aws.uploadFileToBucket(params, function(data){
-          resolve(data.Location);
+          response.status(200).json({
+            success:true,
+            message:"file uploaded successfully",
+            imageURL:data.Location
+          })
         });
       }else{
-        reject(error);
+        response.status(500).json({
+          success:false,
+          message:"Something went wrong",
+          debug:error
+        })
       }
     })
-  })
-  return responseHelper.createSuccessResponse(null,{imageURL});
+  // return responseHelper.createSuccessResponse(null,{imageURL});
 }
 
 file.rename=(req, file, cb)=>{

@@ -2,8 +2,8 @@ const { EMAIL_TYPES, ERROR_TYPE, MONGO_ERROR, USER_ROLE } = require('../utils/co
 const MESSAGES = require('../utils/messages');
 const responseHelper = require("../utils/responseHelper");
 const { SessionModel, UserModel } = require(`../models`);
-let _ = require('lodash');
 const commonFunctions = require('../utils/commonFunctions');
+let _ = require('lodash');
 const util=require('../utils/utils');
 
 let authService = {};

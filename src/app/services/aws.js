@@ -25,6 +25,24 @@ service.uploadFileToBucket=async (params, cb)=>{
     });
 }
 
+service.deleteFile=async (params)=>{
+    new Promise((resolve,reject)=>{
+        const s3 = new AWS.S3({
+            accessKeyId: process.env.AWS_ACCESS_KEY,
+            secretAccessKey: process.env.AWS_SECRET_KEY
+        });
+        
+        s3.deleteObject(params, function (err, data) {
+            if (!err && data) {
+                // let s3Url = params.base_s3_img_url + data.key;
+                resolve(data);
+            } else {
+                reject(err);
+            }
+        });
+    })
+}
+
 service.sendEmail=async (params)=>{
     const ses = new AWS.SES({
         accessKeyId: process.env.AWS_ACCESS_KEY,

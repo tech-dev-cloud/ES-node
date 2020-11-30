@@ -1,10 +1,10 @@
 
 const JOI = require('joi');
-const { USER_ROLE, DEFAULT } = require('../../../utils/constants');
-const { quizController } = require('../../../controllers');
-const routeUtils = require('../../../utils/routeUtils');
+const { USER_ROLE, DEFAULT } = require('../../utils/constants');
+const { quizController } = require('../../controllers');
+const routeUtils = require('../../utils/routeUtils');
 const { Router } = require('express');
-const CONSTANTS = require('../../../utils/constants');
+const CONSTANTS = require('../../utils/constants');
 
 let MODULE = {
   name: 'quiz',

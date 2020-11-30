@@ -3,7 +3,7 @@
 const BCRYPT = require('bcrypt');
 const fs = require('fs');
 const CONFIG = require('../../config/config');
-const transporter = require('nodemailer').createTransport(CONFIG.Development.NODE_MAILER.transporter);
+// const transporter = require('nodemailer').createTransport(CONFIG.Development.NODE_MAILER.transporter);
 const JWT = require('jsonwebtoken');
 const handleBar = require('handlebars');
 const {aws}=require('../services/aws');
@@ -48,7 +48,7 @@ utils.sendEmailSES = (user, type) => {
       Destination:{
         ToAddresses:[user.email]
       },
-      Source:CONFIG.Development.NODE_MAILER.sender,
+      Source:"theeduseeker@gmail.com",
       Message:{
         Body:{
           Html:{Data:content}

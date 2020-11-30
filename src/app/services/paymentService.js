@@ -1,7 +1,8 @@
 const InstaMojo = require('instamojo-nodejs');
 var CryptoJS = require("crypto-js");
 const MESSAGES = require('../utils/messages');
-const paymentGateway = require('../../config/config')[process.env.ACTIVE_MODE || 'Development'].PAYMENT_GATEWAY;
+// const paymentGateway = require('../../config/config')[process.env.ACTIVE_MODE || 'Development'].PAYMENT_GATEWAY;
+const paymentGateway = require('../../config/config');
 const { PaymentModel } = require('../models');
 const { ERROR_TYPE } = require('../utils/constants');
 const responseHelper = require('../utils/responseHelper');

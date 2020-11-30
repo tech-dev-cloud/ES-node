@@ -1,4 +1,4 @@
-let { QuizModel } = require('../models');
+let { QuizModel,Product } = require('../models');
 const redis=require('../../config/redisConnection');
 const params=require('../../config/env/development_params.json');
 
@@ -40,6 +40,46 @@ let common={
             reject(err)
           }
           resolve(true);
+        })
+      })
+    },
+    getProduct:async (product_id)=>{
+      return new Promise((resolve,reject)=>{
+        redis.get(`${params.product_key}${product_id.toString()}`, async(err, result)=>{
+          if(!err && result){
+            resolve(JSON.parse(result));
+          }else{
+            let match={};
+            match['_id']=product_id;
+            let data=await Product.aggregate([
+              {$match:match},
+              {$lookup:{
+                  from:"product_images",
+                  let:{"id":"$_id"},
+                  pipeline:[
+                      {$match:{$expr:{$eq:["$product_id","$$id"]}}},
+                      {$project:{image_path:1}}
+                  ],
+                  as:"image"
+              }},
+              {$lookup:{
+                  from:"product_question_maps",
+                  let:{"id":"$_id"},
+                  pipeline:[
+                      {$match:{$expr:{$eq:["$product_id","$$id"]}}},
+                      {$project:{question_id:1}},
+                      {$group:{_id:null,"ids":{$push:"$question_id"}}}
+                  ],
+                  as:"questions"
+              }},
+              {$unwind:{path:"$questions", preserveNullAndEmptyArrays:true}},
+              // {$group:{_id:null,count:{$sum:1},items:{$push:"$$ROOT"}}}
+            ]);
+            redis.set(params.product_key,JSON.stringify(data[0]), (err)=>{
+              redis.expire(params.product_key,params.product_expiry);
+            });
+            resolve(data[0]);
+          }
         })
       })
     }

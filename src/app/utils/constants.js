@@ -31,10 +31,7 @@ CONSTANTS.DB = {
   }
 }
 
-
-CONSTANTS.PRODUCT_TYPE = {
-  QUIZ: 'quiz'
-}
+CONSTANTS.PRODUCT_TYPE = ['1','2', '3','4']
 
 CONSTANTS.PAYMENT_PURPOSE = {
   Quiz: 'Purchase Eduseeker Quiz'

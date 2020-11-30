@@ -1,9 +1,9 @@
 'use strict';
 
 const Joi = require('joi');
-const { USER_ROLE } = require('../../../utils/constants');
-const { subjectController } = require('../../../controllers');
-const routeUtils = require('../../../utils/routeUtils');
+const { USER_ROLE } = require('../../utils/constants');
+const { subjectController } = require('../../controllers');
+const routeUtils = require('../../utils/routeUtils');
 
 const MODULE = {
   name: 'subject'
@@ -26,7 +26,7 @@ let routes = [
       model: 'CreateSubject'
     },
     auth: [USER_ROLE.TEACHER, USER_ROLE.ADMIN],
-    handler: subjectController.createResource
+    handler: subjectController.createSubject
   },
   {
     method: 'GET',
@@ -39,7 +39,7 @@ let routes = [
       description: 'Api to get Subjects',
       model: 'GetSubjects'
     },
-    handler: subjectController.findResource
+    handler: subjectController.getAllSubjects
   },
   {
     method: 'GET',
@@ -53,7 +53,7 @@ let routes = [
       model: 'Get_Subject_By_ID'
     },
     // auth: CONSTANTS.AVAILABLE_AUTH.ADMIN,
-    handler: subjectController.findResourceyID
+    handler: subjectController.getSubjectById
   },
   {
     method: 'PUT',
@@ -70,24 +70,24 @@ let routes = [
       model: 'UpdateSuabject'
     },
     auth: [USER_ROLE.ADMIN],
-    handler: subjectController.updateResource
+    handler: subjectController.updateSubject
   },
-  {
-    method: 'DELETE',
-    path: `/api/${MODULE.name}/:id`,
-    joiSchemaForSwagger: {
-      headers: Joi.object({
-        authorization: Joi.string().required()
-      }).options({ allowUnknown: true }),
-      params: {
-        id: routeUtils.validation.mongooseId
-      },
-      group: 'Subjects',
-      description: 'Api to delete Subject',
-      model: 'Delete_Subject'
-    },
-    auth: [USER_ROLE.ADMIN],
-    handler: subjectController.deleteResource
-  }
+  // {
+  //   method: 'DELETE',
+  //   path: `/api/${MODULE.name}/:id`,
+  //   joiSchemaForSwagger: {
+  //     headers: Joi.object({
+  //       authorization: Joi.string().required()
+  //     }).options({ allowUnknown: true }),
+  //     params: {
+  //       id: routeUtils.validation.mongooseId
+  //     },
+  //     group: 'Subjects',
+  //     description: 'Api to delete Subject',
+  //     model: 'Delete_Subject'
+  //   },
+  //   auth: [USER_ROLE.ADMIN],
+  //   handler: subjectController.deleteResource
+  // }
 ]
 module.exports = routes;

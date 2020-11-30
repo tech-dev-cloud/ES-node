@@ -12,8 +12,7 @@ let schema = new Schema({
   options: [{ type: String }],
   correctOption: [{ type: Number, required: true }],
   createdBy: { type: Schema.Types.ObjectId, ref: 'users' },
-  status: { type: Boolean, default: false },
-  isDeleted: { type: Boolean, default: false }
+  status: { type: Boolean, default: false }
 });
 
 schema.set('timestamps', true);

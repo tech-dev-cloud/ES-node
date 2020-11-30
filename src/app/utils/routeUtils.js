@@ -113,26 +113,26 @@ const getHandlerMethod = (route) => {
   const { handler } = route;
   return (req, res) => {
     logger.info(`${route.method}: ${route.path}`)
-    let payload = {
-      ...(req || {}).body,
-      ...(req || {}).query,
-      ...(req || {}).params,
-      user: (req || {}).user,
-      file: req.file,
-      web_app:req.headers['web-app']
-    }
-    handler(payload)
-      .then(result => {
-        if (result) {
-          res.status(200).json(result);
-        } else {
-          res.sendStatus(200);
-        }
-      }).catch(error => {
-        logger.error('API Error'+error);
-        console.log(error);
-        res.status(400).json(error)
-      });
+    // let payload = {
+    //   ...(req || {}).body,
+    //   ...(req || {}).query,
+    //   ...(req || {}).params,
+    //   user: (req || {}).user,
+    //   file: req.file,
+    //   web_app:req.headers['web-app']
+    // }
+    handler(req, res)
+      // .then(result => {
+      //   if (result) {
+      //     res.status(200).json(result);
+      //   } else {
+      //     res.sendStatus(200);
+      //   }
+      // }).catch(error => {
+      //   logger.error('API Error'+error);
+      //   console.log(error);
+      //   res.status(400).json(error)
+      // });
   }
 }
 

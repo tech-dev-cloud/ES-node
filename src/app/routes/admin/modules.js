@@ -1,7 +1,7 @@
 const JOI = require('joi');
-const { USER_ROLE, DEFAULT,DB } = require('../../../utils/constants');
-const { moduleController } = require('../../../controllers');
-const routeUtils = require('../../../utils/routeUtils');
+const { USER_ROLE, DEFAULT,DB } = require('../../utils/constants');
+const { moduleController } = require('../../controllers');
+const routeUtils = require('../../utils/routeUtils');
 
 const MODULE = {
   name: 'modules'
