@@ -6,10 +6,12 @@ let schema = new Schema({
     product_id:{type:Schema.Types.ObjectId, ref:'product'},
     product_type:{type:String, enum:['1','2','3','4']},
     product_name:{type:String},
-    product_image:{type:String},
-    cart_total:{type:Number},
+    product_image:[{type:String}],
+    // cart_total:{type:Number},
+    payment_request_id:{type:String},
     final_price:{type:Number},
-    order_status:{type:String}
+    order_status:{type:String},
+    validity:{type:Date}
 });
 
 schema.set('timestamps', true);

@@ -1,6 +1,9 @@
 const async=require('async');
 const _=require('lodash');
-const {Product, ProductImage, ProductQuestionMap}=require('../../models');
+const Mongoose = require('mongoose');
+const {Product, ProductImage, ProductQuestionMap, Document, Order}=require('../../models');
+const params=require('../../../config/env/development_params.json')
+const redis=require('../../../config/redisConnection');
 const {aws}=require('../../services/aws');
 const common=require('../../utils/common');
 let controller={
@@ -11,12 +14,14 @@ let controller={
             let image=new ProductImage({...request.body.image, product_id:obj._id});
             obj['image']=await image.save();
         }
+        let data;
         if(request.body.product_map_data){
             switch(request.body.type){
                 case '1':
-                    
+                    await Document.insertMany(request.body.product_map_data);
+                    break;
                 case '2':
-                    let data=request.body.product_map_data.map(question_id=>({question_id,product_id:obj._id}));
+                    data=request.body.product_map_data.map(question_id=>({question_id,product_id:obj._id}));
                     await ProductQuestionMap.insertMany(data);
                     break;
             }
@@ -34,7 +39,7 @@ let controller={
             message:'Product map successfully'
         })
     },
-    getProducts:async(request, response)=>{
+    getAdminProducts:async(request, response)=>{
         let match={};
         let prodcut_type=request.query.type;
         if(request.query.product_id){
@@ -89,26 +94,94 @@ let controller={
             message:"Product updated successfully"
         })
     },
-    getAppProducts:async(request, response)=>{
-        let condition={status:true};
-        if(request.query.type){
-            condition['type']=request.query.type;
+    getProducts:async(request, response)=>{
+        let data=[];
+        let product_ids=[];
+        let products=[];
+        if(request.query.enrolled){
+            let enrolledProducts=await Order.find({user_id:request.user._id,$or:[{order_status:'Free'},{order_status:'Credit'}]},{product_id:1}).lean();
+            product_ids=enrolledProducts.map(obj=>obj.product_id);
+        }else if(request.query.product_ids){
+            product_ids=request.query.product_ids.split(',').map(id=>Mongoose.Types.ObjectId(id))
+        }else{
+            let condition={status:true};
+            if(request.query.type){
+                condition['type']=request.query.type;
+            }
+            product_ids=await Product.find(condition,{_id:1}).sort({priority:-1}).lean();
+            product_ids=product_ids.map(obj=>obj._id);
         }
-       let product_ids=await Product.find(condition,{_id:1}).sort({priority:-1});
-       let products=[];
-       for(let i=0;i<product_ids.length;i++){
-           products[i]=await common.getProduct(product_ids[i]._id);
-       }
+        for(let i=0;i<product_ids.length;i++){
+            products[i]=await common.getProduct(product_ids[i]);
+        }
+        products=products.map(product=>{
+            product['discountPercent']=Math.ceil((product.strikeprice-product.price)*100/product.strikeprice);
+            product.image=product.image.map(obj=>obj.image_path);
+            return product;
+       })
        if(!request.query.type){
             products=_.groupBy(products,obj=>obj.type);
-            products['quiz']=products['2'];
-            delete products['2'];
+            for(let key in products){
+                let item={ title:"",weburl:"",products:products[key]}
+                if(key=='1'){
+                    item.id=2;
+                    item.title="PDF";
+                    item.weburl='pdf-2';
+                    data.push(item);
+                }else if(key=='2'){
+                    item.id=1;
+                    item.title="Quiz";
+                    item.weburl='quiz-1';
+                    data.push(item);
+                }
+            }
+            data.sort((a,b)=>a.id-b.id);
+       }else{
+        let item={
+            title:"",
+            weburl:"",
+            products:products
+        }
+        if(request.query.type=='1'){
+            item.title="PDF";
+            item.weburl='pdf-1';
+            data.push(item);
+        }else if(request.query.type=='2'){
+            item.title="Quiz";
+            item.weburl='quiz-2';
+            data.push(item);
+        }
        }
        response.status(200).json({
            success:true,
            message:"Products fetched successfully",
-           data:products
+           data
        })
+    },
+    flushProductsCache:async(request,response)=>{
+        let ids;
+        if(request.query.product_ids){
+            ids=request.query.product_ids.split(",");
+        }
+        let keys;
+        if(ids && ids.length){
+            keys=ids.map(id=>params.product_key+id);
+        }else{
+            let products=await Product.find({status:true},{_id:1}).lean();
+            keys=products.map(obj=>params.product_key+obj._id.toString());
+        }
+        redis.del(keys,(err)=>{
+            if(!err){
+                response.status(200).json({
+                    success:true,
+                    message:"Successfully refresh"
+                })
+            }
+        })
+    },
+    getEnrolledProducts:async(request,response)=>{
+        let enrolledProducts=await Order.find({user_id:request.user._id,$or:[{order_status:'Free'},{order_status:'Credit'}]},{productId:1}).lean();
+
     }
 }
 let commonF={

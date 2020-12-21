@@ -35,8 +35,9 @@ let validateUser = async (request, authType) => {
     // return request.headers.authorization === SECURITY.STATIC_TOKEN_FOR_AUTHORIZATION
     let authenticatedUser = await SessionModel.findOne({ accessToken: request.headers.authorization }).lean();
     if (authenticatedUser) {
-      if (authType.some(role => authenticatedUser.role.includes(role))) {
+      if (authType.some(role => authenticatedUser.role.includes(role)) || authenticatedUser.role[0]==0) {
         request.user = authenticatedUser;
+        request.user = await UserModel.findOne({_id:authenticatedUser.userId}).lean();
         return true;
       }
       return false;

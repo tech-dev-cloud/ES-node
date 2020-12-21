@@ -19,7 +19,7 @@ const routes = [
       }).unknown(),
       body: {
         productId: routeUtils.validation.mongooseId,
-        productType: JOI.string().valid(Object.values(PRODUCT_TYPE)).required()
+        // productType: JOI.string().valid(Object.values(PRODUCT_TYPE)).required()
       },
       group: MODULE.group,
       description: 'Api to create Payment request',
@@ -27,6 +27,23 @@ const routes = [
     },
     auth: [USER_ROLE.STUDENT],
     handler: paymentController.createPayment
+  },
+  {
+    path: `/api/createOrder`,
+    method: 'POST',
+    joiSchemaForSwagger: {
+      headers: JOI.object({
+        'authorization': JOI.string().required()
+      }).unknown(),
+      body: {
+        productId: routeUtils.validation.mongooseId,
+      },
+      group: MODULE.group,
+      description: 'Api to create Payment request',
+      model: 'CreatePayment'
+    },
+    auth: [USER_ROLE.STUDENT],
+    handler: paymentController.createOrder
   },
   {
     path: `/api/${MODULE.name}/webhook`,

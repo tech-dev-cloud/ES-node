@@ -9,7 +9,7 @@ let MODULE = {
 }
 const routes = [
   {
-    path: `/admin/product`,
+    path: `/api/product`,
     method: 'POST',
     joiSchemaForSwagger: {
       headers: JOI.object({
@@ -33,7 +33,7 @@ const routes = [
           image_path:JOI.string(),
           priority:JOI.number().default(1)
         }),
-        product_map_data:JOI.array().items(routeUtils.validation.mongooseId)
+        product_map_data:JOI.array().items(JOI.any())
       },
       group: `${MODULE.group}`,
       description: 'Api to create Product',
@@ -62,26 +62,30 @@ const routes = [
       model: 'getAllProducts'
     },
     auth:[USER_ROLE.TEACHER, USER_ROLE.ADMIN],
-    handler: productController.getProducts
+    handler: productController.getAdminProducts
   },
   {
     path: `/api/getAllProducts`,
     method: 'GET',
     joiSchemaForSwagger: {
+      headers: JOI.object({
+        'authorization': JOI.string().required()
+      }).unknown(),
       query:{
         searchString:JOI.string(),
         searchKey:JOI.string(),
         limit:JOI.number().default(20),
         index:JOI.number().min(0),
-        product_id:routeUtils.validation.mongooseId,
+        enrolled:JOI.boolean(),
+        product_ids:JOI.string(),
         type:JOI.string().valid(PRODUCT_TYPE)
       },
       group: `${MODULE.group}`,
       description: 'Api to get Products',
       model: 'getAllProducts'
     },
-    // auth:[USER_ROLE.TEACHER, USER_ROLE.ADMIN],
-    handler: productController.getAppProducts
+    auth:[USER_ROLE.STUDENT],
+    handler: productController.getProducts
   },
   {
     path: `/admin/map/quiz`,
@@ -147,69 +151,36 @@ const routes = [
     auth: [USER_ROLE.TEACHER, USER_ROLE.ADMIN],
     handler: productController.updateProductByID
   },
-//   {
-//     path: `/api/${MODULE.name}/:quizId`,
-//     method: 'GET',
-//     joiSchemaForSwagger: {
-//       params: JOI.object({
-//         quizId: routeUtils.validation.mongooseId
-//       }),
-//       group: `${MODULE.group}`,
-//       description: 'Api to get Quiz List',
-//       model: 'GetQuiz'
-//     },
-//     handler: productController.findResourceById
-//   },
-//   {
-//     path: `/api/${MODULE.name}/play/:quizId`,
-//     method: 'GET',
-//     joiSchemaForSwagger: {
-//       headers: JOI.object({
-//         'authorization': JOI.string().required()
-//       }).unknown(),
-//       params: JOI.object({
-//         quizId: routeUtils.validation.mongooseId
-//       }),
-//       group: `${MODULE.group}`,
-//       description: 'Api to get Quiz data to play',
-//       model: 'GetQuizToPlay'
-//     },
-//     auth: [USER_ROLE.STUDENT],
-//     handler: productController.getDataToPlay
-//   },
-//   {
-//     path: `/api/${MODULE.name}/:quizId`,
-//     method: 'DELETE',
-//     joiSchemaForSwagger: {
-//       headers: JOI.object({
-//         'authorization': JOI.string().required()
-//       }).unknown(),
-//       params: JOI.object({
-//         quizId: routeUtils.validation.mongooseId
-//       }),
-//       group: `${MODULE.group}`,
-//       description: 'Api to delete Quiz',
-//       model: 'DeleteQuiz'
-//     },
-//     auth: [USER_ROLE.TEACHER, USER_ROLE.ADMIN],
-//     handler: productController.deleteQuiz
-//   },
-//   {
-//     path: `/api/flushCache/${MODULE.name}`,
-//     method: 'GET',
-//     joiSchemaForSwagger: {
-//       headers: JOI.object({
-//         'authorization': JOI.string().required()
-//       }).unknown(),
-//       query:JOI.object({
-//         id:JOI.string()
-//       }),
-//       group: `${MODULE.group}`,
-//       description: 'Api to flush all Quiz from Cache',
-//       model: 'FlushQuizCache'
-//     },
-//     auth: [USER_ROLE.ADMIN, USER_ROLE.TEACHER],
-//     handler: productController.flushCache
-//   }
+  {
+    path: `/api/flushProductCache`,
+    method: 'GET',
+    joiSchemaForSwagger: {
+      headers: JOI.object({
+        'authorization': JOI.string().required()
+      }).unknown(),
+      query:{
+        product_ids:JOI.string()
+      },
+      group: `${MODULE.group}`,
+      description: 'Api to flush Products cache',
+      model: 'flushProductCache'
+    },
+    auth:[USER_ROLE.TEACHER, USER_ROLE.ADMIN, USER_ROLE.STUDENT],
+    handler: productController.flushProductsCache
+  },
+  {
+    path: `/api/getEnrolledProducts`,
+    method: 'GET',
+    joiSchemaForSwagger: {
+      headers: JOI.object({
+        'authorization': JOI.string().required()
+      }).unknown(),
+      group: `${MODULE.group}`,
+      description: 'Api to get enrolled Products',
+      model: 'getEnrolledProducts'
+    },
+    auth:[USER_ROLE.STUDENT],
+    handler: productController.getEnrolledProducts
+  }
 ]
 module.exports = routes;

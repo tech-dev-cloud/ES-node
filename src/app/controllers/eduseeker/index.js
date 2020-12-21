@@ -4,7 +4,7 @@ module.exports = {
   ...require('./questionController'),
   // ...require('./unitController'),
   // ...require('./quizController'),
-  // ...require('./paymentController'),
+  ...require('./paymentController'),
   // ...require('./userController'),
   // ...require('./performanceController'),
   ...require('./file'),

@@ -44,8 +44,9 @@ let common={
       })
     },
     getProduct:async (product_id)=>{
+      let cacheKey=`${params.product_key}${product_id.toString()}`;
       return new Promise((resolve,reject)=>{
-        redis.get(`${params.product_key}${product_id.toString()}`, async(err, result)=>{
+        redis.get(cacheKey, async(err, result)=>{
           if(!err && result){
             resolve(JSON.parse(result));
           }else{
@@ -62,26 +63,15 @@ let common={
                   ],
                   as:"image"
               }},
-              {$lookup:{
-                  from:"product_question_maps",
-                  let:{"id":"$_id"},
-                  pipeline:[
-                      {$match:{$expr:{$eq:["$product_id","$$id"]}}},
-                      {$project:{question_id:1}},
-                      {$group:{_id:null,"ids":{$push:"$question_id"}}}
-                  ],
-                  as:"questions"
-              }},
-              {$unwind:{path:"$questions", preserveNullAndEmptyArrays:true}},
-              // {$group:{_id:null,count:{$sum:1},items:{$push:"$$ROOT"}}}
             ]);
-            redis.set(params.product_key,JSON.stringify(data[0]), (err)=>{
-              redis.expire(params.product_key,params.product_expiry);
+            redis.set(cacheKey,JSON.stringify(data[0]), (err)=>{
+              redis.expire(cacheKey,params.product_expiry);
             });
             resolve(data[0]);
           }
         })
       })
-    }
+    },
+    // convertToWebP:
 }
 module.exports=common;

@@ -3,7 +3,7 @@ var CryptoJS = require("crypto-js");
 const MESSAGES = require('../utils/messages');
 // const paymentGateway = require('../../config/config')[process.env.ACTIVE_MODE || 'Development'].PAYMENT_GATEWAY;
 const paymentGateway = require('../../config/config');
-const { PaymentModel } = require('../models');
+const { PaymentModel, Order } = require('../models');
 const { ERROR_TYPE } = require('../utils/constants');
 const responseHelper = require('../utils/responseHelper');
 
@@ -13,7 +13,7 @@ let service = {};
 service.createPayment = async (paymentObject, payload) => {
   // InstaMojo.setKeys(paymentGateway.API_KEY, paymentGateway.TOKEN);
   InstaMojo.setKeys(process.env.PRIVATE_API_KEY, process.env.PRIVATE_AUTH_TOKEN);
-  InstaMojo.isSandboxMode(false);
+  InstaMojo.isSandboxMode(true);
   return new Promise((resolve, reject) => {
     InstaMojo.createPayment(paymentObject, async (err, res) => {
       if (!err) {
@@ -26,7 +26,7 @@ service.createPayment = async (paymentObject, payload) => {
           productId: payload.productId,
           userId: payload.user.userId
         });
-        const data = await payment.save();
+        await payment.save();
         resolve({ url: response.payment_request.longurl });
       }
       else {
@@ -36,14 +36,22 @@ service.createPayment = async (paymentObject, payload) => {
   })
 }
 
-service.freeEnrolled=async (payload, product)=>{
-  const alreadyEnrolled=await PaymentModel.findOne({userId: payload.user.userId, productId:product._id}).lean();
-  if(alreadyEnrolled){
-    throw responseHelper.createErrorResponse(ERROR_TYPE.ALREADY_EXISTS, MESSAGES.QUIZ.DUPLICATE);
+service.freeEnrolled=async (user, product)=>{
+  let validity=new Date();
+  validity=new Date(validity.setMonth(validity.getMonth()+product.validity));
+  let payload={
+    user_id:user._id,
+    product_id:product._id,
+    product_type:product.type,
+    product_name:product.name,
+    product_image:product.image.map(obj=>obj.image_path),
+    final_price:product.price,
+    order_status:'Free',
+    validity
   }
-  let obj=new PaymentModel({userId: payload.user.userId, productId:product._id, status:'Credit'});
-  let data=await obj.save();
-  return data;
+  let order=new Order(payload);
+  await order.save(payload);
+  return;
 }
 // Payment webhook handler
 service.webhook = async (payload) => {

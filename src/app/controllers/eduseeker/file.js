@@ -10,18 +10,22 @@ let file={};
 
 
 file.uploadFile=async(request, response)=>{
-
-  let outputPath=`${Date.now()}${request.file.originalname.split('.')[0]}.webp`;
-  await webp.cwebp(request.file.path, outputPath, '-q 100');
-    fs.readFile(outputPath, function(error, fileContent){
+  let imageType=request.file.mimetype.split('/')[0];
+  ContentType=request.file.mimetype;
+  let outputPath=`${Date.now()}${request.file.originalname}`;
+  if(imageType=="image"){
+    outputPath=`${outputPath.split('.')[0]}.webp`;
+    await webp.cwebp(request.file.path, outputPath, '-q 100');
+    ContentType='image/webp';
+  }
+    fs.readFile(request.file.path, function(error, fileContent){
       if (!error && fileContent && fileContent != undefined) {
-        fs.unlinkSync(outputPath);
+        // fs.unlinkSync(outputPath);
         fs.unlinkSync(request.file.path);
-        // Key:'s1/'+outputPath,
         let params={
           Bucket: process.env.BUCKET_NAME,
           Body: fileContent,
-          ContentType: 'image/webp',
+          ContentType,
           ACL: 'public-read'
         }
         params['Key']=(config.NODE_ENV=='development')?'dev/'+outputPath:'s1/'+outputPath;

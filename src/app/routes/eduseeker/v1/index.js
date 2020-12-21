@@ -4,7 +4,7 @@ module.exports = [
   // ...require('./questionRoutes'),
   // ...require('./unitRoutes'),
   // ...require('./quizRoutes'),
-  // ...require('./paymentRoutes'),
+  ...require('./paymentRoutes'),
   // ...require('./userRoutes'),
   // ...require('./performanceRoutes'),
   ...require('./file'),

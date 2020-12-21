@@ -12,6 +12,7 @@ let schema = new Schema({
     priority:{type:Number, default:0},
     similar_products:[{type:Schema.Types.ObjectId}],
     status:{type:Boolean, default:true},
+    validity:{type:Number},
     product_meta:{},
     created_by:{type:Schema.Types.ObjectId, ref:'user'},
     benefits:[{type:String}]
