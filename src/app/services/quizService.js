@@ -89,7 +89,7 @@ service.getDataToPlay = async (payload) => {
 
 service.deleteQuiz=async(payload)=>{
   if (!payload.hardDelete) {
-    return await QuizModel.findOneAndDelete({ _id: payload.quizId }, { isDeleted: true }).lean();
+    return await QuizModel.updateOne({ _id: payload.quizId }, {$set:{isDeleted: true} }).lean();
   }
   return await QuizModel.deleteOne({ _id: payload.id });
 }
