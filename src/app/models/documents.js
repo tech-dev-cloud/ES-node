@@ -9,9 +9,13 @@ let schema = new Schema({
     status:{type:Boolean, default:true},
     mime_type:{type:String},
     type:{type:String,enum:['1','2', '3', '4', '5'] }, //1-> default Image, 2-> Video, 3-> GIF, 4-> pdf, 5->doc
-    priority:{type:Number, default:1}
+    // priority:{type:Number, default:1},
+    user_id:{type:Schema.Types.ObjectId, ref:'users'}
 });
 
 schema.set('timestamps', true);
+schema.index({product_id:1},{unique:false});
+schema.index({filename:'text'})
+schema.index({status:1},{unique:false});
 let Document = MONGOOSE.model('document', schema);
 module.exports = { Document };

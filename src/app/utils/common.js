@@ -1,4 +1,4 @@
-let { QuizModel,Product } = require('../models');
+let { QuizModel,Product,ProductQuestionMap,Document } = require('../models');
 const redis=require('../../config/redisConnection');
 const params=require('../../config/env/development_params.json');
 
@@ -72,6 +72,30 @@ let common={
         })
       })
     },
-    // convertToWebP:
+    getProductMeta:async(product)=>{
+      let data;
+      switch(product.type){
+        case "1":
+           data=await Document.find({product_id:product._id, status:true}).lean();
+          break;
+        case "2":
+          data=await ProductQuestionMap.find({product_id:product._id, status:true}).lean();
+          data= await ProductQuestionMap.aggregate([
+            {$match:{product_id:product._id, status:true}},
+            {$project:{question_id:1}},
+            {$lookup:{
+                from:"questions",
+                localField:"question_id",
+                foreignField:"_id",
+                as:"questionData"
+            }},
+            {$unwind:"$questionData"},
+            {$project:{"questionData._id":1,"questionData.options":1,"questionData.correctOption":1,"questionData.subjectId":1,"questionData.question":1,"questionData.description":1,
+            "questionData.moduleId":1,"questionData.type":1}}
+          ])
+          break;
+      }
+      return data;
+    }
 }
 module.exports=common;

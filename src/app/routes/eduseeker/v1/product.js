@@ -114,7 +114,7 @@ const routes = [
     handler: productController.mapProductQuiz
   },
   {
-    path: `/admin/product/:id`,
+    path: `/api/product/:id`,
     method: 'PUT',
     joiSchemaForSwagger: {
       headers: JOI.object({

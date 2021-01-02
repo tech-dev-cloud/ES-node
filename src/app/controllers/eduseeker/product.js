@@ -8,7 +8,7 @@ const {aws}=require('../../services/aws');
 const common=require('../../utils/common');
 let controller={
     createProduct:async(request,response)=>{
-        let product=new Product(request.body);
+        let product=new Product({...request.body,created_by:request.user._id});
         let obj=await product.save();
         if(request.body.image){
             let image=new ProductImage({...request.body.image, product_id:obj._id});
@@ -18,7 +18,8 @@ let controller={
         if(request.body.product_map_data){
             switch(request.body.type){
                 case '1':
-                    await Document.insertMany(request.body.product_map_data);
+                    data=request.body.product_map_data.map(obj=>({...obj,user_id:request.user._id,product_id:obj._id}));
+                    await Document.insertMany(data);
                     break;
                 case '2':
                     data=request.body.product_map_data.map(question_id=>({question_id,product_id:obj._id}));
@@ -40,7 +41,11 @@ let controller={
         })
     },
     getAdminProducts:async(request, response)=>{
-        let match={};
+        let productMetaData;
+        let responseData;
+        let match={
+            created_by:request.user._id
+        };
         let prodcut_type=request.query.type;
         if(request.query.product_id){
             match['_id']=request.query.product_id;
@@ -59,30 +64,25 @@ let controller={
                 ],
                 as:"image"
             }},
-            {$lookup:{
-                from:"product_question_maps",
-                let:{"id":"$_id"},
-                pipeline:[
-                    {$match:{$expr:{$eq:["$product_id","$$id"]}}},
-                    {$project:{question_id:1}},
-                    {$group:{_id:null,"ids":{$push:"$question_id"}}}
-                ],
-                as:"questions"
-            }},
-            {$unwind:{path:"$questions", preserveNullAndEmptyArrays:true}},
             {$group:{_id:null,count:{$sum:1},items:{$push:"$$ROOT"}}}
         ]);
-        
+        responseData={...data[0]}
+        if(request.query.product_id){
+            productMetaData=await common.getProductMeta(data[0].items[0]);
+            responseData={...responseData,productMetaData};
+        }
         response.status(200).json({
             success:true,
             message:"Product fethed successfull",
-            data:data[0]
+            data:responseData
         })
     },
     updateProductByID:async(request,response)=>{
         let obj=await Product.updateOne({_id:request.params.id},request.body);
         switch(request.body.type){
-            case '2':
+            case "1":
+                
+            case '2': //Quiz
                 try{
                     await commonF.updateQuiz(request.body, request.params.id);
                 }catch(err){
@@ -223,7 +223,8 @@ let commonF={
                 }
             })
         })
-    }
+    },
+
 }
 
 module.exports={productController:controller}

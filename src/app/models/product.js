@@ -15,7 +15,7 @@ let schema = new Schema({
     validity:{type:Number},
     product_meta:{},
     created_by:{type:Schema.Types.ObjectId, ref:'user'},
-    benefits:[{type:String}]
+    benefits:[{type:String}],
 });
 
 schema.set('timestamps', true);
