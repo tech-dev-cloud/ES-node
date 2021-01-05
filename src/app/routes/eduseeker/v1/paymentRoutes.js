@@ -53,26 +53,83 @@ const routes = [
     },
     // auth: [USER_ROLE.STUDENT],
     handler: paymentController.webhook
+  },
+  {
+    path: `/admin/${MODULE.name}`,
+    method: 'GET',
+    joiSchemaForSwagger: {
+      headers: JOI.object({
+        'authorization': JOI.string().required()
+      }).unknown(),
+      query: {
+        payment_status: JOI.string()
+      },
+      group: MODULE.group,
+      description: 'Get All Payments',
+      model: 'GetAllPayments'
+    },
+    auth: [USER_ROLE.TEACHER, USER_ROLE.ADMIN],
+    handler: paymentController.getAllPayments
+  },
+  {
+    path: `/admin/${MODULE.name}`,
+    method: 'POST',
+    joiSchemaForSwagger: {
+      headers: JOI.object({
+        'authorization': JOI.string().required()
+      }).unknown(),
+      body: {
+        email:JOI.string().email().required(),
+        product_ids:JOI.array().items(routeUtils.validation.mongooseId).required(),
+        grand_total:JOI.number().required(),
+        status: JOI.string().valid(['Pending','Credit']).required(),
+      },
+      group: MODULE.group,
+      description: 'Add Payments from admin',
+      model: 'AddPayment'
+    },
+    auth: [USER_ROLE.TEACHER, USER_ROLE.ADMIN],
+    handler: paymentController.addPayment
+  },
+  {
+    path: `/admin/${MODULE.name}/:id`,
+    method: 'PUT',
+    joiSchemaForSwagger: {
+      headers: JOI.object({
+        'authorization': JOI.string().required()
+      }).unknown(),
+      params:{
+        id:routeUtils.validation.mongooseId
+      },
+      body: {
+        email:JOI.string().email(),
+        grand_total:JOI.number(),
+        status: JOI.string().valid(['Pending','Credit'])
+      },
+      group: MODULE.group,
+      description: 'Update Payments from admin',
+      model: 'UpdatePayment'
+    },
+    auth: [USER_ROLE.TEACHER, USER_ROLE.ADMIN],
+    handler: paymentController.updatePayment
+  },
+  {
+    path: `/admin/${MODULE.name}/:id`,
+    method: 'GET',
+    joiSchemaForSwagger: {
+      headers: JOI.object({
+        'authorization': JOI.string().required()
+      }).unknown(),
+      params:{
+        id:routeUtils.validation.mongooseId
+      },
+      group: MODULE.group,
+      description: 'Get Payments from admin',
+      model: 'GetPaymentById'
+    },
+    auth: [USER_ROLE.TEACHER, USER_ROLE.ADMIN],
+    handler: paymentController.getPaymentByID
   }
-  // {
-  //   path: `/api/${MODULE.name}/success`,
-  //   method: 'POST',
-  //   joiSchemaForSwagger: {
-  //     headers: JOI.object({
-  //       'authorization': JOI.string().required()
-  //     }).unknown(),
-  //     body: {
-  //       payment_request_id: JOI.string().required(),
-  //       payment_status: JOI.string().required(),
-  //       payment_id: JOI.string().required()
-  //     },
-  //     group: MODULE.group,
-  //     description: 'webhook',
-  //     model: 'PaymentSuccess'
-  //   },
-  //   auth: [USER_ROLE.STUDENT],
-  //   handler: paymentController.paymentSuccess
-  // }
 ]
 
 module.exports = routes;

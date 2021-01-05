@@ -11,7 +11,7 @@ const user = new schema({
   resetPasswordToken: { type: String },
   createdAt: { type: Date, default: Date.now() }
 })
-
+user.index({email:1},{unique:true});
 user.set("timestamps", true);
 let UserModel = MONGOOSE.model('user', user);
 module.exports = { UserModel }

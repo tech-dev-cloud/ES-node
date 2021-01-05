@@ -1,5 +1,6 @@
 const { DIFFICULT_LEVEL, PRODUCT_TYPE } = require('../utils/constants');
 const MONGOOSE = require('mongoose');
+const { title } = require('../../config/swagger');
 const Schema = MONGOOSE.Schema;
 
 let schema = new Schema({
@@ -25,7 +26,7 @@ let schema = new Schema({
   attemptTime: { type: Number },
   isDeleted: { type: Boolean, default: false }
 });
-
+schema.index({title:'text'},{unique:false});
 schema.set('timestamps', true);
 let QuizModel = MONGOOSE.model('quiz', schema);
 module.exports = { QuizModel };

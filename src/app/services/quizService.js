@@ -24,10 +24,14 @@ service.createQuiz =async (payload)=>{
  * Function to get the quiz list
  */
 service.findResource = async (payload, quizIds=[]) => {
+  let match={status:true};
   let items=[];
   if(quizIds.length==0){
     try{
-      quizIds=await QuizModel.find({status:true},{_id:1}).lean();
+      if(payload.searchString){
+        match['$text']={$search:payload.searchString}
+      }
+      quizIds=await QuizModel.find(match,{_id:1}).lean();
 
     }catch(err){
       console.log(err);

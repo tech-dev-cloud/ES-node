@@ -76,8 +76,8 @@ const routes = [
     path: `/api/${MODULE.name}`,
     method: 'GET',
     joiSchemaForSwagger: {
-      
       query: {
+        searchString:JOI.string(),
         index: JOI.number().default(DEFAULT.INDEX).min(DEFAULT.INDEX),
         limit: JOI.number().min(DEFAULT.LIMIT).min(0)
       },

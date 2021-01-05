@@ -23,7 +23,8 @@ service.createPayment = async (paymentObject, payload) => {
           payment_request_id: response.payment_request.id,
           productType: payload.productType,
           productId: payload.productId,
-          userId: payload.user.userId
+          userId: payload.user.userId,
+          price:paymentObject.amount
         });
         const data = await payment.save();
         resolve({ url: response.payment_request.longurl });
