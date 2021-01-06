@@ -11,7 +11,7 @@ let schema = new Schema({
   payment_request_id: { type: String },
   status: { type: String, default: 'Pending' },
   payment_id: { type: String },
-  created_by:{ type: Schema.Types.ObjectId, required: true, ref: 'users' }
+  created_by:{ type: Schema.Types.ObjectId, ref: 'users' }
 })
 
 schema.set('timestamps', true);
