@@ -68,9 +68,9 @@ const routes = [
     path: `/api/getAllProducts`,
     method: 'GET',
     joiSchemaForSwagger: {
-      headers: JOI.object({
-        'authorization': JOI.string().required()
-      }).unknown(),
+      // headers: JOI.object({
+      //   'authorization': JOI.string().required()
+      // }).unknown(),
       query:{
         searchString:JOI.string(),
         searchKey:JOI.string(),
@@ -84,7 +84,7 @@ const routes = [
       description: 'Api to get Products',
       model: 'getAllProducts'
     },
-    auth:[USER_ROLE.STUDENT],
+    // auth:[USER_ROLE.STUDENT],
     handler: productController.getProducts
   },
   {
