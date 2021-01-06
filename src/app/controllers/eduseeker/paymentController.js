@@ -18,7 +18,7 @@ const controller = {
       // Add Product details
       switch (payload.productType) {
         case PRODUCT_TYPE.QUIZ:
-          const alreadyEnrolled=await PaymentModel.findOne({userId: payload.user.userId, productId:payload.productId}).lean();
+          const alreadyEnrolled=await PaymentModel.findOne({userId: payload.user.userId, productId:payload.productId, status:'Credit'}).lean();
           if(alreadyEnrolled){
             throw responseHelper.createErrorResponse(ERROR_TYPE.ALREADY_EXISTS, MESSAGES.QUIZ.DUPLICATE);
           }
