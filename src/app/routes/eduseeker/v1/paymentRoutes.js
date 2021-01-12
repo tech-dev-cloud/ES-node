@@ -62,7 +62,9 @@ const routes = [
         'authorization': JOI.string().required()
       }).unknown(),
       query: {
-        payment_status: JOI.string()
+        status: JOI.string(),
+        appPurchased: JOI.string(),
+        createdAt: JOI.string()
       },
       group: MODULE.group,
       description: 'Get All Payments',

@@ -45,19 +45,42 @@ const controller = {
     return;
   },
   getAllPayments:async(payload)=>{
-    let match={parent_id:null}
+    let match={parent_id:null};
+    let $addFields={};
     if(payload.status){
       match.status=payload.status;
     }
-    let orders=await PaymentModel.aggregate([
+    if(payload.appPurchased=='true'){
+      match['grand_total']=null;
+      match['parent_id']=null;
+    }
+    if(payload.appPurchased=='false'){
+      match['grand_total']={$ne:null};
+    }
+    if(payload.createdAt){
+      $addFields["creationDate"] = {$dateToString: {format: "%Y-%m-%d", date: "$createdAt", timezone: "+0530"}};
+      match["creationDate"] = payload.createdAt;
+    }
+    let query = [];
+    if (Object.keys($addFields).length) {
+        query[0] = {$addFields};
+    }
+    query=[
+      ...query,
       {$match:match},
       {$lookup:{localField:"userId",foreignField:"_id", from:"users", as:"userData"}},
       {$unwind:"$userData"},
       {$lookup:{localField:"productId",foreignField:"_id", from:"quizzes", as:"quizData"}},
       {$unwind:"$quizData"},
-      {$project:{price:1,grand_total:1,status:1,payment_request_id:1,"userData._id":1,"userData.name":1,"userData.email":1,"quizData.title":1, "quizData.title":1}}
-    ]);
-    return responseHelper.createSuccessResponse(MESSAGES.PAYMENT.SUCCESS, orders);
+      {$project:{price:1,grand_total:1,status:1,payment_request_id:1,"userData._id":1,"userData.name":1,"userData.email":1,"quizData.title":1, "quizData.title":1,"quizData.amount":1,createdAt:1}},
+      {$sort:{_id:-1}}
+    ]
+    let orders=await PaymentModel.aggregate(query);
+    let totalPurchaseAmount=0;
+    for(let index=0;index<orders.length;index++){
+      totalPurchaseAmount+=(orders[index].grand_total || orders[index].quizData.amount);
+    }
+    return responseHelper.createSuccessResponse(MESSAGES.PAYMENT.SUCCESS, {orders,totalPurchaseAmount});
   },
   addPayment:async(payload)=>{
     let userData=await UserModel.find({email:payload.email},{_id:1}).lean();
