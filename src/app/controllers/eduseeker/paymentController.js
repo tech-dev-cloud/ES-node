@@ -78,7 +78,9 @@ const controller = {
     let orders=await PaymentModel.aggregate(query);
     let totalPurchaseAmount=0;
     for(let index=0;index<orders.length;index++){
-      totalPurchaseAmount+=(orders[index].grand_total || orders[index].quizData.amount);
+      if(orders[index].status== "Credit" && orders[index].quizData.amount){
+        totalPurchaseAmount+=(orders[index].grand_total || orders[index].quizData.amount);
+      }
     }
     return responseHelper.createSuccessResponse(MESSAGES.PAYMENT.SUCCESS, {orders,totalPurchaseAmount});
   },
