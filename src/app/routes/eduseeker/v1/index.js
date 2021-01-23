@@ -6,7 +6,7 @@ module.exports = [
   // ...require('./quizRoutes'),
   ...require('./paymentRoutes'),
   // ...require('./userRoutes'),
-  // ...require('./performanceRoutes'),
+  ...require('./performanceRoutes'),
   ...require('./file'),
   ...require('./product'),
   // ...require('./modules'),

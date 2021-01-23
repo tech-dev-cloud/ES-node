@@ -3,14 +3,14 @@ const Mongoose = require('mongoose');
 const swaggerUI = require('swagger-ui-express');
 const multer = require('multer');
 
-const  swaggerJson  = require('../../config/swagger');
+const swaggerJson = require('../../config/swagger');
 const swJson = require('../services/swaggerService');
 const { authService } = require('../services/authService');
-const {file}=require('../controllers');
-const logger=require('../../config/winston');
+const { file } = require('../controllers');
+const logger = require('../../config/winston');
 
 const storage = multer.diskStorage({
-  destination : 'uploads/',
+  destination: 'uploads/',
   filename: file.rename
 });
 const upload = multer({ storage: storage });
@@ -29,7 +29,7 @@ routeUtils.initRoutes = async (app, routes = []) => {
         keys.forEach((key) => {
           middlewares.push(upload.single(key));
         });
-      };
+      }
       middlewares.push(getHandlerMethod(route));
       app.route(route.path)[route.method.toLowerCase()](...middlewares)
     } catch (err) {
@@ -66,7 +66,7 @@ const joiValidation = async (req, route) => {
 let setMongooseId = () => {
   let joiObject = JOI.string()
   joiObject.mongooseId = function () {
-    return this._test('mongodbId', undefined, function (value, state, options) {
+    return this._test('mongodbId', undefined, function (value) {
       return Mongoose.Types.ObjectId(value);
     })
   }
@@ -101,7 +101,7 @@ routeUtils.validation = {
 const dataValidation = (route) => {
   return (req, res, next) => {
     joiValidation(req, route)
-      .then(result => {
+      .then(() => {
         next()
       }).catch(err => {
         res.status(400).json({ error: err.message });
@@ -122,17 +122,17 @@ const getHandlerMethod = (route) => {
     //   web_app:req.headers['web-app']
     // }
     handler(req, res)
-      // .then(result => {
-      //   if (result) {
-      //     res.status(200).json(result);
-      //   } else {
-      //     res.sendStatus(200);
-      //   }
-      // }).catch(error => {
-      //   logger.error('API Error'+error);
-      //   console.log(error);
-      //   res.status(400).json(error)
-      // });
+    // .then(result => {
+    //   if (result) {
+    //     res.status(200).json(result);
+    //   } else {
+    //     res.sendStatus(200);
+    //   }
+    // }).catch(error => {
+    //   logger.error('API Error'+error);
+    //   console.log(error);
+    //   res.status(400).json(error)
+    // });
   }
 }
 

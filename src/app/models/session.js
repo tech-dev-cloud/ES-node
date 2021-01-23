@@ -11,5 +11,6 @@ const schema = new Schema({
 })
 
 schema.set("timestamps", true);
+schema.index({accessToken:1},{unique:false});
 let SessionModel = MONGOOSE.model('session', schema);
 module.exports = { SessionModel }

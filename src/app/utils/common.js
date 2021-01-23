@@ -1,4 +1,4 @@
-let { QuizModel,Product,ProductQuestionMap,Document } = require('../models');
+let { QuizModel,Product,ProductQuestionMap,Document, QuestionModel } = require('../models');
 const redis=require('../../config/redisConnection');
 const params=require('../../config/env/development_params.json');
 
@@ -96,6 +96,22 @@ let common={
           break;
       }
       return data;
+    },
+    getQuestion:async(question_id)=>{
+      let cacheKey=`${params.product_key}${question_id.toString()}`;
+      return new Promise((resolve,reject)=>{
+        redis.get(cacheKey, async(err, someData)=>{
+          if(err || !someData){
+            let question=await QuestionModel.findById(question_id).lean();
+            redis.set(cacheKey,JSON.stringify(question),()=>{
+              redis.expire(cacheKey,params.quiz_question_expiry)
+            })
+            resolve(question);
+          }else{
+            resolve(JSON.parse(someData));
+          }
+        })
+      })
     }
 }
 module.exports=common;

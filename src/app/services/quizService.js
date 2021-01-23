@@ -1,11 +1,6 @@
-let _ = require('lodash');
-const redis=require('../../config/redisConnection');
 const params=require('../../config/env/development_params.json');
-
 let { QuizModel, PaymentModel } = require('../models');
-const { USER_ROLE, ERROR_TYPE, DEFAULT, DB } = require('../utils/constants');
-const MESSAGES = require('../utils/messages');
-const dbUtils = require('../utils/utils');
+const { ERROR_TYPE } = require('../utils/constants');
 const responseHelper = require('../utils/responseHelper');
 const common = require('../utils/common');
 
@@ -28,7 +23,6 @@ service.findResource = async (payload, quizIds=[]) => {
   if(quizIds.length==0){
     try{
       quizIds=await QuizModel.find({status:true},{_id:1}).lean();
-
     }catch(err){
       console.log(err);
     }
@@ -58,7 +52,6 @@ service.findResourceById = async (payload) => {
 }
 
 service.updateQuiz = async (payload) => {
-  
   return QuizModel.findOneAndUpdate({_id:payload.quizId,instructor:payload.user.userId}, {...payload,totalQuestions:payload.questionList.length}).lean();
 }
 

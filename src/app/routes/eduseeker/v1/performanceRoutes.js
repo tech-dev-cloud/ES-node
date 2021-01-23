@@ -35,7 +35,7 @@ const routes = [
       body: {
         quizId: routeUtils.validation.mongooseId,
         userAnswers: JOI.object({
-          questionId: routeUtils.validation.mongooseId,
+          question_id: routeUtils.validation.mongooseId,
           answer: JOI.array().items(JOI.string().required()),
           status: JOI.valid(Object.values(DB.ANSWER_ACTION)).required()
         }),
@@ -83,7 +83,7 @@ const routes = [
         'authorization': JOI.string().required()
       }).unknown(),
       body: {
-        quizId: routeUtils.validation.mongooseId,
+        product_id: routeUtils.validation.mongooseId,
         remainingTime: JOI.object({
           hours:JOI.number(),
           minutes:JOI.number(),

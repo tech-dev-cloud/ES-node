@@ -7,7 +7,7 @@ const config=require('../../../config/config')
 let file={
   uploadFile:async(request, response)=>{
     let imageType=request.file.mimetype.split('/')[0];
-    ContentType=request.file.mimetype;
+    let ContentType=request.file.mimetype;
     let outputPath=`${Date.now()}${request.file.originalname}`;
     if(imageType=="image"){
       outputPath=`${outputPath.split('.')[0]}.webp`;

@@ -3,8 +3,9 @@ const MESSAGES = require('../utils/messages');
 const responseHelper = require("../utils/responseHelper");
 const { SessionModel, UserModel } = require(`../models`);
 const commonFunctions = require('../utils/commonFunctions');
-let _ = require('lodash');
-const util=require('../utils/utils');
+const util = require('../utils/utils');
+const { Mongoose } = require('mongoose');
+const params=require('../../config/env/development_params.json');
 
 let authService = {};
 /**
@@ -18,7 +19,7 @@ authService.userValidate = (authType) => {
       }
       let responseObject = responseHelper.createErrorResponse(ERROR_TYPE.UNAUTHORIZED, MESSAGES.USER.UNAUTHORIZED);
       return response.status(responseObject.statusCode).json(responseObject);
-    }).catch((err) => {
+    }).catch(() => {
       let responseObject = responseHelper.createErrorResponse(ERROR_TYPE.UNAUTHORIZED, MESSAGES.USER.UNAUTHORIZED);
       return response.status(responseObject.statusCode).json(responseObject);
     });
@@ -30,19 +31,22 @@ authService.userValidate = (authType) => {
  * function to validate user's jwt token and fetch its details from the system. 
  * @param {} request 
  */
-let validateUser = async (request, authType) => {
+let validateUser = async (request, authType = [0]) => {
   try {
-    // return request.headers.authorization === SECURITY.STATIC_TOKEN_FOR_AUTHORIZATION
-    let authenticatedUser = await SessionModel.findOne({ accessToken: request.headers.authorization }).lean();
-    if (authenticatedUser) {
-      if (authType.some(role => authenticatedUser.role.includes(role)) || authenticatedUser.role[0]==0) {
-        request.user = authenticatedUser;
-        request.user = await UserModel.findOne({_id:authenticatedUser.userId}).lean();
-        return true;
+    if(request.headers.authorization){
+      let authenticatedUser = await SessionModel.findOne({accessToken:request.headers.authorization}).lean();
+      if (authenticatedUser) {
+        if (authType.some(role => authenticatedUser.role.includes(role)) || authenticatedUser.role[0] == 0) {
+          request.user = authenticatedUser;
+          request.user = await UserModel.findOne({ _id: authenticatedUser.userId }).lean();
+          return true;
+        }
       }
       return false;
+    }else{
+      request.user = await UserModel.findOne({ _id: Mongoose.Types.ObjectId(params.default_user) }).lean();
+      return true;
     }
-    return false;
   } catch (err) {
     return false;
   }
@@ -51,7 +55,7 @@ let validateUser = async (request, authType) => {
 /**
  * function to validate user's token from samsung server if it is valid or not.
  */
-authService.validateToken = async (token) => {
+authService.validateToken = async () => {
   // TODO call samsung server to validate if user's token is valid or not.
   let isValidToken = true;
   return isValidToken;
@@ -67,9 +71,9 @@ authService.unauthentication = async (user) => {
 /**Function to register user */
 authService.userRegister = async (payload) => {
   payload.password = commonFunctions.hashPassword(payload.password);
-  payload.email=payload.email.toLowerCase();
-  if(payload.web_app){
-    payload.role=[USER_ROLE.STUDENT]
+  payload.email = payload.email.toLowerCase();
+  if (payload.web_app) {
+    payload.role = [USER_ROLE.STUDENT]
   }
   const user = new UserModel(payload);
   try {
@@ -111,8 +115,8 @@ authService.userLogin = async (payload) => {
   } else {
     session = await (new SessionModel(sessionPayload).save());
   }
-  let response={
-    accessToken:session.accessToken,
+  let response = {
+    accessToken: session.accessToken,
     name: user.name
   }
   return response;
@@ -130,11 +134,11 @@ authService.forgotPassword = async (payload) => {
   }
   user.resetPasswordToken = commonFunctions.encryptJwt(resetPayload);
   await user.save();
-  try{
+  try {
     await util.sendEmailSES(user, EMAIL_TYPES.FORGOT_PASSWORD);
     return "Please check you email to reset password"
-  }catch(err){
-    console.error(err); 
+  } catch (err) {
+    console.error(err);
     return false;
   }
 }
@@ -155,13 +159,13 @@ authService.isValidResetPasswordLink = async (payload) => {
 }
 
 authService.resetPassword = async (payload) => {
-  let user=await UserModel.findOne({resetPasswordToken:payload.token}).lean()
-  if(!user){
-    throw responseHelper.createErrorResponse(ERROR_TYPE.BAD_REQUEST,MESSAGES.INVALID_TOKEN);
+  let user = await UserModel.findOne({ resetPasswordToken: payload.token }).lean()
+  if (!user) {
+    throw responseHelper.createErrorResponse(ERROR_TYPE.BAD_REQUEST, MESSAGES.INVALID_TOKEN);
   }
   let obj = commonFunctions.decryptJwt(user.resetPasswordToken);
-  if(obj.expireTime<Date.now()){
-    throw responseHelper.createErrorResponse(ERROR_TYPE.BAD_REQUEST,MESSAGES.INVALID_TOKEN);
+  if (obj.expireTime < Date.now()) {
+    throw responseHelper.createErrorResponse(ERROR_TYPE.BAD_REQUEST, MESSAGES.INVALID_TOKEN);
   }
   let updateData = { password: commonFunctions.hashPassword(payload.password), resetPasswordToken: null };
   let data = UserModel.findByIdAndUpdate(obj._id, { $set: updateData }, { new: true });
@@ -174,7 +178,7 @@ authService.emailVerification = async (token) => {
   return user;
 }
 
-authService.logoutSession=async(payload)=>{
-  return await SessionModel.deleteOne({_id:payload.user._id});
+authService.logoutSession = async (payload) => {
+  return await SessionModel.deleteOne({ _id: payload.user._id });
 }
 module.exports = { authService };

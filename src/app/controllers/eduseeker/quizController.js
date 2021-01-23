@@ -1,8 +1,8 @@
 const responseHelper = require('../../utils/responseHelper');
 const MESSAGES = require('../../utils/messages');
-const redis=require('../../../config/redisConnection');
 const { quizService } = require('../../services');
-const { QuizModel, PaymentModel } = require('../../models');
+const {  PaymentModel, ProductQuestionMap, Order } = require('../../models');
+const common = require('../../utils/common');
 
 let controller = {}
 
@@ -53,9 +53,31 @@ controller.updateQuiz=async(payload)=>{
   return responseHelper.createSuccessResponse(MESSAGES.QUESTION.UPDATE, data);
 }
 
-controller.getDataToPlay = async (payload) => {
-  const data = await quizService.getDataToPlay(payload);
-  return data;
+controller.getDataToPlay = async (request, response) => {
+  let product_id=request.params.product_id;
+  let questions=[];
+  const isPurchased = await Order.findOne({ product_id: product_id, user_id: request.user._id, order_status:{$in:['Credit','Free']}}).lean();
+  if (isPurchased) {
+    let product=await common.getProduct(product_id);
+    let question_ids=await ProductQuestionMap.find({product_id},{question_id:1}).lean();
+    for(let index=0;index<question_ids.length;index++){
+      let obj=await common.getQuestion(question_ids[index].question_id);
+      if(obj){
+        questions.push(obj);
+      }
+    }
+    response.status(200).json({
+      success:true,
+      message:'Quiz Data to play',
+      data:{questions,product}
+    })
+  }else{
+    response.status(400).json({
+      success:false,
+      message:'You have to purchase this quiz',
+      
+    })
+  }
 }
 
 controller.deleteQuiz = async(payload)=>{

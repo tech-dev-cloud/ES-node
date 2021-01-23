@@ -1,30 +1,30 @@
 const InstaMojo = require('instamojo-nodejs');
 var CryptoJS = require("crypto-js");
-const MESSAGES = require('../utils/messages');
 // const paymentGateway = require('../../config/config')[process.env.ACTIVE_MODE || 'Development'].PAYMENT_GATEWAY;
 const paymentGateway = require('../../config/config');
-const { PaymentModel, Order } = require('../models');
-const { ERROR_TYPE } = require('../utils/constants');
-const responseHelper = require('../utils/responseHelper');
+const { Order } = require('../models');
+const { response } = require('express');
 
 
 let service = {};
 
-service.createPayment = async (paymentObject, payload) => {
+service.createPayment = async (paymentObject, product, user) => {
   // InstaMojo.setKeys(paymentGateway.API_KEY, paymentGateway.TOKEN);
   InstaMojo.setKeys(process.env.PRIVATE_API_KEY, process.env.PRIVATE_AUTH_TOKEN);
   InstaMojo.isSandboxMode(true);
   return new Promise((resolve, reject) => {
     InstaMojo.createPayment(paymentObject, async (err, res) => {
       if (!err) {
-        console.log(res);
         const response = JSON.parse(res);
-        let payment = new PaymentModel({
+        let validity = new Date();
+        validity = new Date(validity.setMonth(validity.getMonth() + product.validity));
+        let payment = new Order({
           ...response,
           payment_request_id: response.payment_request.id,
-          productType: payload.productType,
-          productId: payload.productId,
-          userId: payload.user.userId
+          product_type: product.type,
+          product_id: product._id,
+          user_id: user._id,
+          validity
         });
         await payment.save();
         resolve({ url: response.payment_request.longurl });
@@ -36,28 +36,26 @@ service.createPayment = async (paymentObject, payload) => {
   })
 }
 
-service.freeEnrolled=async (user, product)=>{
-  let validity=new Date();
-  validity=new Date(validity.setMonth(validity.getMonth()+product.validity));
-  let payload={
-    user_id:user._id,
-    product_id:product._id,
-    product_type:product.type,
-    product_name:product.name,
-    product_image:product.image.map(obj=>obj.image_path),
-    final_price:product.price,
-    order_status:'Free',
+service.freeEnrolled = async (user, product) => {
+  let validity = new Date();
+  validity = new Date(validity.setMonth(validity.getMonth() + product.validity));
+  let payload = {
+    user_id: user._id,
+    product_id: product._id,
+    product_type: product.type,
+    product_name: product.name,
+    product_image: product.image.map(obj => obj.image_path),
+    final_price: product.price,
+    order_status: 'Free',
     validity
   }
-  let order=new Order(payload);
+  let order = new Order(payload);
   await order.save(payload);
   return;
 }
-// Payment webhook handler
 service.webhook = async (payload) => {
-  const payment = await PaymentModel.findOne({ payment_request_id: payload.payment_request_id });
-  if (payment) {
-    console.log('===>>payment object found');
+  const order = await Order.findOne({ payment_request_id: payload.payment_request_id });
+  if (order) {
     let providedMac = payload.mac;
     delete payload.mac;
     delete payload.user;
@@ -65,17 +63,18 @@ service.webhook = async (payload) => {
     delete payload.web_app;
     const data = Object.keys(payload).sort().map(key => payload[key]).join('|');
     let calculatedMac = CryptoJS.HmacSHA1(data, paymentGateway.SALT);
-    payment.status = payload.status;
-    await payment.save();
+    order.status = payload.status;
     if (providedMac == calculatedMac.toString()) {
-      return true;
+      order.save();
     } else {
-      payment.status = 'Failed';
-     await  payment.save();
-      throw responseHelper.createErrorResponse(ERROR_TYPE.BAD_REQUEST)
+      order.status = 'Failed';
+      order.save();
     }
   }
-  throw responseHelper.createErrorResponse(ERROR_TYPE.BAD_REQUEST)
+  response.status(200).json({
+    success:true,
+    message:"webhook executed successfully"
+  })
 }
 
 module.exports = { paymentService: service };
