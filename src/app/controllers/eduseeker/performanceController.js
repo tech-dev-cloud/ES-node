@@ -17,7 +17,7 @@ controller.startQuiz = async (payload) => {
 controller.saveAnswer = async (request, response) => {
   // const data = await performanceService.saveAnswer(payload);
   let criteria = {
-    product_id: request.body.quizId,
+    product_id: request.body.product_id,
     user_id: request.user._id
   }
   const quiz = await PerformanceModel.findOne(criteria).lean();
@@ -42,7 +42,7 @@ controller.saveAnswer = async (request, response) => {
     }
   }else{
     dataToUpdate={
-      product_id:request.body.quizId,
+      product_id:request.body.product_id,
       user_id:request.user._id,
       remainingTime:request.body.remainingTime,
       userAnswers:request.body.userAnswers

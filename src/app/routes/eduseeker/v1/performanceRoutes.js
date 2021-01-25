@@ -60,7 +60,7 @@ const routes = [
         'authorization': JOI.string().required()
       }).unknown(),
       body: {
-        quizId: routeUtils.validation.mongooseId,
+        product_id: routeUtils.validation.mongooseId,
         status: JOI.string().valid(Object.values(DB.QUIZ_PLAY_STATUS)),
         remainingTime: JOI.object({
           hours:JOI.number(),
