@@ -1,19 +1,15 @@
-const { authService } = require('../../services');
-const { EMAIL_TYPES, ERROR_TYPE, MONGO_ERROR, USER_ROLE } = require('../../utils/constants');
+const { EMAIL_TYPES, MONGO_ERROR, USER_ROLE } = require('../../utils/constants');
 const util=require('../../utils/utils');
-const MESSAGE = require('../../utils/messages');
-const responseHelper = require('../../utils/responseHelper');
 const { UserModel,SessionModel } = require(`../../models`);
 const commonFunctions = require('../../utils/commonFunctions');
-const { request } = require('express');
 
 let controller = {
   userRegister: async (request, response) => {
     request.body.password = commonFunctions.hashPassword(request.body.password);
     request.body.email=request.body.email.toLowerCase();
-    if(request.headers.web_app){
-      request.user.role=[USER_ROLE.STUDENT]
-    }
+    request.body.role=[USER_ROLE.STUDENT];
+    // if(request.headers.web_app){
+    // }
     const user = new UserModel(request.body);
     try {
       let data=await user.save();

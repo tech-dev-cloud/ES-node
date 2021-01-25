@@ -31,22 +31,27 @@ authService.userValidate = (authType) => {
  * function to validate user's jwt token and fetch its details from the system. 
  * @param {} request 
  */
-let validateUser = async (request, authType = [0]) => {
+let validateUser = async (request, authType) => {
   try {
     if(request.headers.authorization){
       let authenticatedUser = await SessionModel.findOne({ accessToken: request.headers.authorization }).lean();
       if (authenticatedUser) {
-        if (authType.some(role => authenticatedUser.role.includes(role)) || authenticatedUser.role[0] == 0) {
-          request.user = authenticatedUser;
-          request.user = await UserModel.findOne({ _id: authenticatedUser.userId }).lean();
-          return true;
+        if (authType && authType.length){
+          if(authType.some(role => authenticatedUser.role.includes(role)) || authenticatedUser.role[0] == 0){
+            request.user = await UserModel.findOne({ _id: authenticatedUser.userId }).lean();
+          }else{
+            return false;
+          }
+        }else{
+          request.user = await UserModel.findOne({ _id: mongoose.Types.ObjectId(params.default_user) }).lean();
         }
+      }else{
         return false;
       }
     }else{
-      request.user = await UserModel.findOne({ _id: mongoose.Types.ObjectId(params.default_user) }).lean();
-      return true;
+          request.user = await UserModel.findOne({ _id: mongoose.Types.ObjectId(params.default_user) }).lean();
     }
+    return true;
   } catch (err) {
     return false;
   }
