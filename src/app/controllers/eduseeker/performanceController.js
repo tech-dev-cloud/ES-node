@@ -5,14 +5,14 @@ const { DB } = require('../../utils/constants');
 let controller = {};
 
 controller.startQuiz = async (payload) => {
-  const quiz = await PaymentModel.findOne({ productId: payload.quizId, userId: payload.user.userId, status: 'Credit' }).lean();
-  if (quiz) {
-    const obj = new PerformanceModel({ quizId: payload.quizId, userId: payload.user.userId, remainingTime: quiz.attemptTime });
-    await obj.save();
-    return;
-  } else {
-    throw responseHelper.createErrorResponse(ERROR_TYPE.UNAUTHORIZED)
-  }
+  // const quiz = await PaymentModel.findOne({ productId: payload.quizId, userId: payload.user.userId, status: 'Credit' }).lean();
+  // if (quiz) {
+  //   const obj = new PerformanceModel({ quizId: payload.quizId, userId: payload.user.userId, remainingTime: quiz.attemptTime });
+  //   await obj.save();
+  //   return;
+  // } else {
+  //   throw responseHelper.createErrorResponse(ERROR_TYPE.UNAUTHORIZED)
+  // }
 }
 
 controller.saveAnswer = async (request, response) => {

@@ -3,7 +3,6 @@ var CryptoJS = require("crypto-js");
 // const paymentGateway = require('../../config/config')[process.env.ACTIVE_MODE || 'Development'].PAYMENT_GATEWAY;
 const paymentGateway = require('../../config/config');
 const { Order } = require('../models');
-const { response } = require('express');
 
 
 let service = {};
@@ -71,10 +70,7 @@ service.webhook = async (payload) => {
       order.save();
     }
   }
-  response.status(200).json({
-    success:true,
-    message:"webhook executed successfully"
-  })
+  return;
 }
 
 module.exports = { paymentService: service };
