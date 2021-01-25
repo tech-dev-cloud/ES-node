@@ -132,14 +132,20 @@ let controller = {
             for (let key in products) {
                 let item = { title: "", weburl: "", products: products[key] }
                 if (key == '1') {
-                    item.id = 2;
+                    item.id = 3;
                     item.title = "PDF";
-                    item.weburl = 'pdf-2';
+                    item.weburl = 'pdf-3';
                     data.push(item);
                 } else if (key == '2') {
                     item.id = 1;
                     item.title = "Quiz";
                     item.weburl = 'quiz-1';
+                    data.push(item);
+                }
+                else if (key == '3') {
+                    item.id = 2;
+                    item.title = "Bulk Package";
+                    item.weburl = 'bulk-2';
                     data.push(item);
                 }
             }
@@ -152,10 +158,14 @@ let controller = {
             }
             if (request.query.type == '1') {
                 item.title = "PDF";
-                item.weburl = 'pdf-1';
+                item.weburl = 'pdf-3';
                 data.push(item);
             } else if (request.query.type == '2') {
                 item.title = "Quiz";
+                item.weburl = 'quiz-1';
+                data.push(item);
+            } else if (request.query.type == '3') {
+                item.title = "Bulk Package";
                 item.weburl = 'quiz-2';
                 data.push(item);
             }
