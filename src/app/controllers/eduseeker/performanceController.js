@@ -1,5 +1,4 @@
 const _=require('lodash');
-const { performanceService } = require('../../services');
 const { PerformanceModel } = require('../../models');
 const { DB } = require('../../utils/constants');
 let controller = {};
@@ -57,9 +56,13 @@ controller.saveAnswer = async (request, response) => {
   })
 }
 
-controller.updateStatus = async (payload) => {
-  const data = await performanceService.updateStatus(payload);
-  return data;
+controller.updateStatus = async (request, response) => {
+  const data = await PerformanceModel.findOneAndUpdate({product_id:request.body.product_id, user_id:request.user._id},request.body, { upsert:true }).lean();
+  response.status(200).json({
+    success:true,
+    message:'Quiz updated successfully',
+    data
+  })
 }
 
 controller.submitQuiz = async (request,response)=>{

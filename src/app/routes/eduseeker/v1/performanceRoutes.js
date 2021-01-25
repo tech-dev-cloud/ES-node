@@ -1,5 +1,5 @@
 const JOI = require('joi');
-const { USER_ROLE, DEFAULT, DB } = require('../../../utils/constants');
+const { USER_ROLE, DB } = require('../../../utils/constants');
 const { performanceController } = require('../../../controllers');
 const routeUtils = require('../../../utils/routeUtils');
 
@@ -33,7 +33,7 @@ const routes = [
         'authorization': JOI.string().required()
       }).unknown(),
       body: {
-        quizId: routeUtils.validation.mongooseId,
+        product_id: routeUtils.validation.mongooseId,
         userAnswers: JOI.object({
           question_id: routeUtils.validation.mongooseId,
           answer: JOI.array().items(JOI.string().required()),
