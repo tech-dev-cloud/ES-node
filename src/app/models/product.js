@@ -16,6 +16,7 @@ let schema = new Schema({
     product_meta:{},
     created_by:{type:Schema.Types.ObjectId, ref:'user'},
     benefits:[{type:String}],
+    sub_products:[{type:Schema.Types.ObjectId, ref:'products'}]
 });
 
 schema.set('timestamps', true);

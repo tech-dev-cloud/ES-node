@@ -8,7 +8,11 @@ const { aws } = require('../../services/aws');
 const common = require('../../utils/common');
 let controller = {
     createProduct: async (request, response) => {
-        let product = new Product({ ...request.body, created_by: request.user._id });
+        let product_payload={...request.body, created_by: request.user._id};
+        if(request.body.type=='3'){
+            product_payload['sub_products'] = request.body.product_map_data.map(product_id => Mongoose.Types.ObjectId(product_id));
+        }
+        let product = new Product(product_payload);
         let obj = await product.save();
         if (request.body.image) {
             let image = new ProductImage({ ...request.body.image, product_id: obj._id });
@@ -52,6 +56,9 @@ let controller = {
         }
         if (prodcut_type) {
             match['type'] = prodcut_type;
+        }
+        if(request.query.searchString){
+            match['$text']={$search:request.query.searchString};
         }
         let data = await Product.aggregate([
             { $match: match },
