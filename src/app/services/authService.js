@@ -4,7 +4,7 @@ const responseHelper = require("../utils/responseHelper");
 const { SessionModel, UserModel } = require(`../models`);
 const commonFunctions = require('../utils/commonFunctions');
 const util = require('../utils/utils');
-const { Mongoose } = require('mongoose');
+const mongoose = require('mongoose');
 const params=require('../../config/env/development_params.json');
 
 let authService = {};
@@ -44,7 +44,7 @@ let validateUser = async (request, authType = [0]) => {
         return false;
       }
     }else{
-      request.user = await UserModel.findOne({ _id: Mongoose.Types.ObjectId(params.default_user) }).lean();
+      request.user = await UserModel.findOne({ _id: mongoose.Types.ObjectId(params.default_user) }).lean();
       return true;
     }
   } catch (err) {
