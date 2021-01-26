@@ -121,6 +121,12 @@ let controller = {
         }
         for (let i = 0; i < product_ids.length; i++) {
             products[i] = await common.getProduct(product_ids[i]);
+            if(products[i].type==3){
+                products[i]['sub_products']=products[i].sub_products.map(async(product_id)=>{
+                    let obj=await common.getProduct(product_id);
+                    return obj;
+                })
+            }
         }
         products = products.map(product => {
             product['discountPercent'] = Math.ceil((product.strikeprice - product.price) * 100 / product.strikeprice);
