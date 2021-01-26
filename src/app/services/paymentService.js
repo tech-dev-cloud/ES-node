@@ -14,17 +14,21 @@ service.createPayment = async (paymentObject, product, user) => {
   return new Promise((resolve, reject) => {
     InstaMojo.createPayment(paymentObject, async (err, res) => {
       if (!err) {
+        let validity;
         const response = JSON.parse(res);
-        let validity = new Date();
-        validity = new Date(validity.setMonth(validity.getMonth() + product.validity));
-        let payment = new Order({
+        let payload={
           ...response,
           payment_request_id: response.payment_request.id,
           product_type: product.type,
           product_id: product._id,
-          user_id: user._id,
-          validity
-        });
+          user_id: user._id
+        }
+        if(product.validity){
+          validity = new Date();
+          validity = new Date(validity.setMonth(validity.getMonth() + product.validity));
+          payload['validity']=validity;
+        }
+        let payment = new Order();
         await payment.save();
         resolve({ url: response.payment_request.longurl });
       }

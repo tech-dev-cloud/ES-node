@@ -11,6 +11,8 @@ let controller = {
         let product_payload={...request.body, created_by: request.user._id};
         if(request.body.type=='3'){
             product_payload['sub_products'] = request.body.product_map_data.map(product_id => Mongoose.Types.ObjectId(product_id));
+        }else if(request.body.type=='2'){
+            product_payload.product_meta['totalQuestions']=request.body.product_map_data.length;
         }
         let product = new Product(product_payload);
         let obj = await product.save();
@@ -127,6 +129,7 @@ let controller = {
                 products[i]['sub_products']=await Promise.all(products[i].sub_products.map(async(product_id)=>{
                     let obj=await common.getProduct(product_id);
                     obj.image=obj.image.map(prod_image => prod_image.image_path);
+                    obj['discountPercent'] = Math.ceil((products[i].strikeprice - products[i].price) * 100 / products[i].strikeprice);
                     return obj;
                 }))
             }

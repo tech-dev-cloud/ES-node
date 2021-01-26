@@ -121,7 +121,14 @@ const getHandlerMethod = (route) => {
     //   file: req.file,
     //   web_app:req.headers['web-app']
     // }
-    handler(req, res)
+    try{
+      handler(req, res);
+    }catch(err){
+      res.status(500).json({
+        success:false,
+        message:'Something went wrong'
+      })
+    }
     // .then(result => {
     //   if (result) {
     //     res.status(200).json(result);
