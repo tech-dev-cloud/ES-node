@@ -121,18 +121,15 @@ let controller = {
         }
         for (let i = 0; i < product_ids.length; i++) {
             products[i] = await common.getProduct(product_ids[i]);
+            products[i]['discountPercent'] = Math.ceil((products[i].strikeprice - products[i].price) * 100 / products[i].strikeprice);
             if(products[i].type==3){
-                products[i]['sub_products']=products[i].sub_products.map(async(product_id)=>{
+                products[i]['sub_products']=await Promise.all(products[i].sub_products.map(async(product_id)=>{
                     let obj=await common.getProduct(product_id);
+                    obj.image=obj.image.map(prod_image => prod_image.image_path);
                     return obj;
-                })
+                }))
             }
         }
-        products = products.map(product => {
-            product['discountPercent'] = Math.ceil((product.strikeprice - product.price) * 100 / product.strikeprice);
-            product.image = product.image.map(obj => obj.image_path);
-            return product;
-        })
         if (!request.query.type) {
             products = _.groupBy(products, obj => obj.type);
             for (let key in products) {
