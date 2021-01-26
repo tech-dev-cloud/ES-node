@@ -28,7 +28,7 @@ service.createPayment = async (paymentObject, product, user) => {
           validity = new Date(validity.setMonth(validity.getMonth() + product.validity));
           payload['validity']=validity;
         }
-        let payment = new Order();
+        let payment = new Order(payload);
         await payment.save();
         resolve({ url: response.payment_request.longurl });
       }
