@@ -34,8 +34,8 @@ controller.createPayment = async (payload) => {
     const data = await paymentService.freeEnrolled(payload, product);
     return responseHelper.createSuccessResponse(MESSAGES.PAYMENT.SUCCESS, data)
   }
-  paymentObject.webhook = "https://api.eduseeker.in/api/payment/webhook";
-  paymentObject.redirect_url = "https://eduseeker.in/order-confirm"
+  paymentObject.webhook = "http://devapi.eduseeker.in/api/payment/webhook";
+  paymentObject.redirect_url = "https://devweb.eduseeker.in/order-confirm"
   const data = await paymentService.createPayment(paymentObject, payload);
   return responseHelper.createSuccessResponse(MESSAGES.PAYMENT.SUCCESS, data);
 }
