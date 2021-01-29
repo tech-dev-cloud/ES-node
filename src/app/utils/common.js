@@ -63,6 +63,17 @@ let common={
                   ],
                   as:"image"
               }},
+              {$lookup:{
+                    from:"users",
+                    let:{"id":"$created_by"},
+                    pipeline:[
+                        {$match:{$expr:{$eq:["$_id","$$id"]}}},
+                        {$project:{name:1}}
+                    ],
+                    as:"mentorInfo"
+                }
+              },
+              {$unwind:"$mentorInfo"}
             ]);
             redis.set(cacheKey,JSON.stringify(data[0]), (err)=>{
               redis.expire(cacheKey,params.product_expiry);
