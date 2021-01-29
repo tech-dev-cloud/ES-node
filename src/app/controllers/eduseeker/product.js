@@ -128,8 +128,10 @@ let controller = {
             if(products[i].type==3){
                 products[i]['sub_products']=await Promise.all(products[i].sub_products.map(async(product_id)=>{
                     let obj=await common.getProduct(product_id);
-                    obj.image=obj.image.map(prod_image => prod_image.image_path);
-                    obj['discountPercent'] = Math.ceil((products[i].strikeprice - products[i].price) * 100 / products[i].strikeprice);
+                    if(obj){
+                        obj.image=obj.image.map(prod_image => prod_image.image_path);
+                        obj['discountPercent'] = Math.ceil((products[i].strikeprice - products[i].price) * 100 / products[i].strikeprice);
+                    }
                     return obj;
                 }))
             }
@@ -141,18 +143,18 @@ let controller = {
                 if (key == '1') {
                     item.id = 3;
                     item.title = "PDF";
-                    item.weburl = 'pdf-3';
+                    item.weburl = `pdf-${item.id}`;
                     data.push(item);
                 } else if (key == '2') {
                     item.id = 1;
                     item.title = "Quiz";
-                    item.weburl = 'quiz-1';
+                    item.weburl = `quiz-${item.id}`;
                     data.push(item);
                 }
                 else if (key == '3') {
                     item.id = 2;
                     item.title = "Bulk Package";
-                    item.weburl = 'bulk-2';
+                    item.weburl = `bulk-${item.id}`;
                     data.push(item);
                 }
             }
@@ -165,15 +167,15 @@ let controller = {
             }
             if (request.query.type == '1') {
                 item.title = "PDF";
-                item.weburl = 'pdf-3';
+                item.weburl = `pdf-${item.id}`;
                 data.push(item);
             } else if (request.query.type == '2') {
                 item.title = "Quiz";
-                item.weburl = 'quiz-1';
+                item.weburl = `quiz-${item.id}`;
                 data.push(item);
             } else if (request.query.type == '3') {
                 item.title = "Bulk Package";
-                item.weburl = 'quiz-2';
+                item.weburl = `bulk-${item.id}`;
                 data.push(item);
             }
         }
