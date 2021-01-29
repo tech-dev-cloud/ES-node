@@ -146,13 +146,13 @@ let controller = {
                     item.weburl = `pdf-${item.id}`;
                     data.push(item);
                 } else if (key == '2') {
-                    item.id = 1;
+                    item.id = 2;
                     item.title = "Quiz";
                     item.weburl = `quiz-${item.id}`;
                     data.push(item);
                 }
                 else if (key == '3') {
-                    item.id = 2;
+                    item.id = 1;
                     item.title = "Bulk Package";
                     item.weburl = `bulk-${item.id}`;
                     data.push(item);
