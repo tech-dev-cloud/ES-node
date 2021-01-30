@@ -95,6 +95,9 @@ const controller = {
   getOrders: async (request, response)=>{
     let $addFields={};
     let match={instructor_id:request.user._id};
+    let itemPerPage=request.query.limit || 10;
+    let skip=(request.query.skip || 0) * itemPerPage;
+
     if(request.query.order_status){
       match['order_status']=request.query.order_status;
     }
@@ -112,7 +115,9 @@ const controller = {
       {$lookup:{localField:"user_id",foreignField:"_id", from:"users", as:"userData"}},
       {$unwind:"$userData"},
       {$project:{product_name:1, product_image:1, final_price:1,order_status:1, validity:1, payment_request_id:1,user_id:1,"userData.name":1,"userData.email":1, createdAt:1}},
-      {$sort:{_id:-1}}
+      {$sort:{_id:-1}},
+      {$skip:skip},
+      {$limit:itemPerPage}
     ]
     let allOrdersQuery= Order.aggregate(query);
     let totalAmount=Order.aggregate([

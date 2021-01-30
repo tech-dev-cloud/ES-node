@@ -81,6 +81,8 @@ const routes = [
       queery:{
         order_status:JOI.string(),
         createdAt:JOI.string(),
+        skip:JOI.number(),
+        limit:JOI.number()
       },
       group: MODULE.group,
       description: 'Get Orders',
