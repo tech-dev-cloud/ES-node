@@ -3,7 +3,7 @@ const MESSAGES = require('../../utils/messages');
 const { paymentService } = require('../../services');
 const { Order } = require('../../models');
 const config = require('../../../config/config');
-let params=require(`../../../config/env/${config.NODE_ENV}_params.js`);
+let params=require(`../../../config/env/${config.NODE_ENV}_params.json`);
 const common = require('../../utils/common');
 
 const controller = {}
