@@ -73,7 +73,8 @@ controller.webhook = async (request, response) => {
           }
         }));
         Order.insertMany(sub_products);
-        order.save();
+      }
+      order.save();
     } else {
       order.status = 'Failed';
       order.save();
@@ -83,7 +84,6 @@ controller.webhook = async (request, response) => {
     success:true,
     message:"webhook executed successfully"
   })
-  }
 }
 
 module.exports = { paymentController: controller }
