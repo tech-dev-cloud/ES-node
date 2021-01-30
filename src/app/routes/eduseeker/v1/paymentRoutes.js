@@ -70,26 +70,25 @@ const routes = [
     },
     // auth: [USER_ROLE.STUDENT],
     handler: paymentController.webhook
+  },
+  {
+    path: `/api/orders`,
+    method: 'GET',
+    joiSchemaForSwagger: {
+      headers: JOI.object({
+        'authorization': JOI.string().required()
+      }).unknown(),
+      queery:{
+        order_status:JOI.string(),
+        createdAt:JOI.string(),
+      },
+      group: MODULE.group,
+      description: 'Get Orders',
+      model: 'PaymentSuccess'
+    },
+    auth: [USER_ROLE.TEACHER,USER_ROLE.ADMIN],
+    handler: paymentController.getOrders
   }
-  // {
-  //   path: `/api/${MODULE.name}/success`,
-  //   method: 'POST',
-  //   joiSchemaForSwagger: {
-  //     headers: JOI.object({
-  //       'authorization': JOI.string().required()
-  //     }).unknown(),
-  //     body: {
-  //       payment_request_id: JOI.string().required(),
-  //       payment_status: JOI.string().required(),
-  //       payment_id: JOI.string().required()
-  //     },
-  //     group: MODULE.group,
-  //     description: 'webhook',
-  //     model: 'PaymentSuccess'
-  //   },
-  //   auth: [USER_ROLE.STUDENT],
-  //   handler: paymentController.paymentSuccess
-  // }
 ]
 
 module.exports = routes;

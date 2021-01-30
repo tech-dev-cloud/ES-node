@@ -20,7 +20,9 @@ service.createPayment = async (paymentObject, product, user) => {
           payment_request_id: response.payment_request.id,
           product_type: product.type,
           product_id: product._id,
-          user_id: user._id
+          user_id: user._id,
+          final_price:paymentObject.amount,
+          instructor_id:product.created_by
         }
         if(product.validity){
           validity = new Date();
