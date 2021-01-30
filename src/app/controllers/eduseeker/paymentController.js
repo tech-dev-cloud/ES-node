@@ -95,8 +95,8 @@ const controller = {
   getOrders: async (request, response)=>{
     let $addFields={};
     let match={instructor_id:request.user._id};
-    let itemPerPage=request.query.limit || 10;
-    let skip=(request.query.skip || 0) * itemPerPage;
+    let itemPerPage=parseInt(request.query.limit || '0') || 10;
+    let skip=parseInt(request.query.skip || '0') * itemPerPage;
 
     if(request.query.order_status){
       match['order_status']=request.query.order_status;
