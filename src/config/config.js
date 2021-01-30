@@ -38,7 +38,7 @@ var nconf = require('nconf');
 
 
 // variable to import to nconf from process.env
-const envVariables = ['PORT', 'NODE_ENV', 'PRIVATE_SALT'];
+const envVariables = ['PORT', 'NODE_ENV', 'PRIVATE_SALT','PRIVATE_SALT','PRIVATE_AUTH_TOKEN','PRIVATE_API_KEY','TEST_PRIVATE_SALT','TEST_PRIVATE_AUTH_TOKEN','TEST_PRIVATE_API_KEY'];
 
 // var rootPath = path.normalize(__dirname + '/..');
 

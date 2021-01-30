@@ -1,16 +1,19 @@
 const InstaMojo = require('instamojo-nodejs');
 var CryptoJS = require("crypto-js");
 // const paymentGateway = require('../../config/config')[process.env.ACTIVE_MODE || 'Development'].PAYMENT_GATEWAY;
-const paymentGateway = require('../../config/config');
+const config = require('../../config/config');
 const { Order } = require('../models');
 
 
 let service = {};
 
 service.createPayment = async (paymentObject, product, user) => {
-  // InstaMojo.setKeys(paymentGateway.API_KEY, paymentGateway.TOKEN);
-  InstaMojo.setKeys(process.env.PRIVATE_API_KEY, process.env.PRIVATE_AUTH_TOKEN);
-  InstaMojo.isSandboxMode(true);
+  if(config.NODE_ENV=='development'){
+    InstaMojo.setKeys(config.TEST_PRIVATE_API_KEY, config.TEST_PRIVATE_AUTH_TOKEN);
+    InstaMojo.isSandboxMode(true);
+  }else{
+    InstaMojo.setKeys(config.PRIVATE_API_KEY, config.PRIVATE_AUTH_TOKEN);
+  }
   return new Promise((resolve, reject) => {
     InstaMojo.createPayment(paymentObject, async (err, res) => {
       if (!err) {
@@ -65,7 +68,7 @@ service.webhook = async (payload) => {
     delete payload.file;
     delete payload.web_app;
     const data = Object.keys(payload).sort().map(key => payload[key]).join('|');
-    let calculatedMac = CryptoJS.HmacSHA1(data, paymentGateway.SALT);
+    let calculatedMac = CryptoJS.HmacSHA1(data, config.SALT);
     order.status = payload.status;
     if (providedMac == calculatedMac.toString()) {
       order.save();

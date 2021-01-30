@@ -8,13 +8,14 @@ let schema = new Schema({
     product_type: { type: String, enum: ['1', '2', '3', '4'] },
     product_name: { type: String },
     product_image: [{ type: String }],
-    // cart_total:{type:Number},
     payment_request_id: { type: String },
     final_price: { type: Number },
     order_status: { type: String, default: 'Pending' },
     validity: { type: Date }
 });
-
+schema.index({user_id:1}, {unique:false});
+schema.index({product_id:1}, {unique:false});
+schema.index({order_status:1}, {unique:false});
 schema.set('timestamps', true);
 let Order = MONGOOSE.model('order', schema);
 module.exports = { Order };

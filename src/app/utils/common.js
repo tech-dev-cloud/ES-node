@@ -44,7 +44,7 @@ let common={
       })
     },
     getProduct:async (product_id)=>{
-      let cacheKey=`${params.product_key}${product_id.toString()}`;
+      let cacheKey=`${params.product_cache_key}${product_id.toString()}`;
       return new Promise((resolve,reject)=>{
         redis.get(cacheKey, async(err, result)=>{
           if(!err && result){
@@ -75,8 +75,8 @@ let common={
               },
               {$unwind:"$mentorInfo"}
             ]);
-            redis.set(cacheKey,JSON.stringify(data[0]), (err)=>{
-              redis.expire(cacheKey,params.product_expiry);
+            redis.set(cacheKey,JSON.stringify(data[0]), ()=>{
+              redis.expire(cacheKey,params.product_cache_expiry);
             });
             resolve(data[0]);
           }
@@ -109,7 +109,7 @@ let common={
       return data;
     },
     getQuestion:async(question_id)=>{
-      let cacheKey=`${params.product_key}${question_id.toString()}`;
+      let cacheKey=`${params.product_cache_key}${question_id.toString()}`;
       return new Promise((resolve,reject)=>{
         redis.get(cacheKey, async(err, someData)=>{
           if(err || !someData){

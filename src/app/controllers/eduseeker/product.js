@@ -2,7 +2,8 @@ const async = require('async');
 const _ = require('lodash');
 const Mongoose = require('mongoose');
 const { Product, ProductImage, ProductQuestionMap, Document, Order } = require('../../models');
-const params = require('../../../config/env/development_params.json')
+const config = require('../../../config/config');
+let params=require(`../../../config/env/${config.NODE_ENV}_params.js`);
 const redis = require('../../../config/redisConnection');
 const { aws } = require('../../services/aws');
 const common = require('../../utils/common');
@@ -192,10 +193,10 @@ let controller = {
         }
         let keys;
         if (ids && ids.length) {
-            keys = ids.map(id => params.product_key + id);
+            keys = ids.map(id => params.product_cache_key + id);
         } else {
             let products = await Product.find({ status: true }, { _id: 1 }).lean();
-            keys = products.map(obj => params.product_key + obj._id.toString());
+            keys = products.map(obj => params.product_cache_key + obj._id.toString());
         }
         redis.del(keys, (err) => {
             if (!err) {
