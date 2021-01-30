@@ -15,7 +15,7 @@ controller.createOrder = async (request, response) => {
     email: request.user.email,
     phone: request.user.phoneNumber
   }
-  let purchased = await Order.findOne({ user_id: request.user._id, product_id: request.body.productId, order_status:{$nin:['Free', 'Credit']}, validity: { $gte: new Date() } }).lean();
+  let purchased = await Order.findOne({ user_id: request.user._id, product_id: request.body.productId, order_status:{$in:['Free', 'Credit']}, validity: { $gte: new Date() } }).lean();
   if (!purchased) {
     let product = await common.getProduct(request.body.productId);
     paymentObject.amount = product.price;
