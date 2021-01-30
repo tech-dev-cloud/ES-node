@@ -122,7 +122,7 @@ const controller = {
     Promise.all([allOrdersQuery,totalAmount]).then(result=>{
       response.status(200).json({
         success:true,
-        data:{orders:result[0],stats:result[1]}
+        data:{orders:result[0],stats:result[1][0]}
       })
     }).catch(err=>{
       response.status(500).json({

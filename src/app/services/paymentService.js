@@ -20,6 +20,8 @@ service.createPayment = async (paymentObject, product, user) => {
           payment_request_id: response.payment_request.id,
           product_type: product.type,
           product_id: product._id,
+          product_name:product.name,
+          product_image: product.image,
           user_id: user._id,
           final_price:paymentObject.amount,
           instructor_id:product.created_by
