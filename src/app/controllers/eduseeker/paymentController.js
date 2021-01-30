@@ -52,7 +52,7 @@ controller.webhook = async (request, response) => {
     delete payload.file;
     delete payload.web_app;
     const data = Object.keys(payload).sort().map(key => payload[key]).join('|');
-    let calculatedMac = CryptoJS.HmacSHA1(data, config.SALT);
+    let calculatedMac = CryptoJS.HmacSHA1(data, config.PRIVATE_SALT);
     order.status = payload.status;
     if (providedMac == calculatedMac.toString()) {
       let product=await common.getProduct(order.product_id);
