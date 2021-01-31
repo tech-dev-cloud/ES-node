@@ -130,12 +130,13 @@ let controller = {
             product_ids = product_ids.map(obj => obj._id);
         }
         for (let i = 0; i < product_ids.length; i++) {
-            products[i] = await common.getProduct(product_ids[i]);
-            if(products[i].strikeprice){
-                products[i]['discountPercent'] = Math.ceil((products[i].strikeprice - products[i].price) * 100 / products[i].strikeprice);
+            let currentProduct=await common.getProduct(product_ids[i]);
+            // products[i] = await common.getProduct(product_ids[i]);
+            if(currentProduct && currentProduct.strikeprice){
+                currentProduct['discountPercent'] = Math.ceil((currentProduct.strikeprice - currentProduct.price) * 100 / currentProduct.strikeprice);
             }
-            products[i].image=products[i].image.map(prod_image => prod_image.image_path);
-            if(products[i].type==3){
+            currentProduct.image=currentProduct.image.map(prod_image => prod_image.image_path);
+            if(currentProduct.type==3){
                 products[i]['sub_products']=await Promise.all(products[i].sub_products.map(async(product_id)=>{
                     let obj=await common.getProduct(product_id);
                     if(obj){
@@ -145,6 +146,7 @@ let controller = {
                     return obj;
                 }))
             }
+            products.push(currentProduct);
         }
         if (!request.query.type) {
             products = _.groupBy(products, obj => obj.type);
