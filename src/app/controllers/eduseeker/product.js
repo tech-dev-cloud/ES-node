@@ -137,11 +137,11 @@ let controller = {
             }
             currentProduct.image=currentProduct.image.map(prod_image => prod_image.image_path);
             if(currentProduct.type==3){
-                products[i]['sub_products']=await Promise.all(products[i].sub_products.map(async(product_id)=>{
+                currentProduct['sub_products']=await Promise.all(currentProduct.sub_products.map(async(product_id)=>{
                     let obj=await common.getProduct(product_id);
                     if(obj){
                         obj.image=obj.image.map(prod_image => prod_image.image_path);
-                        obj['discountPercent'] = Math.ceil((products[i].strikeprice - products[i].price) * 100 / products[i].strikeprice);
+                        obj['discountPercent'] = Math.ceil((currentProduct.strikeprice - currentProduct.price) * 100 / currentProduct.strikeprice);
                     }
                     return obj;
                 }))
