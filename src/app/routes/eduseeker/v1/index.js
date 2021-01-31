@@ -9,5 +9,5 @@ module.exports = [
   ...require('./performanceRoutes'),
   ...require('./file'),
   ...require('./modules'),
-  ...require('./dummy'),
+  ...require('./dummy')
 ]

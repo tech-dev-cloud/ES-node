@@ -29,3 +29,4 @@ let routes=[
         handler: dummy.products
     },
 ]
+module.exports=routes;
