@@ -1,6 +1,6 @@
 const JOI = require('joi');
 const { USER_ROLE, DEFAULT,DB } = require('../../../utils/constants');
-const { dummyController } = require('../../../controllers');
+const { dummy } = require('../../../controllers');
 const routeUtils = require('../../../utils/routeUtils');
 
 let routes=[
