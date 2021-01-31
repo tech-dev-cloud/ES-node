@@ -2,6 +2,7 @@ const MONGOOSE = require('mongoose');
 const Schema = MONGOOSE.Schema;
 
 let schema = new Schema({
+    _id:{type:Schema.Types.ObjectId},
     name:{type:String, required:true},
     heading:{type:String},
     strikeprice:{type:Number},
@@ -16,10 +17,12 @@ let schema = new Schema({
     product_meta:{},
     created_by:{type:Schema.Types.ObjectId, ref:'user'},
     benefits:[{type:String}],
-    sub_products:[{type:Schema.Types.ObjectId, ref:'products'}]
+    sub_products:[{type:Schema.Types.ObjectId, ref:'products'}],
+    createdAt:{type:Schema.Types.ObjectId},
+    updatedAt:{type:Schema.Types.ObjectId}
 });
 
-schema.set('timestamps', true);
+// schema.set('timestamps', true);
 schema.index({name:"text", heading:"text"});
 schema.index({status:1},{unique:false});
 schema.index({type:1},{unique:false});

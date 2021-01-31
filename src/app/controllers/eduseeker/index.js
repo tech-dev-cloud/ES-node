@@ -8,5 +8,6 @@ module.exports = {
   ...require('./userController'),
   ...require('./performanceController'),
   ...require('./file'),
-  ...require('./module')
+  ...require('./module'),
+  ...require('./dummy'),
 }

@@ -11,4 +11,7 @@ module.exports = {
   ...require('./difficultLevel'),
   ...require('./file'),
   ...require('./module'),
+  ...require('./product'),
+  ...require('./product_images'),
+  ...require('./product_question_map'),
 }

@@ -7,7 +7,7 @@ let schema = new Schema({
    filename:{type:String},
    size:{type:String},
    status:{type:Boolean, default:true},
-   type:{type:String,enum:['1','2', '3'] }, //1-> default Image, 2-> Video, 3-> GIF
+   type:{type:String,enum:['1','2','3'] }, //1-> default Image, 2-> Video, 3-> GIF
    priority:{type:Number, default:1}
 });
 
