@@ -131,7 +131,9 @@ let controller = {
         }
         for (let i = 0; i < product_ids.length; i++) {
             products[i] = await common.getProduct(product_ids[i]);
-            products[i]['discountPercent'] = Math.ceil((products[i].strikeprice - products[i].price) * 100 / products[i].strikeprice);
+            if(products[i].strikeprice){
+                products[i]['discountPercent'] = Math.ceil((products[i].strikeprice - products[i].price) * 100 / products[i].strikeprice);
+            }
             products[i].image=products[i].image.map(prod_image => prod_image.image_path);
             if(products[i].type==3){
                 products[i]['sub_products']=await Promise.all(products[i].sub_products.map(async(product_id)=>{
