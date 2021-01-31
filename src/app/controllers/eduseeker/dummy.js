@@ -1,6 +1,7 @@
 const {QuestionModel, Product, ProductQuestionMap, ProductImage}=require('../../models');
 const request = require('request');
 let mongoose=require('mongoose');
+const { Order } = require('../../models/order');
 
 const controller = {
     questions:async(payload)=>{
@@ -17,20 +18,20 @@ const controller = {
             }
         })
     },
-    // users:async()=>{
-    //     request({
-    //         url:"http://api.eduseeker.in/api/question?subjectId=5f43f643dcb5622553b494dd",
-    //         method:"GET",
-    //         headers: {
-    //            Authorization: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjpbMV0sImlkIjoiNWY0YjgyMWY4ZGE1YmY3NWNiZDFjZmIyIiwiaWF0IjoxNjEwMDA2NDYwfQ.8tO9tEfWlxygA7uKY3KrailwCKDahYhq1_PE0f6KWEg',
-    //         },
-    //     },(err, r, b)=>{
-    //         if (!err && b) {
-    //             const body = JSON.parse(b);
-    //             QuestionModel.insertMany(body.items);
-    //         }
-    //     })
-    // },
+    users:async()=>{
+        request({
+            url:"http://api.eduseeker.in/api/question?subjectId=5f43f643dcb5622553b494dd",
+            method:"GET",
+            headers: {
+               Authorization: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjpbMV0sImlkIjoiNWY0YjgyMWY4ZGE1YmY3NWNiZDFjZmIyIiwiaWF0IjoxNjEwMDA2NDYwfQ.8tO9tEfWlxygA7uKY3KrailwCKDahYhq1_PE0f6KWEg',
+            },
+        },(err, r, b)=>{
+            if (!err && b) {
+                const body = JSON.parse(b);
+                QuestionModel.insertMany(body.items);
+            }
+        })
+    },
     products:async(payload)=>{
         request({
             url:"http://api.eduseeker.in/api/quiz",
@@ -83,5 +84,38 @@ const controller = {
             }
         })
     },
+    orders:async(payload)=>{
+        request({
+            url:"http://api.eduseeker.in/admin/payment",
+            method:"GET",
+            headers: {
+               Authorization: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjpbMV0sImlkIjoiNWY0YjgyMWY4ZGE1YmY3NWNiZDFjZmIyIiwiaWF0IjoxNjEwMDA2NDYwfQ.8tO9tEfWlxygA7uKY3KrailwCKDahYhq1_PE0f6KWEg',
+            },
+        },(err, r, b)=>{
+            if (!err && b) {
+                const body = JSON.parse(b);
+                let orders=[];
+                for(let index=0;index<body.orders.length;index++){
+                    let order=body.orders[index];
+                    let validity=new Date(order.createdAt);
+                    validity=new Date(validity.setMonth(validity.getMonth()+6));
+                    orders.push({
+                        user_id:mongoose.Types.ObjectId(order.userId),
+                        product_id:mongoose.Types.ObjectId(order.productId),
+                        product_type:'2',
+                        product_name:order.quizData.title,
+                        product_image:order.quizData.title.imageURL,
+                        payment_request_id:order.payment_request_id,
+                        final_price:order.price,
+                        order_status:order.status,
+                        validity:validity,
+                        createdAt:order.createdAt,
+                        updatedAt:order.updatedAt
+                    })
+                }
+                Order.insertMany(orders);
+            }
+        })
+    }
 }
 module.exports={dummy:controller}

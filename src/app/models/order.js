@@ -12,7 +12,9 @@ let schema = new Schema({
     payment_request_id: { type: String },
     final_price: { type: Number },
     order_status: { type: String, default: 'Pending' },
-    validity: { type: Date }
+    validity: { type: Date },
+    createdAt: {type:Date},
+    updatedAt: {type:Date},
 });
 schema.index({user_id:1}, {unique:false});
 schema.index({instructor_id:1}, {unique:false});

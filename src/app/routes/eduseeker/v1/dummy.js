@@ -9,7 +9,7 @@ let routes=[
         method: 'GET',
         joiSchemaForSwagger: {
         
-            group: 'dymmy',
+            group: 'dummy',
             description: 'Api to create question',
             model: 'V2question'
         },
@@ -27,6 +27,18 @@ let routes=[
         },
         // auth: [USER_ROLE.TEACHER],
         handler: dummy.products
+    },
+    {
+        path: `/update/orders`,
+        method: 'GET',
+        joiSchemaForSwagger: {
+        
+            group: 'dummy',
+            description: 'Api to create orders',
+            model: 'V2question'
+        },
+        // auth: [USER_ROLE.TEACHER],
+        handler: dummy.orders
     },
 ]
 module.exports=routes;
