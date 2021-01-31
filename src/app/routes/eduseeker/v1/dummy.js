@@ -9,7 +9,7 @@ let routes=[
         method: 'GET',
         joiSchemaForSwagger: {
         
-            group: 'V2_Question',
+            group: 'dymmy',
             description: 'Api to create question',
             model: 'V2question'
         },
@@ -21,7 +21,7 @@ let routes=[
         method: 'GET',
         joiSchemaForSwagger: {
         
-            group: 'V2_products',
+            group: 'dummy',
             description: 'Api to create question',
             model: 'V2question'
         },

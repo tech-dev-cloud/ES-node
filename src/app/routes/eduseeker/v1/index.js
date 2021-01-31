@@ -8,5 +8,6 @@ module.exports = [
   ...require('./userRoutes'),
   ...require('./performanceRoutes'),
   ...require('./file'),
-  ...require('./modules')
+  ...require('./modules'),
+  ...require('./dummy'),
 ]
