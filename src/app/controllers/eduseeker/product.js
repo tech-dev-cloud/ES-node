@@ -144,6 +144,9 @@ let controller = {
                     }
                     return obj;
                 }))
+            }else if(currentProduct.type==1 && request.query.enrolled){
+                let docs=await Document.find({product_id:currentProduct._id, status:true},{_id:1,filename:1,url:1,size:1, mime_type:1}).lean();
+                currentProduct['docs']=docs;
             }
             products.push(currentProduct);
         }
