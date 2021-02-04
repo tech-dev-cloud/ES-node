@@ -25,7 +25,7 @@ let controller = {
         if (request.body.product_map_data) {
             switch (request.body.type) {
                 case '1':
-                    data = request.body.product_map_data.map(obj => ({ ...obj, user_id: request.user._id, product_id: obj._id }));
+                    data = request.body.product_map_data.map(obj => ({ ...obj, user_id: request.user._id, product_id: product._id }));
                     await Document.insertMany(data);
                     break;
                 case '2':
