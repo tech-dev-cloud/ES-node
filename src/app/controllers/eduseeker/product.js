@@ -15,11 +15,11 @@ let controller = {
         }else if(request.body.type=='2'){
             product_payload.product_meta['totalQuestions']=request.body.product_map_data.length;
         }
-        let product = new Product(product_payload);
-        let obj = await product.save();
+        let obj = new Product(product_payload);
+        let product = await obj.save();
         if (request.body.image) {
-            let image = new ProductImage({ ...request.body.image, product_id: obj._id });
-            obj['image'] = await image.save();
+            let image = new ProductImage({ ...request.body.image, product_id: product._id });
+            product['image'] = await image.save();
         }
         let data;
         if (request.body.product_map_data) {
@@ -29,7 +29,7 @@ let controller = {
                     await Document.insertMany(data);
                     break;
                 case '2':
-                    data = request.body.product_map_data.map(question_id => ({ question_id, product_id: obj._id }));
+                    data = request.body.product_map_data.map(question_id => ({ question_id, product_id: product._id }));
                     await ProductQuestionMap.insertMany(data);
                     break;
             }
@@ -37,7 +37,7 @@ let controller = {
         response.status(200).json({
             success: true,
             message: "Product created successfully",
-            data: obj
+            data: product
         })
     },
     mapProductQuiz: async (request, response) => {
@@ -131,7 +131,6 @@ let controller = {
         }
         for (let i = 0; i < product_ids.length; i++) {
             let currentProduct=await common.getProduct(product_ids[i]);
-            // products[i] = await common.getProduct(product_ids[i]);
             if(currentProduct && currentProduct.strikeprice){
                 currentProduct['discountPercent'] = Math.ceil((currentProduct.strikeprice - currentProduct.price) * 100 / currentProduct.strikeprice);
             }
