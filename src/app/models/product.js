@@ -2,7 +2,7 @@ const MONGOOSE = require('mongoose');
 const Schema = MONGOOSE.Schema;
 
 let schema = new Schema({
-    _id:{type:Schema.Types.ObjectId},
+    product_id:{type:Schema.Types.ObjectId},
     name:{type:String, required:true},
     heading:{type:String},
     strikeprice:{type:Number},

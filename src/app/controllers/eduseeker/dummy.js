@@ -48,7 +48,7 @@ const controller = {
                 for(let index=0;index<body.items.length;index++){
                     let product=body.items[index];
                     products.push({
-                        _id:mongoose.Types.ObjectId(product._id),
+                        product_id:mongoose.Types.ObjectId(product._id),
                         name:product.title,
                         heading:product.headline,
                         price:product.amount,
