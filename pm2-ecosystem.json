@@ -26,14 +26,9 @@
         "pid_file": "./pids/es1.pid",
         "log_date_format": "YYYY-MM-DD HH:mm Z",
         "max_memory_restart": "1G",
-        "env_development": {
-          "NODE_ENV": "development",
-          "PORT": 3000,
-          "VAULT" : "dev"
-        },
         "env_production": {
           "NODE_ENV": "production",
-          "PORT": 3001,
+          "PORT": 4000,
           "VAULT": "pr"
         },
         "env" : {
@@ -46,7 +41,7 @@
         },
         "env_staging": {
           "NODE_ENV": "production",
-          "PORT": 3000,
+          "PORT": 4001,
           "VAULT": "pr"
         }
       }
