@@ -2,8 +2,8 @@ const MONGOOSE = require('mongoose');
 const Schema = MONGOOSE.Schema;
 
 let schema = new Schema({
-    product_id:{type:Schema.Types.ObjectId, required:true, ref:'product'},
-    question_id:{type:Schema.Types.ObjectId, required:true, ref:'question'},
+    product_id:{type:Schema.Types.ObjectId, required:true},
+    question_id:{type:Schema.Types.ObjectId, required:true},
     priority:{type:Number, default:0},
     status:{type:Boolean, default:true}
 });
