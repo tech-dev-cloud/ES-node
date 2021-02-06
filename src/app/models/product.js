@@ -8,7 +8,7 @@ let schema = new Schema({
     price:{type:Number},
     isPaid:{type:Boolean, default:false},
     description:{type:String},
-    type:{type:String, enum:['1','2','3','4']}, // 1->PDF, 2->quiz, 3->Notes, 4-> course
+    type:{type:String, enum:['1','2','3','4']}, // 1->PDF/notes/e-books, 2->quiz, 3->Bulk Pack, 4-> course
     priority:{type:Number, default:0},
     similar_products:[{type:Schema.Types.ObjectId}],
     status:{type:Boolean, default:true},

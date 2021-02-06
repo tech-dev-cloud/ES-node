@@ -18,11 +18,11 @@ const routes = [
       body: {
         name: JOI.string().required(),
         heading: JOI.string(),
-        strikeprice: JOI.number().required(),
+        strikeprice: JOI.number(),
         price: JOI.number(),
         isPaid: JOI.boolean().required(),
         similar_products: JOI.array().items(routeUtils.validation.mongooseId),
-        description: JOI.string(),
+        description: JOI.string().optional(),
         type: JOI.string().valid(['1', '2', '3', '4']).description("1->PDF, 2->quiz, 3->books, 4-> course"),
         priority: JOI.number().default(0),
         product_meta: JOI.object(),

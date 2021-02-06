@@ -82,6 +82,9 @@ let controller = {
         if (request.query.product_id) {
             productMetaData = await common.getProductMeta(data[0].items[0]);
             responseData = { ...responseData, productMetaData };
+            if(data[0].items[0].type==3){
+                responseData.sub_products_info=Product.find({_id:{$in:data[0].items[0].sub_products}}).lean();
+            }
         }
         response.status(200).json({
             success: true,
@@ -108,7 +111,6 @@ let controller = {
         let data = [];
         let product_ids = [];
         let products = [];
-
         if (request.query.enrolled) {
             let enrolledProducts = await Order.find({ user_id: request.user._id, product_type:{$ne:'3'}, $or: [{ order_status: 'Free' }, { order_status: 'Credit' }]}, { product_id: 1, validity:1 }).lean();
             for(let index=0;index<enrolledProducts.length;index++){
