@@ -83,7 +83,7 @@ let controller = {
             productMetaData = await common.getProductMeta(data[0].items[0]);
             responseData = { ...responseData, productMetaData };
             if(data[0].items[0].type==3){
-                responseData.sub_products_info=Product.find({_id:{$in:data[0].items[0].sub_products}}).lean();
+                responseData.items[0].sub_products_info=await Product.find({_id:{$in:data[0].items[0].sub_products}}).lean();
             }
         }
         response.status(200).json({
@@ -101,6 +101,8 @@ let controller = {
                 } catch (err) {
                     console.log(err)
                 }
+                break;
+
         }
         response.status(200).json({
             success: true,

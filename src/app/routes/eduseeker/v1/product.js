@@ -142,7 +142,8 @@ const routes = [
           priority: JOI.number()
         }),
         new_items: JOI.array().items(JOI.string()),
-        removed_items: JOI.array().items(JOI.string())
+        removed_items: JOI.array().items(JOI.string()),
+        product_map_data: JOI.array().items(JOI.any())
       },
       group: `${MODULE.group}`,
       description: 'Api to update product by id',
