@@ -126,7 +126,7 @@ const routes = [
       body: {
         name: JOI.string(),
         heading: JOI.string(),
-        strikeprice: JOI.number(),
+        strikeprice: JOI.number().optional(),
         price: JOI.number(),
         isPaid: JOI.boolean(),
         similar_products: JOI.array().items(routeUtils.validation.mongooseId),

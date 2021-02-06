@@ -94,6 +94,11 @@ let controller = {
     },
     updateProductByID: async (request, response) => {
         await Product.updateOne({ _id: request.params.id }, request.body);
+        if (request.body.image) {
+            ProductImage.update({product_id: request.params.id},{product_id:request.params.id, ...request.body.image}, {upsert:true});
+            // let image = new ProductImage({ ...request.body.image, product_id: product._id });
+            // product['image'] = await image.save();
+        }
         switch (request.body.type) {
             case '2': //Quiz
                 try {
