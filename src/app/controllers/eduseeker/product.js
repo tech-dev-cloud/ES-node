@@ -61,6 +61,7 @@ let controller = {
             match['type'] = prodcut_type;
         }
         if(request.query.searchString){
+            match['type']={$ne:'3'}
             match['$text']={$search:request.query.searchString};
         }
         let data = await Product.aggregate([
