@@ -5,8 +5,8 @@
     "quiz_question_key":"quiz_question_",
     "quiz_question_expiry":200,
     "default_user":"600be4282cc2fcd777ad854c",
-    "backend_server":"http://15.207.57.187:4001",
-    "frontend_server":"http://devweb.eduseeker.in",
+    "backend_server":"https://api.eduseeker.in",
+    "frontend_server":"https://eduseeker.in",
     "payment_webhook":"/api/payment/webhook",
     "payment_redirection":"/order-confirm"
 }
