@@ -93,14 +93,22 @@ let controller = {
         })
     },
     updateProductByID: async (request, response) => {
+        if(request.body.type==3){
+            request.body['sub_products']=request.body.product_map_data.map(product_id => Mongoose.Types.ObjectId(product_id));
+        }
         await Product.updateOne({ _id: request.params.id }, request.body);
         if (request.body.image) {
-            await   ProductImage.update({product_id: request.params.id},{product_id:request.params.id, ...request.body.image}, {upsert:true});
-            // let image = new ProductImage({ ...request.body.image, product_id: product._id });
-            // product['image'] = await image.save();
+            await ProductImage.update({product_id: request.params.id},{product_id:request.params.id, ...request.body.image}, {upsert:true});
         }
         switch (request.body.type) {
             case '2': //Quiz
+                try {
+                    await commonF.updateQuiz(request.body, request.params.id);
+                } catch (err) {
+                    console.log(err)
+                }
+                break;
+            case '3': //Bulk
                 try {
                     await commonF.updateQuiz(request.body, request.params.id);
                 } catch (err) {
@@ -229,11 +237,7 @@ let controller = {
                 })
             }
         })
-    },
-    // getEnrolledProducts: async (request, response) => {
-    //     let enrolledProducts = await Order.find({ user_id: request.user._id, $or: [{ order_status: 'Free' }, { order_status: 'Credit' }] }, { productId: 1 }).lean();
-
-    // }
+    }
 }
 let commonF = {
     updateQuiz: async (payload, product_id) => {
