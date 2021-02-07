@@ -128,8 +128,8 @@ let controller = {
         let product_ids = [];
         let products = [];
         if (request.query.enrolled) {
-            let enrolledProducts = await Order.find({ user_id: request.user._id, product_type:{$ne:'3'}, validity:{$gt:new Date()}, $or: [{ order_status: 'Free' }, { order_status: 'Credit' }]}, { product_id: 1 }).lean();
-            enrolledProducts=_.uniqBy(enrolledProducts,'product_id');
+            let enrolledProducts = await Order.find({ user_id: request.user._id, product_type:{$ne:'3'}, $or: [{ order_status: 'Free' }, { order_status: 'Credit' }]}, { product_id: 1 }).lean();
+            // enrolledProducts=_.uniqBy(enrolledProducts,'product_id');
             for(let index=0;index<enrolledProducts.length;index++){
                 product_ids.push(enrolledProducts[index].product_id);
                 // if(enrolledProducts[index].validity && enrolledProducts[index].validity>new Date()){
