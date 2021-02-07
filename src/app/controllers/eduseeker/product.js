@@ -166,7 +166,7 @@ let controller = {
                 let item = { title: "", weburl: "", products: products[key] }
                 if (key == '1') {
                     item.id = 3;
-                    item.title = "PDF";
+                    item.title = "PDF/E-Books";
                     item.weburl = `pdf-${item.id}`;
                     data.push(item);
                 } else if (key == '2') {
