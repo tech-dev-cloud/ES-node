@@ -150,24 +150,26 @@ let controller = {
         }
         for (let i = 0; i < product_ids.length; i++) {
             let currentProduct=await common.getProduct(product_ids[i]);
-            if(currentProduct && currentProduct.strikeprice){
-                currentProduct['discountPercent'] = Math.ceil((currentProduct.strikeprice - currentProduct.price) * 100 / currentProduct.strikeprice);
+            if(currentProduct){
+                if(currentProduct && currentProduct.strikeprice){
+                    currentProduct['discountPercent'] = Math.ceil((currentProduct.strikeprice - currentProduct.price) * 100 / currentProduct.strikeprice);
+                }
+                currentProduct.image=currentProduct.image.map(prod_image => prod_image.image_path);
+                if(currentProduct.type==3){
+                    currentProduct['sub_products']=await Promise.all(currentProduct.sub_products.map(async(product_id)=>{
+                        let obj=await common.getProduct(product_id);
+                        if(obj){
+                            obj.image=obj.image.map(prod_image => prod_image.image_path);
+                            obj['discountPercent'] = Math.ceil((currentProduct.strikeprice - currentProduct.price) * 100 / currentProduct.strikeprice);
+                        }
+                        return obj;
+                    }))
+                }else if(currentProduct.type==1 && request.query.enrolled){
+                    let docs=await Document.find({product_id:currentProduct._id, status:true},{_id:1,filename:1,url:1,size:1, mime_type:1}).lean();
+                    currentProduct['docs']=docs;
+                }
+                products.push(currentProduct);
             }
-            currentProduct.image=currentProduct.image.map(prod_image => prod_image.image_path);
-            if(currentProduct.type==3){
-                currentProduct['sub_products']=await Promise.all(currentProduct.sub_products.map(async(product_id)=>{
-                    let obj=await common.getProduct(product_id);
-                    if(obj){
-                        obj.image=obj.image.map(prod_image => prod_image.image_path);
-                        obj['discountPercent'] = Math.ceil((currentProduct.strikeprice - currentProduct.price) * 100 / currentProduct.strikeprice);
-                    }
-                    return obj;
-                }))
-            }else if(currentProduct.type==1 && request.query.enrolled){
-                let docs=await Document.find({product_id:currentProduct._id, status:true},{_id:1,filename:1,url:1,size:1, mime_type:1}).lean();
-                currentProduct['docs']=docs;
-            }
-            products.push(currentProduct);
         }
         if (!request.query.type) {
             products = _.groupBy(products, obj => obj.type);
