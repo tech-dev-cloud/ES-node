@@ -109,7 +109,7 @@ let common={
       return data;
     },
     getQuestion:async(question_id)=>{
-      let cacheKey=`${params.product_cache_key}${question_id.toString()}`;
+      let cacheKey=`${params.quiz_question_key}${question_id.toString()}`;
       return new Promise((resolve,reject)=>{
         redis.get(cacheKey, async(err, someData)=>{
           if(err || !someData){
