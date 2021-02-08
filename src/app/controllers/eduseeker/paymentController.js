@@ -95,7 +95,7 @@ const controller = {
     let match={instructor_id:request.user._id};
     let itemPerPage=parseInt(request.query.limit || '0') || 10;
     let skip=parseInt(request.query.skip || '0') * itemPerPage;
-
+    
     if(request.query.order_status){
       match['order_status']=request.query.order_status;
     }
@@ -104,8 +104,10 @@ const controller = {
       match["creationDate"] = request.query.createdAt;
     }
     let query=[];
+    let query2=[]
     if(Object.keys($addFields).length){
       query[0] = {$addFields};
+      query2[0] = {$addFields};
     }
     query=[
       ...query,
@@ -117,11 +119,13 @@ const controller = {
       {$skip:skip},
       {$limit:itemPerPage}
     ]
-    let allOrdersQuery= Order.aggregate(query);
-    let totalAmount=Order.aggregate([
+    query2=[
+      ...query2,
       {$match: match},
       {$group:{_id:null, totoalCounts:{$sum:1},amount:{$sum:"$final_price"}}}
-    ])
+    ]
+    let allOrdersQuery= Order.aggregate(query);
+    let totalAmount=Order.aggregate(query2);
     Promise.all([allOrdersQuery,totalAmount]).then(result=>{
       response.status(200).json({
         success:true,
