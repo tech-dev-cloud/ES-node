@@ -119,6 +119,7 @@ const controller = {
       {$skip:skip},
       {$limit:itemPerPage}
     ]
+    match['order_status']="Credit";
     query2=[
       ...query2,
       {$match: match},
