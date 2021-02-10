@@ -1,6 +1,6 @@
 const JOI = require('joi');
-const {USER_ROLE}=require('../../../utils/constants');
-const { authController } = require('../../../controllers');
+const {USER_ROLE}=require('../../utils/constants');
+const { authController } = require('../../controllers');
 
 const routes = [
   {
