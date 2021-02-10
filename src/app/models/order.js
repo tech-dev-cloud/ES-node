@@ -18,6 +18,7 @@ schema.index({user_id:1}, {unique:false});
 schema.index({instructor_id:1}, {unique:false});
 schema.index({product_id:1}, {unique:false});
 schema.index({order_status:1}, {unique:false});
+schema.index({payment_request_id:1}, {unique:false});
 schema.set('timestamps', true);
 let Order = MONGOOSE.model('order', schema);
 module.exports = { Order };

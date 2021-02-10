@@ -78,6 +78,7 @@ const routes = [
         index: JOI.number().min(0),
         enrolled: JOI.boolean(),
         product_ids: JOI.string(),
+        payment_request_id: JOI.string(),
         type: JOI.string().valid(PRODUCT_TYPE)
       },
       group: `${MODULE.group}`,

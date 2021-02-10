@@ -129,7 +129,6 @@ let controller = {
         let products = [];
         if (request.query.enrolled) {
             let enrolledProducts = await Order.find({ user_id: request.user._id, product_type:{$ne:'3'}, $or: [{ order_status: 'Free' }, { order_status: 'Credit' }]}, { product_id: 1, validity:1 }).lean();
-            // enrolledProducts=_.uniqBy(enrolledProducts,'product_id');
             for(let index=0;index<enrolledProducts.length;index++){
                 if(enrolledProducts[index].validity && enrolledProducts[index].validity>new Date()){
                     product_ids.push(enrolledProducts[index].product_id);
@@ -140,6 +139,8 @@ let controller = {
             product_ids = enrolledProducts.map(obj => obj.product_id);
         } else if (request.query.product_ids) {
             product_ids = request.query.product_ids.split(',').map(id => Mongoose.Types.ObjectId(id))
+        } else if(request.query.payment_request_id) {
+            product_ids= Order.findOne({payment_request_id:request.query.payment_request_id},{product_id:1}).lean();
         } else {
             let condition = { status: true };
             if (request.query.type) {
@@ -160,13 +161,16 @@ let controller = {
                         let obj=await common.getProduct(product_id);
                         if(obj){
                             obj.image=obj.image.map(prod_image => prod_image.image_path);
-                            obj['discountPercent'] = Math.ceil((currentProduct.strikeprice - currentProduct.price) * 100 / currentProduct.strikeprice);
+                            obj['discountPercent'] = Math.round((currentProduct.strikeprice - currentProduct.price) * 100 / currentProduct.strikeprice);
                         }
                         return obj;
                     }))
                 }else if(currentProduct.type==1 && request.query.enrolled){
                     let docs=await Document.find({product_id:currentProduct._id, status:true},{_id:1,filename:1,url:1,size:1, mime_type:1}).lean();
                     currentProduct['docs']=docs;
+                }
+                if(request.user){
+                    currentProduct.isPurchased = !!(await Order.findOne({product_id:product_ids[i], user_id:request.user._id, order_status:"Credit"}).lean());
                 }
                 products.push(currentProduct);
             }
