@@ -151,7 +151,7 @@ let createSwaggerUIForRoutes = (app, routes = []) => {
     swJson.swaggerDoc.addNewRoute(route.joiSchemaForSwagger, route.path, route.method.toLowerCase());
   });
   try {
-    const swaggerDocument = require('../../../swagger.json');
+    const swaggerDocument = require('../../swagger.json');
     app.use('/documentation', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
   } catch (err) {
     console.log(err.message);

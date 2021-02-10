@@ -1,6 +1,6 @@
 const JOI = require('joi');
-const { USER_ROLE } = require('../../../utils/constants');
-const { userController } = require('../../../controllers');
+const { USER_ROLE } = require('../../utils/constants');
+const { userController } = require('../../controllers');
 
 const MODULE = {
   name: 'user',

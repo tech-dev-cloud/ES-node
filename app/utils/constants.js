@@ -80,7 +80,7 @@ CONSTANTS.MONGO_ERROR = {
 }
 
 CONSTANTS.EMAIL_TEMPLATE = {
-  FORGOT_PASSWORD: 'src/public/forgot-password.html'
+  FORGOT_PASSWORD: 'public/forgot-password.html'
 }
 
 CONSTANTS.USER_ROLE = {

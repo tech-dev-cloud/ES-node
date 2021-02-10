@@ -1,8 +1,8 @@
 
 const JOI = require('joi');
-const { USER_ROLE, PRODUCT_TYPE } = require('../../../utils/constants');
-const { productController } = require('../../../controllers');
-const routeUtils = require('../../../utils/routeUtils');
+const { USER_ROLE, PRODUCT_TYPE } = require('../../utils/constants');
+const { productController } = require('../../controllers');
+const routeUtils = require('../../utils/routeUtils');
 
 let MODULE = {
   group: 'Product'

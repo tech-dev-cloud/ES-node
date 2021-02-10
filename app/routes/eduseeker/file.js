@@ -1,7 +1,7 @@
 
 const JOI = require('joi');
-const { USER_ROLE, DEFAULT, PRODUCT_TYPE } = require('../../../utils/constants');
-const {file}=require('../../../controllers');
+const { USER_ROLE, DEFAULT, PRODUCT_TYPE } = require('../../utils/constants');
+const {file}=require('../../controllers');
 let routes=[
     {
         path:'/api/file/upload',

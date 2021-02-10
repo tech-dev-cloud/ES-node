@@ -2,7 +2,7 @@
     "apps": [
       {
         "name": "es1",
-        "script": "src/server.js",
+        "script": "server.js",
         "instances": "1",
         "exec_mode": "cluster",
         "args": ["color"],
