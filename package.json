@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "nodemon server.js --ignore ./swagger.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -37,6 +37,7 @@
   },
   "devDependencies": {
     "@types/vscode": "^1.51.0",
-    "eslint": "^7.17.0"
+    "eslint": "^7.17.0",
+    "nodemon": "^2.0.7"
   }
 }

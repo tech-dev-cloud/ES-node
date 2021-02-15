@@ -154,6 +154,20 @@ const routes = [
     handler: productController.updateProductByID
   },
   {
+    path: '/api/getProduct/:product_id',
+    method: 'GET',
+    joiSchemaForSwagger:{
+      params:JOI.object({
+        product_id: routeUtils.validation.mongooseId
+      }),
+      group: `${MODULE.group}`,
+      description: 'Api to get Product by ID',
+      model: 'GetProduct'
+    },
+    // auth: [USER_ROLE.STUDENT]
+    handler: productController.getProductDetails
+  },
+  {
     path: `/api/flushProductCache`,
     method: 'GET',
     joiSchemaForSwagger: {

@@ -7,7 +7,7 @@ let params=require(`../../../config/env/${config.NODE_ENV}_params.json`);
 const redis = require('../../../config/redisConnection');
 const { aws } = require('../../services/aws');
 const common = require('../../utils/common');
-let controller = {
+let productController = {
     createProduct: async (request, response) => {
         let product_payload={...request.body, created_by: request.user._id};
         if(request.body.type=='3'){
@@ -66,20 +66,18 @@ let controller = {
         }
         let data = await Product.aggregate([
             { $match: match },
-            {
-                $lookup: {
-                    from: "product_images",
-                    let: { "id": "$_id" },
-                    pipeline: [
+            {$lookup: 
+                {from: "product_images",let: { "id": "$_id" }, pipeline: [
                         { $match: { $expr: { $eq: ["$product_id", "$$id"] } } },
                         { $project: { image_path: 1 } }
                     ],
                     as: "image"
-                }
+                },
             },
+            {$lookup:{from: "products", localField:"similar_products", foreignField: "_id", as: "similar_products_info"}},   
             { $group: { _id: null, count: { $sum: 1 }, items: { $push: "$$ROOT" } } }
         ]);
-        responseData = { ...data[0] }
+        responseData = { ...data[0] };
         if (request.query.product_id) {
             productMetaData = await common.getProductMeta(data[0].items[0]);
             responseData = { ...responseData, productMetaData };
@@ -97,6 +95,7 @@ let controller = {
         if(request.body.type==3){
             request.body['sub_products']=request.body.product_map_data.map(product_id => Mongoose.Types.ObjectId(product_id));
         }
+        console.log(request.body);
         await Product.updateOne({ _id: request.params.id }, request.body);
         if (request.body.image) {
             await ProductImage.update({product_id: request.params.id},{product_id:request.params.id, ...request.body.image}, {upsert:true});
@@ -224,6 +223,22 @@ let controller = {
             data
         })
     },
+    getProductDetails: async(request, response)=>{
+        let product=await common.getProduct(request.params.product_id);
+        product.image=product.image.map(prod_image => prod_image.image_path);
+        if(product.similar_products.length){
+            product.similar_products_info=await Promise.all(product.similar_products.map(async id=>{
+                obj=await common.getProduct(id);
+                obj.image=obj.image.map(prod_image => prod_image.image_path);
+                return obj;
+            }))
+        }
+        response.status(200).json({
+            success: false,
+            message: '',
+            data: product
+        })
+    },
     flushProductsCache: async (request, response) => {
         let ids;
         if (request.query.product_ids) {
@@ -289,4 +304,4 @@ let commonF = {
 
 }
 
-module.exports = { productController: controller }
+module.exports = { productController }

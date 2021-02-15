@@ -23,5 +23,6 @@ schema.set('timestamps', true);
 schema.index({name:"text", heading:"text"});
 schema.index({status:1},{unique:false});
 schema.index({type:1},{unique:false});
+schema.index({created_by:1},{unique:false});
 let Product = MONGOOSE.model('product', schema);
 module.exports = { Product };
