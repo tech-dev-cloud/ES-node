@@ -1,9 +1,9 @@
 'use strict';
 
 const Joi = require('joi');
-const { USER_ROLE } = require('../../../utils/constants');
-const { unitController } = require('../../../controllers');
-const routeUtils = require('../../../utils/routeUtils');
+const { USER_ROLE } = require('../../utils/constants');
+const { unitController } = require('../../controllers');
+const routeUtils = require('../../utils/routeUtils');
 
 const MODULE = {
   name: 'unit',
