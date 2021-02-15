@@ -1,6 +1,6 @@
 
 const JOI = require('joi');
-const { USER_ROLE } = require('../../../utils/constants');
+const { USER_ROLE } = require('../../utils/constants');
 const { paymentController } = require('../../../controllers');
 const routeUtils = require('../../../utils/routeUtils');
 
