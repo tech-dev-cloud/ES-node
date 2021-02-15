@@ -28,6 +28,7 @@ const routes = [
         product_meta: JOI.object(),
         status: JOI.boolean(),
         benefits: JOI.array().items(JOI.string()),
+        validity: JOI.number(),
         image: JOI.object({
           type: JOI.string().valid(['1', '2', '3']).description("1->PDF, 2->quiz, 3->books, 4-> course"),
           image_path: JOI.string(),
@@ -137,6 +138,7 @@ const routes = [
         product_meta: JOI.object(),
         status: JOI.boolean(),
         benefits: JOI.array().items(JOI.string()),
+        validity: JOI.number(),
         image: JOI.object({
           type: JOI.string().valid(['1', '2', '3']).description("1->PDF, 2->quiz, 3->books, 4-> course"),
           image_path: JOI.string(),
