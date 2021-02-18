@@ -6,7 +6,7 @@ const config = require('../../../config/config');
 let params=require(`../../../config/env/${config.NODE_ENV}_params.json`);
 const common = require('../../utils/common');
 
-const controller = {
+const paymentController = {
   createOrder: async (request, response) => {
     //Add user details
     let paymentObject = {
@@ -142,4 +142,4 @@ const controller = {
   }
 }
 
-module.exports = { paymentController: controller }
+module.exports = { paymentController }

@@ -43,8 +43,6 @@ service.createPayment = async (paymentObject, product, user) => {
 }
 
 service.freeEnrolled = async (user, product) => {
-  let validity = new Date();
-  validity = new Date(validity.setMonth(validity.getMonth() + product.validity));
   let payload = {
     user_id: user._id,
     product_id: product._id,
@@ -52,8 +50,7 @@ service.freeEnrolled = async (user, product) => {
     product_name: product.name,
     product_image: product.image.map(obj => obj.image_path),
     final_price: product.price,
-    order_status: 'Free',
-    validity
+    order_status: 'Free'
   }
   let order = new Order(payload);
   await order.save(payload);
