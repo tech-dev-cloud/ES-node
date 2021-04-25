@@ -17,5 +17,6 @@ module.exports = {
   ...require('./product_question_map'),
   ...require('./documents'),
   ...require('./order'),
-  ...require('./videoContent')
+  ...require('./videoContent'),
+  ...require('./comment'),
 }

@@ -8,5 +8,5 @@ module.exports = {
   ...require('./userService'),
   ...require('./performanceService'),
   ...require('./aws'),
-  ...require('./product'),
+  ...require('./product')
 }

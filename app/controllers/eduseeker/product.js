@@ -1,13 +1,13 @@
 const async = require('async');
 const _ = require('lodash');
 const Mongoose = require('mongoose');
-const { Product, ProductImage, ProductQuestionMap, Document, Order, VideoContent } = require('../../models');
+const { Product, ProductImage, ProductQuestionMap, Document, Order, Comment } = require('../../models');
 const config = require('../../../config/config');
 let params = require(`../../../config/env/${config.NODE_ENV}_params.json`);
 const redis = require('../../../config/redisConnection');
 const { aws } = require('../../services/aws');
 const common = require('../../utils/common');
-const productService = require('../../services/product');
+const { productService } = require('../../services');
 let productController = {
     /**
      * Handler to create product 
@@ -94,7 +94,7 @@ let productController = {
         ]);
         responseData = { ...data[0] };
         if (request.query.product_id) {
-            productMetaData = await common.getProductMeta(data[0].items[0]);
+            productMetaData = await productService.getProductMeta(data[0].items[0]);
             responseData = { ...responseData, productMetaData };
             if (data[0].items[0].type == 3) {
                 responseData.items[0].sub_products_info = await Product.find({ _id: { $in: data[0].items[0].sub_products } }).lean();
@@ -143,7 +143,7 @@ let productController = {
         let product_ids = [];
         let products = [];
         if (request.query.enrolled) {
-            let enrolledProducts = await Order.find({ user_id: request.user._id, product_type: { $ne: '3' }, $or: [{ order_status: 'Free' }, { order_status: 'Credit' }] }, { product_id: 1, validity: 1 }).sort({ _id: -1 }).lean();
+            let enrolledProducts = await Order.find({ user_id: request.user._id, product_type: { $ne: 'bulk' }, $or: [{ order_status: 'Free' }, { order_status: 'Credit' }] }, { product_id: 1, validity: 1 }).sort({ _id: -1 }).lean();
             for (let index = 0; index < enrolledProducts.length; index++) {
                 if (enrolledProducts[index].validity && enrolledProducts[index].validity > new Date()) {
                     product_ids.push(enrolledProducts[index].product_id);
@@ -152,10 +152,6 @@ let productController = {
                 }
             }
             product_ids = enrolledProducts.map(obj => obj.product_id);
-        } else if (request.query.product_ids) {
-            product_ids = request.query.product_ids.split(',').map(id => Mongoose.Types.ObjectId(id))
-        } else if (request.query.payment_request_id) {
-            product_ids = Order.findOne({ payment_request_id: request.query.payment_request_id }, { product_id: 1 }).lean();
         } else {
             let condition = { status: true, isPublish: true };
             if (request.query.type) {
@@ -165,28 +161,25 @@ let productController = {
             product_ids = product_ids.map(obj => obj._id);
         }
         for (let i = 0; i < product_ids.length; i++) {
-            let currentProduct = await common.getProduct(product_ids[i]);
+            let currentProduct = await productService.getProduct(product_ids[i]);
             if (currentProduct) {
-                if (currentProduct && currentProduct.strikeprice) {
-                    currentProduct['discountPercent'] = Math.ceil((currentProduct.strikeprice - currentProduct.price) * 100 / currentProduct.strikeprice);
-                }
-                currentProduct.image = currentProduct.image.map(prod_image => prod_image.image_path);
-                if (currentProduct.type == params.product_types.bulk) {
-                    currentProduct['sub_products'] = await Promise.all(currentProduct.sub_products.map(async (product_id) => {
-                        let obj = await common.getProduct(product_id);
-                        if (obj) {
-                            obj.image = obj.image.map(prod_image => prod_image.image_path);
-                            obj['discountPercent'] = Math.round((currentProduct.strikeprice - currentProduct.price) * 100 / currentProduct.strikeprice);
-                        }
-                        return obj;
-                    }))
-                } else if (currentProduct.type == params.product_types.notes && request.query.enrolled) {
-                    let docs = await Document.find({ product_id: currentProduct._id, status: true }, { _id: 1, filename: 1, url: 1, size: 1, mime_type: 1 }).lean();
-                    currentProduct['docs'] = docs;
-                }
-                if (request.user) {
-                    currentProduct.isPurchased = !!(await Order.findOne({ product_id: product_ids[i], user_id: request.user._id, order_status: "Credit" }).lean());
-                }
+                // currentProduct.image = currentProduct.image.map(prod_image => prod_image.image_path);
+                // if (currentProduct.type == params.product_types.bulk) {
+                //     currentProduct['sub_products'] = await Promise.all(currentProduct.sub_products.map(async (product_id) => {
+                //         let obj = await common.getProduct(product_id);
+                //         if (obj) {
+                //             obj.image = obj.image.map(prod_image => prod_image.image_path);
+                //             obj['discountPercent'] = Math.round((currentProduct.strikeprice - currentProduct.price) * 100 / currentProduct.strikeprice);
+                //         }
+                //         return obj;
+                //     }))
+                // } else if (currentProduct.type == params.product_types.notes && request.query.enrolled) {
+                //     let docs = await Document.find({ product_id: currentProduct._id, status: true }, { _id: 1, filename: 1, url: 1, size: 1, mime_type: 1 }).lean();
+                //     currentProduct['docs'] = docs;
+                // }
+                // if (request.user) {
+                //     currentProduct.isPurchased = !!(await Order.findOne({ product_id: product_ids[i], user_id: request.user._id, order_status: "Credit" }).lean());
+                // }
                 products.push(currentProduct);
             }
         }
@@ -204,39 +197,19 @@ let productController = {
                     item.title = "Quiz";
                     item.weburl = `quiz-${item.id}`;
                     data.push(item);
-                }
-                else if (key == params.product_types.bulk) {
+                } else if (key == params.product_types.bulk) {
                     item.id = 2;
                     item.title = "Bulk Package";
                     item.weburl = `bulk-${item.id}`;
                     data.push(item);
                 } else if (key == params.product_types.course) {
                     item.id = 1;
-                    item.title = "Latest Courses";
+                    item.title = "Courses";
                     item.weburl = `course-${item.id}`;
                     data.push(item);
                 }
             }
             data.sort((a, b) => a.id - b.id);
-        } else {
-            let item = {
-                title: "",
-                weburl: "",
-                products: products
-            }
-            if (request.query.type == '1') {
-                item.title = "PDF";
-                item.weburl = `pdf-${item.id}`;
-                data.push(item);
-            } else if (request.query.type == '2') {
-                item.title = "Quiz";
-                item.weburl = `quiz-${item.id}`;
-                data.push(item);
-            } else if (request.query.type == '3') {
-                item.title = "Bulk Package";
-                item.weburl = `bulk-${item.id}`;
-                data.push(item);
-            }
         }
         response.status(200).json({
             success: true,
@@ -245,17 +218,50 @@ let productController = {
         })
     },
     getProductDetails: async (request, response) => {
-        let product = await common.getProduct(request.params.product_id);
-        product.image = product.image.map(prod_image => prod_image.image_path);
+        const product_id = request.params.product_id;
+        let enrolled = request.query.enrolled == 'true';
+        let result = await Promise.all(
+            [
+                productService.getProduct(request.params.product_id),
+                productService.isProductPurchased(product_id, request.user),
+                productService.totalEnrolled(product_id)
+            ]);
+        let product = result[0];
+        let obj = result[1];
+        product['purchaseStatus'] = obj.purchased;
+        // if (result[2] && (result[2] * 2) > 50) {
+        product['totalEnrolled'] = result[2] * 2 || 0;
+        // }
+        if (product.type == params.product_types.bulk) {
+            product['sub_products'] = await Promise.all(product.sub_products.map(async (product_id) => {
+                let obj = await productService.getProduct(product_id);
+                return obj;
+            }))
+        } else if (product.type == params.product_types.notes && request.query.enrolled) {
+            let docs = await Document.find({ product_id: product._id, status: true }, { _id: 1, filename: 1, url: 1, size: 1, mime_type: 1 }).lean();
+            product['docs'] = docs;
+        }
+        if (enrolled) {
+            if (!product.purchaseStatus) {
+                let data = {};
+                data['weburl'] = productService.getRedirectUrl(product.type);
+                response.status(400).json({
+                    success: false,
+                    message: 'You have not enroll for this course',
+                    data
+                });
+                return;
+            }
+        }
         if (product.similar_products && product.similar_products.length) {
-            product.similar_products_info = await Promise.all(product.similar_products.map(async id => {
-                obj = await common.getProduct(id);
-                obj.image = obj.image.map(prod_image => prod_image.image_path);
+            product.similar_products_info = Promise.all(product.similar_products.map(async id => {
+                obj = await productService.getProduct(id);
                 return obj;
             }))
         }
         if (product.type == params.product_types.course) {
-            await productService.getCourseContent(product);
+            await productService.getCourseContent(product, enrolled);
+            product.weburl = productService.getRedirectUrl(product.type);
         }
         response.status(200).json({
             success: true,
@@ -282,6 +288,57 @@ let productController = {
                     message: "Successfully refresh"
                 })
             }
+        })
+    },
+    addReview: async (request, response) => {
+        let review_type = request.body.type;
+        let obj;
+        try {
+            if (review_type == 'product_review') {
+                let data = await productService.isProductPurchased(request.body.object_id, request.user._id);
+                if (data.purchased) {
+                    obj = new Comment({ ...request.body, created_by: request.user._id });
+                } else {
+                    throw 'user does not purchase this product yet';
+                }
+            } else {
+                obj = new Comment({ ...request.body, created_by: request.user._id });
+            }
+            let comment = (await obj.save()).toObject();
+            comment.user = request.user;
+            response.status(200).json({
+                success: true,
+                data: comment
+            });
+        } catch (err) {
+            console.log(err)
+            response.status(400).json({
+                success: false,
+                message: err
+            })
+        }
+    },
+    getReviews: async (request, response) => {
+        let last_doc_id = request.query.last_doc_id;
+        let limit = request.query.limit || 10;
+        const object_id = request.query.object_id;
+        const type = request.query.type;
+        let comments = await productService.getComments(object_id, null, type, last_doc_id, limit);
+        let subComments = [];
+        for (let index = 0; index < comments.length; index++) {
+            let promise = productService.getComments(null, comments[index]._id, type, comments[index]._id, 999999);
+            subComments[index] = promise;
+        };
+        let data = await Promise.all(subComments);
+        for (let index = 0; index < data.length; index++) {
+            if (data[index]) {
+                comments[index].commentData = data[index];
+                comments[index].commentCounts = data[index].length;
+            }
+        }
+        response.status(200).json({
+            success: true,
+            data: comments
         })
     }
 }

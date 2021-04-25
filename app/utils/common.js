@@ -2,7 +2,7 @@ let fs = require('fs');
 let gm = require('gm').subClass({ imageMagick: true });
 let path = require('path');
 const vimeoClient = require('../../config/vimeo');
-let { QuizModel, Product, ProductQuestionMap, Document, QuestionModel } = require('../models');
+let { QuizModel, QuestionModel } = require('../models');
 const redis = require('../../config/redisConnection');
 const params = require('../../config/env/development_params.json');
 
@@ -47,80 +47,7 @@ let common = {
       })
     })
   },
-  getProduct: async (product_id) => {
-    let cacheKey = `${params.product_cache_key}${product_id.toString()}`;
-    return new Promise((resolve, reject) => {
-      redis.get(cacheKey, async (err, result) => {
-        if (!err && result) {
-          resolve(JSON.parse(result));
-        } else {
-          let match = {};
-          match['_id'] = product_id;
-          let data = await Product.aggregate([
-            { $match: match },
-            {
-              $lookup: {
-                from: "product_images",
-                let: { "id": "$_id" },
-                pipeline: [
-                  { $match: { $expr: { $eq: ["$product_id", "$$id"] } } },
-                  { $project: { image_path: 1 } }
-                ],
-                as: "image"
-              }
-            },
-            {
-              $lookup: {
-                from: "users",
-                let: { "id": "$created_by" },
-                pipeline: [
-                  { $match: { $expr: { $eq: ["$_id", "$$id"] } } },
-                  { $project: { name: 1 } }
-                ],
-                as: "mentorInfo"
-              }
-            },
-            { $unwind: "$mentorInfo" }
-          ]);
-          redis.set(cacheKey, JSON.stringify(data[0]), () => {
-            redis.expire(cacheKey, params.product_cache_expiry);
-          });
-          resolve(data[0]);
-        }
-      })
-    })
-  },
-  getProductMeta: async (product) => {
-    let data;
-    switch (product.type) {
-      case "1":
-        data = await Document.find({ product_id: product._id, status: true }).lean();
-        break;
-      case "2":
-        data = await ProductQuestionMap.find({ product_id: product._id, status: true }).lean();
-        data = await ProductQuestionMap.aggregate([
-          { $match: { product_id: product._id, status: true } },
-          { $project: { question_id: 1 } },
-          {
-            $lookup: {
-              from: "questions",
-              localField: "question_id",
-              foreignField: "_id",
-              as: "questionData"
-            }
-          },
-          { $unwind: "$questionData" },
-          {
-            $project: {
-              "questionData._id": 1, "questionData.options": 1, "questionData.correctOption": 1, "questionData.subjectId": 1, "questionData.question": 1, "questionData.description": 1,
-              "questionData.moduleId": 1, "questionData.type": 1
-            }
-          }
-        ])
-        break;
-    }
-    return data;
-  },
+
   getQuestion: async (question_id) => {
     let cacheKey = `${params.quiz_question_key}${question_id.toString()}`;
     return new Promise((resolve, reject) => {
@@ -166,9 +93,6 @@ let common = {
       color += letters[Math.floor(Math.random() * 16)];
     }
     return color;
-  },
-  videoUpload(file) {
-
   }
 }
 module.exports = common;

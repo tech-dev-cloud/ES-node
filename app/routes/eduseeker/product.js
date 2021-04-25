@@ -169,7 +169,7 @@ const routes = [
       description: 'Api to get Product by ID',
       model: 'GetProduct'
     },
-    // auth: [USER_ROLE.STUDENT]
+    auth: [USER_ROLE.STUDENT],
     handler: productController.getProductDetails
   },
   {
@@ -202,6 +202,41 @@ const routes = [
     },
     auth: [USER_ROLE.STUDENT],
     handler: productController.getEnrolledProducts
+  },
+  {
+    path: '/api/reviews',
+    method: 'POST',
+    joiSchemaForSwagger: {
+      headers: JOI.object({
+        'authorization': JOI.string().required()
+      }).unknown(),
+      body: {
+        message: JOI.string().required(),
+        type: JOI.string().valid(['product_review', 'lecture_query', 'feedback']).required(),
+        object_id: routeUtils.validation.mongooseId,
+        parent_id: routeUtils.validation.mongooseId
+      },
+      group: 'Reviews',
+      description: 'Api to add review',
+      model: 'addReview'
+    },
+    auth: [USER_ROLE.STUDENT],
+    handler: productController.addReview
+  },
+  {
+    path: '/api/reviews',
+    method: 'GET',
+    joiSchemaForSwagger: {
+      query: {
+        object_id: routeUtils.validation.mongooseId,
+        type: JOI.string().valid(['product_review', 'lecture_query', 'feedback'])
+      },
+      group: 'Reviews',
+      description: 'Api to get review',
+      model: 'getReview'
+    },
+    auth: [USER_ROLE.STUDENT],
+    handler: productController.getReviews
   }
 ]
 module.exports = routes;

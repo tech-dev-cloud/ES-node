@@ -1,9 +1,9 @@
 var CryptoJS = require("crypto-js");
 const MESSAGES = require('../../utils/messages');
-const { paymentService } = require('../../services');
+const { paymentService, productService } = require('../../services');
 const { Order } = require('../../models');
 const config = require('../../../config/config');
-let params=require(`../../../config/env/${config.NODE_ENV}_params.json`);
+let params = require(`../../../config/env/${config.NODE_ENV}_params.json`);
 const common = require('../../utils/common');
 
 const paymentController = {
@@ -14,10 +14,10 @@ const paymentController = {
       email: request.user.email,
       phone: request.user.phoneNumber
     }
-    let product = await common.getProduct(request.body.productId);
-    let criteria={ user_id: request.user._id, product_id: request.body.productId, order_status:{$in:['Free', 'Credit']} };
-    if(product.validity){
-      criteria['validity']={ $gte: new Date() };
+    let product = await productService.getProduct(request.body.productId);
+    let criteria = { user_id: request.user._id, product_id: request.body.productId, order_status: { $in: ['Free', 'Credit'] } };
+    if (product.validity) {
+      criteria['validity'] = { $gte: new Date() };
     }
     let purchased = await Order.findOne(criteria).lean();
     if (!purchased) {
@@ -30,8 +30,8 @@ const paymentController = {
           message: MESSAGES.PAYMENT.SUCCESS
         })
       }
-      paymentObject.webhook = params.backend_server+params.payment_webhook;
-      paymentObject.redirect_url = params.frontend_server+params.payment_redirection;
+      paymentObject.webhook = params.backend_server + params.payment_webhook;
+      paymentObject.redirect_url = params.frontend_server + params.payment_redirection;
       const data = await paymentService.createPayment(paymentObject, product, request.user);
       return response.status(200).json({
         success: true,
@@ -45,7 +45,7 @@ const paymentController = {
     })
   },
   webhook: async (request, response) => {
-    let payload=request.body;
+    let payload = request.body;
     const order = await Order.findOne({ payment_request_id: payload.payment_request_id });
     if (order) {
       let providedMac = payload.mac;
@@ -57,23 +57,23 @@ const paymentController = {
       let calculatedMac = CryptoJS.HmacSHA1(data, config.PRIVATE_SALT);
       order.order_status = payload.status;
       if (providedMac == calculatedMac.toString()) {
-        let product=await common.getProduct(order.product_id);
-        if(product.type==3){
+        let product = await productService.getProduct(order.product_id);
+        if (product.type == 3) {
           let validity = new Date();
           validity = new Date(validity.setMonth(validity.getMonth() + product.validity));
-          let sub_products=await Promise.all(product.sub_products.map(async(id)=>{
-            let obj=await common.getProduct(id);
-            let subproduct_order={
-              user_id:order.user_id,
-              parent_product_id:order._id,
-              product_id:id,
-              product_type:obj.type,
-              product_name:obj.name,
-              product_image:product.image.map(obj=>obj.image_path),
-              order_status:payload.status
+          let sub_products = await Promise.all(product.sub_products.map(async (id) => {
+            let obj = await productService.getProduct(id);
+            let subproduct_order = {
+              user_id: order.user_id,
+              parent_product_id: order._id,
+              product_id: id,
+              product_type: obj.type,
+              product_name: obj.name,
+              product_image: product.image.map(obj => obj.image_path),
+              order_status: payload.status
             }
-            if(product.validity){
-              subproduct_order['validity']=validity;
+            if (product.validity) {
+              subproduct_order['validity'] = validity;
             }
             return subproduct_order;
           }));
@@ -86,56 +86,56 @@ const paymentController = {
       }
     }
     response.status(200).json({
-      success:true,
-      message:"webhook executed successfully"
+      success: true,
+      message: "webhook executed successfully"
     })
   },
-  getOrders: async (request, response)=>{
-    let $addFields={};
-    let match={instructor_id:request.user._id};
-    let itemPerPage=parseInt(request.query.limit || '0') || 10;
-    let skip=parseInt(request.query.skip || '0') * itemPerPage;
-    
-    if(request.query.order_status){
-      match['order_status']=request.query.order_status;
+  getOrders: async (request, response) => {
+    let $addFields = {};
+    let match = { instructor_id: request.user._id };
+    let itemPerPage = parseInt(request.query.limit || '0') || 10;
+    let skip = parseInt(request.query.skip || '0') * itemPerPage;
+
+    if (request.query.order_status) {
+      match['order_status'] = request.query.order_status;
     }
-    if(request.query.createdAt){          
-      $addFields["creationDate"] = {$dateToString: {format: "%Y-%m-%d", date: "$createdAt", timezone: "+0530"}};
+    if (request.query.createdAt) {
+      $addFields["creationDate"] = { $dateToString: { format: "%Y-%m-%d", date: "$createdAt", timezone: "+0530" } };
       match["creationDate"] = request.query.createdAt;
     }
-    let query=[];
-    let query2=[]
-    if(Object.keys($addFields).length){
-      query[0] = {$addFields};
-      query2[0] = {$addFields};
+    let query = [];
+    let query2 = []
+    if (Object.keys($addFields).length) {
+      query[0] = { $addFields };
+      query2[0] = { $addFields };
     }
-    query=[
+    query = [
       ...query,
-      {$match:match},
-      {$lookup:{localField:"user_id",foreignField:"_id", from:"users", as:"userData"}},
-      {$unwind:"$userData"},
-      {$project:{product_name:1, product_image:1, final_price:1,order_status:1, validity:1, payment_request_id:1,user_id:1,"userData.name":1,"userData.email":1, createdAt:1}},
-      {$sort:{_id:-1}},
-      {$skip:skip},
-      {$limit:itemPerPage}
+      { $match: match },
+      { $lookup: { localField: "user_id", foreignField: "_id", from: "users", as: "userData" } },
+      { $unwind: "$userData" },
+      { $project: { product_name: 1, product_image: 1, final_price: 1, order_status: 1, validity: 1, payment_request_id: 1, user_id: 1, "userData.name": 1, "userData.email": 1, createdAt: 1 } },
+      { $sort: { _id: -1 } },
+      { $skip: skip },
+      { $limit: itemPerPage }
     ]
-    match['order_status']="Credit";
-    query2=[
+    match['order_status'] = "Credit";
+    query2 = [
       ...query2,
-      {$match: match},
-      {$group:{_id:null, totoalCounts:{$sum:1},amount:{$sum:"$final_price"}}}
+      { $match: match },
+      { $group: { _id: null, totoalCounts: { $sum: 1 }, amount: { $sum: "$final_price" } } }
     ]
-    let allOrdersQuery= Order.aggregate(query);
-    let totalAmount=Order.aggregate(query2);
-    Promise.all([allOrdersQuery,totalAmount]).then(result=>{
+    let allOrdersQuery = Order.aggregate(query);
+    let totalAmount = Order.aggregate(query2);
+    Promise.all([allOrdersQuery, totalAmount]).then(result => {
       response.status(200).json({
-        success:true,
-        data:{orders:result[0],stats:result[1][0]}
+        success: true,
+        data: { orders: result[0], stats: result[1][0] }
       })
-    }).catch(err=>{
+    }).catch(err => {
       response.status(500).json({
-        success:false,
-        message:'something went wrong',
+        success: false,
+        message: 'something went wrong',
         err
       })
     })
