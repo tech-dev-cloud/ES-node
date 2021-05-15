@@ -1,50 +1,50 @@
-let { SubjectModel } = require('../../models');
+let { SubjectModel } = require('../../mongo-models');
 const { subjectService } = require('../../services');
-const config=require('../../../config/config');
+const config = require('../../../config/config');
 let controller = {
   /** Controller to create Subject */
   createSubject: async (request, response) => {
     const subject = new SubjectModel(request.body);
     try {
-      let data=await subject.save();
+      let data = await subject.save();
       response.status(200).json({
-        success:true,
-        message:"Subject added successfully",
+        success: true,
+        message: "Subject added successfully",
         data
       })
     } catch (err) {
       if (err.code == MONGO_ERROR.DUPLICATE) {
         response.status(400).json({
-          success:false,
-          message:"Subject already exist"
+          success: false,
+          message: "Subject already exist"
         })
-      }else{
+      } else {
         response.status(500).json({
-          success:false,
-          message:"Something went wrong"
+          success: false,
+          message: "Something went wrong"
         })
       }
     }
   },
   /** Controller to find Subjects */
   getAllSubjects: async (request, response) => {
-    let match={};
-    if(request.query.status){
-      match['status']=request.query.status;
+    let match = {};
+    if (request.query.status) {
+      match['status'] = request.query.status;
     }
-    let data=await SubjectModel.find(match).lean();
+    let data = await SubjectModel.find(match).lean();
     response.status(200).json({
-      success:true,
-      message:"Subjects data fetched successfully",
+      success: true,
+      message: "Subjects data fetched successfully",
       data
     })
   },
   /** Controller to find Subject by id */
   getSubjectById: async (request, response) => {
-    const data =await SubjectModel.findById(request.params.id).lean();
+    const data = await SubjectModel.findById(request.params.id).lean();
     response.status(200).json({
-      success:true,
-      message:"Subject data fetched successfully",
+      success: true,
+      message: "Subject data fetched successfully",
       data
     })
   },
@@ -57,8 +57,8 @@ let controller = {
   updateSubject: async (request, response) => {
     const data = await subjectService.updateResource(request.body);
     response.status(200).json({
-      success:true,
-      message:"Subject data updated successfully",
+      success: true,
+      message: "Subject data updated successfully",
       data
     })
   }

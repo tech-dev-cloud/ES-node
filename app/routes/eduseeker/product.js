@@ -211,10 +211,11 @@ const routes = [
         'authorization': JOI.string().required()
       }).unknown(),
       body: {
-        message: JOI.string().required(),
+        message: JOI.string(),
         type: JOI.string().valid(['product_review', 'lecture_query', 'feedback']).required(),
         object_id: routeUtils.validation.mongooseId,
-        parent_id: routeUtils.validation.mongooseId
+        parent_id: routeUtils.validation.mongooseId,
+        rating: JOI.number()
       },
       group: 'Reviews',
       description: 'Api to add review',

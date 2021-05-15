@@ -22,5 +22,5 @@ schema.set('timestamps', true);
 schema.index({ product_id: 1 }, { unique: false });
 schema.index({ created_by: 1 }, { unique: false });
 schema.index({ status: 1 }, { unique: false });
-let VideoContent = MONGOOSE.model('videoContent', schema);
-module.exports = { VideoContent };
+let VideoContentModel = MONGOOSE.model('videoContent', schema);
+module.exports = { VideoContentModel };

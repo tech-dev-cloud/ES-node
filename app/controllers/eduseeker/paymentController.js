@@ -1,7 +1,7 @@
 var CryptoJS = require("crypto-js");
 const MESSAGES = require('../../utils/messages');
 const { paymentService, productService } = require('../../services');
-const { Order } = require('../../models');
+const { Order } = require('../../mongo-models');
 const config = require('../../../config/config');
 let params = require(`../../../config/env/${config.NODE_ENV}_params.json`);
 const common = require('../../utils/common');

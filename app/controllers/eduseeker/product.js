@@ -1,13 +1,14 @@
 const async = require('async');
 const _ = require('lodash');
 const Mongoose = require('mongoose');
-const { Product, ProductImage, ProductQuestionMap, Document, Order, Comment } = require('../../models');
+const { Product: ProductModel, ProductImage, ProductQuestionMap, Document, Order, Comment } = require('../../mongo-models');
 const config = require('../../../config/config');
 let params = require(`../../../config/env/${config.NODE_ENV}_params.json`);
 const redis = require('../../../config/redisConnection');
 const { aws } = require('../../services/aws');
 const common = require('../../utils/common');
 const { productService } = require('../../services');
+let { Product } = require('../../models/shop');
 let productController = {
     /**
      * Handler to create product 
@@ -25,7 +26,7 @@ let productController = {
         }
 
         // Save Product 
-        let obj = new Product(product_payload);
+        let obj = new ProductModel(product_payload);
         let product = await obj.save();
         // if (request.body.image) {
         //     let image = new ProductImage({ ...request.body.image, product_id: product._id });
@@ -34,11 +35,11 @@ let productController = {
         let data;
         if (request.body.product_map_data) {
             switch (request.body.type) {
-                case '1':
+                case params.product_types.notes:
                     data = request.body.product_map_data.map(obj => ({ ...obj, user_id: request.user._id, product_id: product._id }));
                     await Document.insertMany(data);
                     break;
-                case '2':
+                case params.product_types.quiz:
                     data = request.body.product_map_data.map(question_id => ({ question_id, product_id: product._id }));
                     await ProductQuestionMap.insertMany(data);
                     break;
@@ -61,7 +62,7 @@ let productController = {
         let productMetaData;
         let responseData;
         let limit = request.query.limit || 10;
-        let skip = (parseInt(request.query.skip || 1) - 1) * request.query.limit;
+        let skip = (parseInt(request.query.skip || 1) - 1) * request.query.limit || 0;
         let match = {
             created_by: request.user._id
         };
@@ -75,30 +76,35 @@ let productController = {
         if (request.query.searchString) {
             match['type'] = { $ne: '3' }
             match['$text'] = { $search: request.query.searchString };
-        }
-        let data = await Product.aggregate([
-            { $match: match },
-            {
-                $lookup:
+        } try {
+
+            let data = await ProductModel.aggregate([
+                { $match: match },
                 {
-                    from: "product_images", let: { "id": "$_id" }, pipeline: [
-                        { $match: { $expr: { $eq: ["$product_id", "$$id"] } } },
-                        { $project: { image_path: 1 } }
-                    ],
-                    as: "image"
+                    $lookup:
+                    {
+                        from: "product_images", let: { "id": "$_id" }, pipeline: [
+                            { $match: { $expr: { $eq: ["$product_id", "$$id"] } } },
+                            { $project: { image_path: 1 } }
+                        ],
+                        as: "image"
+                    },
                 },
-            },
-            { $lookup: { from: "products", localField: "similar_products", foreignField: "_id", as: "similar_products_info" } },
-            { $group: { _id: null, count: { $sum: 1 }, items: { $push: "$$ROOT" } } },
-            { $addFields: { items: { $slice: ["$items", skip, limit] } } }
-        ]);
-        responseData = { ...data[0] };
-        if (request.query.product_id) {
-            productMetaData = await productService.getProductMeta(data[0].items[0]);
-            responseData = { ...responseData, productMetaData };
-            if (data[0].items[0].type == 3) {
-                responseData.items[0].sub_products_info = await Product.find({ _id: { $in: data[0].items[0].sub_products } }).lean();
+                { $lookup: { from: "products", localField: "similar_products", foreignField: "_id", as: "similar_products_info" } },
+                { $sort: { _id: -1 } },
+                { $group: { _id: null, count: { $sum: 1 }, items: { $push: "$$ROOT" } } },
+                { $addFields: { items: { $slice: ["$items", skip, limit] } } }
+            ]);
+            responseData = { ...data[0] };
+            if (request.query.product_id) {
+                productMetaData = await productService.getProductMeta(data[0].items[0]);
+                responseData = { ...responseData, productMetaData };
+                if (data[0].items[0].type == 3) {
+                    responseData.items[0].sub_products_info = await ProductModel.find({ _id: { $in: data[0].items[0].sub_products } }).lean();
+                }
             }
+        } catch (err) {
+            console.log(err);
         }
         response.status(200).json({
             success: true,
@@ -110,12 +116,15 @@ let productController = {
         if (request.body.type == 3) {
             request.body['sub_products'] = request.body.product_map_data.map(product_id => Mongoose.Types.ObjectId(product_id));
         }
-        console.log(request.body);
-        await Product.updateOne({ _id: request.params.id }, request.body);
+        await ProductModel.updateOne({ _id: request.params.id }, request.body);
         if (request.body.image) {
             await ProductImage.update({ product_id: request.params.id }, { product_id: request.params.id, ...request.body.image }, { upsert: true });
         }
         switch (request.body.type) {
+            case '1': //Document Update
+                data = request.body.product_map_data.map(obj => ({ ...obj, user_id: request.user._id, product_id: request.params.id }));
+                await Document.insertMany(data);
+                break;
             case '2': //Quiz
                 try {
                     await commonF.updateQuiz(request.body, request.params.id);
@@ -157,7 +166,7 @@ let productController = {
             if (request.query.type) {
                 condition['type'] = request.query.type;
             }
-            product_ids = await Product.find(condition, { _id: 1 }).sort({ priority: -1 }).lean();
+            product_ids = await ProductModel.find(condition, { _id: 1 }).sort({ priority: -1 }).lean();
             product_ids = product_ids.map(obj => obj._id);
         }
         for (let i = 0; i < product_ids.length; i++) {
@@ -220,54 +229,54 @@ let productController = {
     getProductDetails: async (request, response) => {
         const product_id = request.params.product_id;
         let enrolled = request.query.enrolled == 'true';
-        let result = await Promise.all(
-            [
-                productService.getProduct(request.params.product_id),
-                productService.isProductPurchased(product_id, request.user),
-                productService.totalEnrolled(product_id)
-            ]);
-        let product = result[0];
-        let obj = result[1];
-        product['purchaseStatus'] = obj.purchased;
-        // if (result[2] && (result[2] * 2) > 50) {
-        product['totalEnrolled'] = result[2] * 2 || 0;
-        // }
-        if (product.type == params.product_types.bulk) {
-            product['sub_products'] = await Promise.all(product.sub_products.map(async (product_id) => {
-                let obj = await productService.getProduct(product_id);
-                return obj;
-            }))
-        } else if (product.type == params.product_types.notes && request.query.enrolled) {
-            let docs = await Document.find({ product_id: product._id, status: true }, { _id: 1, filename: 1, url: 1, size: 1, mime_type: 1 }).lean();
-            product['docs'] = docs;
-        }
-        if (enrolled) {
-            if (!product.purchaseStatus) {
-                let data = {};
-                data['weburl'] = productService.getRedirectUrl(product.type);
-                response.status(400).json({
-                    success: false,
-                    message: 'You have not enroll for this course',
-                    data
-                });
-                return;
+        let responsePayload = {};
+        try {
+            let result = await Promise.all(
+                [
+                    productService.getProduct(request.params.product_id),
+                    productService.isProductPurchased(product_id, request.user),
+                    productService.totalEnrolled(product_id)
+                ]);
+            let product = new Product(result[0]);
+            let obj = result[1];
+            product['purchaseStatus'] = obj.purchased;
+            // if (result[2] && (result[2] * 2) > 50) {
+
+
+            product['totalEnrolled'] = result[2] * 2 || 0;
+            // }
+            if (product.type == params.product_types.bulk) {
+                product['sub_products'] = await Promise.all(product.sub_products.map(async (product_id) => {
+                    let obj = await productService.getProduct(product_id);
+                    return obj;
+                }))
+            } else if (product.type == params.product_types.notes && request.query.enrolled) {
+                let docs = await Document.find({ product_id: product._id, status: true }, { _id: 1, filename: 1, url: 1, size: 1, mime_type: 1 }).lean();
+                product['docs'] = docs;
             }
+            if (enrolled) {
+                if (!product.purchaseStatus) {
+                    let data = {};
+                    response.status(400).json({
+                        success: false,
+                        message: 'You have not enroll for this course',
+                        data
+                    });
+                    return;
+                }
+                await product.userRatingReview(request.user._id);
+            }
+            if (product.type == params.product_types.course) {
+                responsePayload.contents = await product.videoContent(enrolled);
+            }
+            response.status(200).json({
+                success: true,
+                message: 'Product fetched successfully',
+                data: { ...product, ...responsePayload }
+            })
+        } catch (err) {
+            console.log(err)
         }
-        if (product.similar_products && product.similar_products.length) {
-            product.similar_products_info = Promise.all(product.similar_products.map(async id => {
-                obj = await productService.getProduct(id);
-                return obj;
-            }))
-        }
-        if (product.type == params.product_types.course) {
-            await productService.getCourseContent(product, enrolled);
-            product.weburl = productService.getRedirectUrl(product.type);
-        }
-        response.status(200).json({
-            success: true,
-            message: 'Product fetched successfully',
-            data: product
-        })
     },
     flushProductsCache: async (request, response) => {
         let ids;
@@ -278,7 +287,7 @@ let productController = {
         if (ids && ids.length) {
             keys = ids.map(id => params.product_cache_key + id);
         } else {
-            let products = await Product.find({ status: true }, { _id: 1 }).lean();
+            let products = await ProductModel.find({ status: true }, { _id: 1 }).lean();
             keys = products.map(obj => params.product_cache_key + obj._id.toString());
         }
         redis.del(keys, (err) => {
@@ -295,6 +304,9 @@ let productController = {
         let obj;
         try {
             if (review_type == 'product_review') {
+                if (!request.body.rating) {
+                    throw 'rating is required';
+                }
                 let data = await productService.isProductPurchased(request.body.object_id, request.user._id);
                 if (data.purchased) {
                     obj = new Comment({ ...request.body, created_by: request.user._id });
@@ -325,20 +337,22 @@ let productController = {
         const type = request.query.type;
         let comments = await productService.getComments(object_id, null, type, last_doc_id, limit);
         let subComments = [];
-        for (let index = 0; index < comments.length; index++) {
-            let promise = productService.getComments(null, comments[index]._id, type, comments[index]._id, 999999);
-            subComments[index] = promise;
-        };
-        let data = await Promise.all(subComments);
-        for (let index = 0; index < data.length; index++) {
-            if (data[index]) {
-                comments[index].commentData = data[index];
-                comments[index].commentCounts = data[index].length;
+        if (type != params.review_type.product_review) {
+            for (let index = 0; index < comments.length; index++) {
+                let promise = productService.getComments(null, comments[index]._id, type, comments[index]._id, 999999);
+                subComments[index] = promise;
+            };
+            let data = await Promise.all(subComments);
+            for (let index = 0; index < data.length; index++) {
+                if (data[index]) {
+                    comments[index].commentData = data[index];
+                    comments[index].commentCounts = data[index].length;
+                }
             }
         }
         response.status(200).json({
             success: true,
-            data: comments
+            data: { comments }
         })
     }
 }

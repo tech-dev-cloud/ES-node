@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { File, Document } = require('../../models');
+const { File, Document } = require('../../mongo-models');
 const vimeoClient = require('../../../config/vimeo');
 const webp = require('webp-converter');
 const { aws } = require('../../services');

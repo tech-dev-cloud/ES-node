@@ -1,11 +1,11 @@
 const { EMAIL_TYPES, ERROR_TYPE, MONGO_ERROR, USER_ROLE } = require('../utils/constants');
 const MESSAGES = require('../utils/messages');
 const responseHelper = require("../utils/responseHelper");
-const { SessionModel, UserModel } = require(`../models`);
+const { SessionModel, UserModel } = require(`../mongo-models`);
 const commonFunctions = require('../utils/commonFunctions');
 const util = require('../utils/utils');
 const mongoose = require('mongoose');
-const params=require('../../config/env/development_params.json');
+const params = require('../../config/env/development_params.json');
 
 let authService = {};
 /**
@@ -33,23 +33,23 @@ authService.userValidate = (authType) => {
  */
 let validateUser = async (request, authType) => {
   try {
-    if(request.headers.authorization){
+    if (request.headers.authorization) {
       let authenticatedUser = await SessionModel.findOne({ accessToken: request.headers.authorization }).lean();
       if (authenticatedUser) {
-        if (authType && authType.length){
-          if(authType.some(role => authenticatedUser.role.includes(role)) || authenticatedUser.role[0] == 0){
+        if (authType && authType.length) {
+          if (authType.some(role => authenticatedUser.role.includes(role)) || authenticatedUser.role[0] == 0) {
             request.user = await UserModel.findOne({ _id: authenticatedUser.userId }).lean();
-          }else{
+          } else {
             return false;
           }
-        }else{
+        } else {
           request.user = await UserModel.findOne({ _id: mongoose.Types.ObjectId(params.default_user) }).lean();
         }
-      }else{
+      } else {
         return false;
       }
-    }else{
-          request.user = await UserModel.findOne({ _id: mongoose.Types.ObjectId(params.default_user) }).lean();
+    } else {
+      request.user = await UserModel.findOne({ _id: mongoose.Types.ObjectId(params.default_user) }).lean();
     }
     return true;
   } catch (err) {

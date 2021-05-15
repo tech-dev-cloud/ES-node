@@ -4,7 +4,7 @@ const MESSAGES = require('../utils/messages');
 const commontFunction = require('../utils/commonFunctions');
 const sendMail = require('./nodemailerService');
 const util = require('../utils/utils');
-const { PaymentModel, UserModel } = require('../models');
+const { PaymentModel, UserModel } = require('../mongo-models');
 const responseHelper = require('../utils/responseHelper');
 
 let userService = {}

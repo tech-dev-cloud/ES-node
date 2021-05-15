@@ -1,4 +1,4 @@
-let { SubjectModel } = require('../models');
+let { SubjectModel } = require('../mongo-models');
 const { MONGO_ERROR, ERROR_TYPE } = require('../utils/constants');
 const MESSAGES = require('../utils/messages');
 const responseHelper = require('../utils/responseHelper');

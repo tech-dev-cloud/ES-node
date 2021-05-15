@@ -2,14 +2,14 @@ const _ = require('lodash');
 const config = require('../../config/config');
 let params = require(`../../config/env/${config.NODE_ENV}_params.json`);
 const redis = require('../../config/redisConnection');
-const { VideoContent, Order, Comment, Product, ProductQuestionMap, Document } = require("../models");
-
-let service = {
-    getCourseContent: async (product, enrolled = false) => {
+const { VideoContentModel, Order, Comment, Product, ProductQuestionMap, Document } = require("../mongo-models");
+class ProductService {
+    constructor() { }
+    async getCourseContent(product_id, enrolled = false) {
         let selectedContentFields = ['_id', 'title', 'lectures'];
         let lectureFields = ['isPreview', 'title', 'description', 'file_type', 'duration', 'url']
-        let contents = await VideoContent.find({ product_id: product._id, status: true }).lean();
-        product.contents = contents.map(content => {
+        let contents = await VideoContentModel.find({ product_id, status: true }).lean();
+        contents = contents.map(content => {
             if (!enrolled) {
                 content = _.pick(content, selectedContentFields);
                 content.lectures = content.lectures.map(lecture => {
@@ -24,6 +24,49 @@ let service = {
             content.duration = content.lectures.reduce((accum, currentValue) => accum + currentValue.duration, 0);
             return content;
         })
+        console.log("=====", contents.length)
+        return contents;
+    }
+    getRedirectUrl(product_type) {
+        let weburl;
+        if (product_type == params.product_types.notes) {
+            weburl = `pdf-4`;
+        } else if (product_type == params.product_types.quiz) {
+            weburl = `quiz-3`;
+        } else if (product_type == params.product_types.bulk) {
+            weburl = `bulk-2`;
+        } else if (product_type == params.product_types.course) {
+            weburl = `course-1`;
+        }
+        return weburl;
+    }
+    async getUserProductReview(object_id, created_by, type) {
+        let data = await Comment.find({ object_id, created_by, type }).lean();
+        console.log("---==->>>data---", data)
+        return data;
+    }
+}
+let service = {
+    async getCourseContent(product_id, enrolled = false) {
+        let selectedContentFields = ['_id', 'title', 'lectures'];
+        let lectureFields = ['isPreview', 'title', 'description', 'file_type', 'duration', 'url']
+        let contents = await VideoContentModel.find({ product_id, status: true }).lean();
+        contents = contents.map(content => {
+            if (!enrolled) {
+                content = _.pick(content, selectedContentFields);
+                content.lectures = content.lectures.map(lecture => {
+                    lecture = _.pick(lecture, lectureFields);
+                    if (!lecture.isPreview) {
+                        delete lecture.url;
+                    }
+                    return lecture;
+                })
+            }
+            content.lectureCounts = content.lectures.length;
+            content.duration = content.lectures.reduce((accum, currentValue) => accum + currentValue.duration, 0);
+            return content;
+        })
+        return contents;
     },
     /**
      * Function Check whether spesified user purchased spesific product of not 
@@ -67,25 +110,13 @@ let service = {
     getRedirectUrl(product_type) {
         let weburl;
         if (product_type == params.product_types.notes) {
-            // item.id = 4;
-            // item.title = "PDF/E-Books";
             weburl = `pdf-4`;
-            // data.push(item);
         } else if (product_type == params.product_types.quiz) {
-            // item.id = 3;
-            // item.title = "Quiz";
             weburl = `quiz-3`;
-            // data.push(item);
         } else if (product_type == params.product_types.bulk) {
-            // item.id = 2;
-            // item.title = "Bulk Package";
             weburl = `bulk-2`;
-            // data.push(item);
         } else if (product_type == params.product_types.course) {
-            // item.id = 1;
-            // item.title = "Latest Courses";
             weburl = `course-1`;
-            // data.push(item);
         }
         return weburl;
     },
@@ -94,6 +125,7 @@ let service = {
         return count;
     },
     getProduct: async (product_id) => {
+        console.log("Type of===", typeof product_id)
         let cacheKey = `${params.product_cache_key}${product_id.toString()}`;
         return new Promise((resolve, reject) => {
             redis.get(cacheKey, async (err, someData) => {
@@ -140,6 +172,7 @@ let service = {
                     }
                     product.image = product.image.map(prod_image => prod_image.image_path);
                     product['weburl'] = service.getRedirectUrl(product.type);
+                    product['rating'] = await service.getProductRating(product_id);
                 }
                 resolve(product);
             })
@@ -176,5 +209,17 @@ let service = {
         }
         return data;
     },
+    getUserProductReview: async (object_id, created_by, type) => {
+        return Comment.find({ object_id, created_by, type }).lean();
+
+    },
+    getProductRating: async (product_id) => {
+        let data = await Comment.find({ object_id: product_id, type: params.review_type.product_review }, { rating: 1 }).lean();
+        if (data && data.length) {
+            let sum = data.reduce((acc, curvalue) => acc + curvalue.rating, 0);
+            return Math.ceil(sum / data.length);
+        }
+        return 0;
+    }
 }
-module.exports = { productService: service };
+module.exports = { productService: service, ProductService: ProductService };

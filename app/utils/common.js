@@ -2,7 +2,7 @@ let fs = require('fs');
 let gm = require('gm').subClass({ imageMagick: true });
 let path = require('path');
 const vimeoClient = require('../../config/vimeo');
-let { QuizModel, QuestionModel } = require('../models');
+let { QuizModel, QuestionModel } = require('../mongo-models');
 const redis = require('../../config/redisConnection');
 const params = require('../../config/env/development_params.json');
 

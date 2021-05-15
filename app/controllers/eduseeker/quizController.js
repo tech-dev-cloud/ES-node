@@ -1,7 +1,7 @@
 const responseHelper = require('../../utils/responseHelper');
 const MESSAGES = require('../../utils/messages');
-const { quizService } = require('../../services');
-const { PaymentModel, ProductQuestionMap, Order } = require('../../models');
+const { quizService, productService } = require('../../services');
+const { PaymentModel, ProductQuestionMap, Order } = require('../../mongo-models');
 const common = require('../../utils/common');
 
 let controller = {}

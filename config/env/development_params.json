@@ -3,7 +3,7 @@
     "product_cache_key": "product_",
     "product_cache_expiry": 200000,
     "quiz_question_key": "quiz_question_",
-    "quiz_question_expiry": 200000,
+    "quiz_question_expiry": 500,
     "default_user": "600be4282cc2fcd777ad854c",
     "backend_server": "http://devapi.eduseeker.in",
     "frontend_server": "http://devweb.eduseeker.in",
