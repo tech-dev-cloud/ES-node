@@ -332,7 +332,7 @@ let productController = {
     },
     getReviews: async (request, response) => {
         let last_doc_id = request.query.last_doc_id;
-        let limit = request.query.limit || 10;
+        let limit = request.query.limit || 3;
         const object_id = request.query.object_id;
         const type = request.query.type;
         let comments = await productService.getComments(object_id, null, type, last_doc_id, limit);

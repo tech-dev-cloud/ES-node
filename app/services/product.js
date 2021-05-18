@@ -88,6 +88,7 @@ let service = {
     },
     async getComments(object_id, parent_comment_id, type, last_doc_id, limit) {
         let $match = { type };
+        // let $sort = { _id: 1 };
         if (last_doc_id) {
             $match._id = { $gt: last_doc_id };
         }
@@ -95,10 +96,9 @@ let service = {
             $match.object_id = object_id;
         }
         $match.parent_id = parent_comment_id || null;
-        // if (parent_comment_id) {
-        // } else {
-        //     $match.parent_id = null;
-        // }
+        if (!parent_comment_id) {
+            // $sort = { _id: -1 };
+        }
         let $lookup = { from: 'users', localField: 'created_by', foreignField: '_id', as: 'user' };
         let $unwind = '$user';
         let $project = { "user.createdAt": 0, "user.password": 0 };

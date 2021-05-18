@@ -230,7 +230,8 @@ const routes = [
     joiSchemaForSwagger: {
       query: {
         object_id: routeUtils.validation.mongooseId,
-        type: JOI.string().valid(['product_review', 'lecture_query', 'feedback'])
+        type: JOI.string().valid(['product_review', 'lecture_query', 'feedback']),
+        last_doc_id: routeUtils.validation.mongooseId
       },
       group: 'Reviews',
       description: 'Api to get review',
