@@ -10,52 +10,47 @@ let file = {
   uploadFile: async (request, response) => {
     let fileType = request.file.mimetype.split('/')[0];
     let ContentType = request.file.mimetype;
-    let outputPath = `${Date.now()}${request.file.originalname}`;
+    let filename = `${Date.now()}${request.file.originalname}`;
     if (fileType == "image") {
-      outputPath = `${outputPath.split('.')[0]}.webp`;
-      await webp.cwebp(request.file.path, outputPath, '-q 100');
+      file.uploadToS3(request.file.path, ContentType, filename);
+      filename = `${filename.split('.')[0]}.webp`;
+      await webp.cwebp(request.file.path, filename, '-q 80');
       ContentType = 'image/webp';
-      fs.readFile(request.file.path, function (error, fileContent) {
+    }
+    file.uploadToS3(request.file.path, ContentType, filename).then(data => {
+      fs.unlinkSync(request.file.path);
+      response.status(200).json({
+        success: true,
+        message: 'File uploaded successfully',
+        data
+      })
+    }).catch(err => {
+      response.status(500).json({
+        success: false,
+        message: 'Something went wrong',
+        err
+      })
+    })
+  },
+  uploadToS3(filepath, ContentType, filename) {
+    return new Promise((resolve, reject) => {
+      fs.readFile(filepath, function (error, fileContent) {
         if (!error && fileContent && fileContent != undefined) {
-          // fs.unlinkSync(outputPath);
-          fs.unlinkSync(request.file.path);
           let params = {
             Bucket: process.env.BUCKET_NAME,
             Body: fileContent,
             ContentType,
             ACL: 'public-read'
           }
-          params['Key'] = (config.NODE_ENV == 'development') ? 'dev/' + outputPath : 's1/' + outputPath;
+          params['Key'] = (config.NODE_ENV == 'development') ? 'dev/' + filename : 's1/' + filename;
           aws.uploadFileToBucket(params, function (data) {
-            response.status(200).json({
-              success: true,
-              message: "file uploaded successfully",
-              imageURL: data.Location
-            })
+            resolve(data.Location)
           });
         } else {
-          response.status(500).json({
-            success: false,
-            message: "Something went wrong",
-            debug: error
-          })
+          reject("Something went wrong")
         }
       })
-    } else if (fileType == 'video') {
-      file.uploadVideo(request.file.path).then(uri => {
-        response.status(200).json({
-          success: true,
-          message: 'Video uploaded successfully',
-          data: uri
-        })
-      }).catch(err => {
-        response.status(500).json({
-          success: false,
-          message: 'Some problem occure during video upload',
-          data: err
-        })
-      })
-    }
+    })
   },
   rename: (req, file, cb) => {
 
