@@ -1,6 +1,2 @@
 # ES-node
-Test readme for CI/CD job
-
-testng
-
-kb
+Publish my changes and run jenkins job
