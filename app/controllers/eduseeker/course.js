@@ -22,16 +22,31 @@ const controller = {
         let body = request.body;
         body.type = params.product_types.course;
         let course_content = body.course_content;
-        // let promises = [];
+        let promises = [];
         if (course_content && course_content.length) {
             course_content = course_content.filter(content => !content._id).map(content => ({ ...content, product_id: courseId, created_by: request.user._id }));
-            VideoContentModel.insertMany(course_content);
+            let promise = VideoContentModel.insertMany(course_content);
+            promises.push(promise);
         }
-        await Product.updateOne({ _id: courseId }, body);
-        response.status(200).json({
-            success: true,
-            message: 'Successfully updated'
-        })
+        if (request.body.deleteContentIds && request.body.deleteContentIds.length) {
+            let promise = VideoContentModel.deleteMany({ _id: { $in: request.body.deleteContentIds } });
+            promises.push(promise);
+        }
+        let obj = Product.updateOne({ _id: courseId }, body);
+        promises.push(obj);
+        try {
+            await Promise.all(promises);
+            response.status(200).json({
+                success: true,
+                message: 'Successfully updated'
+            })
+        } catch (err) {
+            console.log(err);
+            response.status(500).json({
+                success: false,
+                message: err.message
+            })
+        }
     },
     getCourseByID: async (request, response) => {
         let product = await Product.aggregate([
