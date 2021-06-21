@@ -75,7 +75,7 @@ let service = {
      * @returns {*} {purchased, validity}
      */
     async isProductPurchased(product_id, user_id) {
-        let purchaseData = await Order.findOne({ product_id, user_id: user_id, order_status: 'Credit' }).lean();
+        let purchaseData = await Order.findOne({ product_id, user_id: user_id, order_status: { $in: ['Credit', 'Free'] } }).lean();
         if (purchaseData) {
             return {
                 purchased: true,
