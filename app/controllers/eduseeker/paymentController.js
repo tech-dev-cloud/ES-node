@@ -58,7 +58,7 @@ const paymentController = {
       order.order_status = payload.status;
       if (providedMac == calculatedMac.toString()) {
         let product = await productService.getProduct(order.product_id);
-        if (product.type == 3) {
+        if (product.type == params.product_types.bulk) {
           let validity = new Date();
           validity = new Date(validity.setMonth(validity.getMonth() + product.validity));
           let sub_products = await Promise.all(product.sub_products.map(async (id) => {
