@@ -5,14 +5,10 @@ const { USER_ROLE } = require('../../utils/constants');
 const { termController } = require('../../controllers');
 const routeUtils = require('../../utils/routeUtils');
 
-const MODULE = {
-  name: 'term'
-}
-
 let routes = [
   {
     method: 'POST',
-    path: `/api/${MODULE.name}`,
+    path: `/api/terms`,
     joiSchemaForSwagger: {
       headers: Joi.object({
         authorization: Joi.string().required()
@@ -30,14 +26,14 @@ let routes = [
   },
   {
     method: 'GET',
-    path: `/api/${MODULE.name}`,
+    path: `/api/terms`,
     joiSchemaForSwagger: {
       headers: Joi.object({
         authorization: Joi.string().required()
       }).unknown(),
       query: {
         parent_id: routeUtils.validation.mongooseId,
-        index:Joi.number().default(0)
+        index: Joi.number().default(0)
       },
       group: 'Terms',
       description: 'Api to add new Terms',
@@ -47,4 +43,4 @@ let routes = [
     handler: termController.getTerms
   }
 ]
-module.exports=routes
+module.exports = routes

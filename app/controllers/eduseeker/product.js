@@ -99,7 +99,7 @@ let productController = {
             if (request.query.product_id) {
                 productMetaData = await productService.getProductMeta(data[0].items[0]);
                 responseData = { ...responseData, productMetaData };
-                if (data[0].items[0].type == 3) {
+                if (data[0].items[0].type == params.product_types.bulk) {
                     responseData.items[0].sub_products_info = await ProductModel.find({ _id: { $in: data[0].items[0].sub_products } }).lean();
                 }
             }
@@ -113,7 +113,7 @@ let productController = {
         })
     },
     updateProductByID: async (request, response) => {
-        if (request.body.type == 3) {
+        if (request.body.type == params.product_types.bulk) {
             request.body['sub_products'] = request.body.product_map_data.map(product_id => Mongoose.Types.ObjectId(product_id));
         }
         await ProductModel.updateOne({ _id: request.params.id }, request.body);

@@ -26,6 +26,7 @@ const routes = [
                 requirements: JOI.array().items(JOI.string()),
                 cover_image: JOI.string(),
                 promo_video_url: JOI.string(),
+                deleteContentIds: JOI.array().items(routeUtils.validation.mongooseId),
                 course_content: JOI.array().items(JOI.object({
                     title: JOI.string(),
                     lectures: JOI.array().items(JOI.object({
@@ -36,7 +37,8 @@ const routes = [
                         duration: JOI.number(),
                         isPreview: JOI.boolean(),
                     }))
-                }))
+                })),
+
             },
             group: 'Courses',
             description: 'Api to Create a course',

@@ -11,6 +11,6 @@ module.exports = {
   ...require('./product'),
   ...require('./module'),
   ...require('./dashboard'),
-  ...require('./course')
-  // ...require('./term'),
+  ...require('./course'),
+  ...require('./term'),
 }

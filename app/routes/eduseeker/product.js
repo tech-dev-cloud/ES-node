@@ -23,7 +23,7 @@ const routes = [
         isPaid: JOI.boolean(),
         similar_products: JOI.array().items(routeUtils.validation.mongooseId),
         description: JOI.string().optional(),
-        type: JOI.string().valid(['1', '2', '3', '4']).description("1->PDF, 2->quiz, 3->books, 4-> course"),
+        type: JOI.string().valid().description("1->PDF, 2->quiz, 3->books, 4-> course"),
         priority: JOI.number().default(0),
         product_meta: JOI.object(),
         status: JOI.boolean(),

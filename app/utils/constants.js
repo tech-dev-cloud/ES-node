@@ -1,59 +1,56 @@
 
-const CONSTANTS = {};
-
-CONSTANTS.DB = {
-  LOGIN_TYPE: {
-    EDUSEEKER: 0,
-    GOOGLE: 1,
-    FACEBOOK: 2
+const CONSTANTS = {
+  DB: {
+    LOGIN_TYPE: {
+      EDUSEEKER: 0,
+      GOOGLE: 1,
+      FACEBOOK: 2
+    },
+    QUIZ_PLAY_STATUS: {
+      NOT_STARTED: 'not_started',
+      IN_PROGRESS: 'in_progress',
+      HOLD: 'on_hold',
+      COMPLETED: 'completed'
+    },
+    ANSWER_ACTION: {
+      NOT_VISITED: 0,
+      NOT_ANSWERED: 1,
+      ANSWERED: 2,
+      MARK_FOR_REVIEW: 3,
+      SAVE_MARK_FOR_REVIEW: 4
+    },
+    ANSWER_RESULT: {
+      CORRECT: 'correct',
+      INCORRECT: 'incorrect',
+      NOT_ATTEMPT: 'not_attempt'
+    },
+    QUESTION_TYPE: {
+      IMAGE: 1,
+      TEXT: 2
+    }
   },
-  QUIZ_PLAY_STATUS: {
-    NOT_STARTED: 'not_started',
-    IN_PROGRESS: 'in_progress',
-    HOLD:'on_hold',
-    COMPLETED: 'completed'
+  ERROR_TYPE: {
+    DATA_NOT_FOUND: 'DATA_NOT_FOUND',
+    BAD_REQUEST: 'BAD_REQUEST',
+    MONGO_EXCEPTION: 'MONGO_EXCEPTION',
+    ALREADY_EXISTS: 'ALREADY_EXISTS',
+    FORBIDDEN: 'FORBIDDEN',
+    UNAUTHORIZED: 'UNAUTHORIZED',
+    SUCCESS: 'SUCCESS'
   },
-  ANSWER_ACTION: {
-    NOT_VISITED: 0,
-    NOT_ANSWERED: 1,
-    ANSWERED: 2,
-    MARK_FOR_REVIEW: 3,
-    SAVE_MARK_FOR_REVIEW: 4
+  PRODUCTS_TYPE: {
+    notes: "notes",
+    quiz: "quiz",
+    bulk: "bulk",
+    course: "course"
   },
-  ANSWER_RESULT:{
-    CORRECT:'correct',
-    INCORRECT:'incorrect',
-    NOT_ATTEMPT:'not_attempt'
-  },
-  QUESTION_TYPE:{
-    IMAGE:1,
-    TEXT:2
+  DIFFICULT_LEVEL: {
+    BEGINNER: 'Biginner',
+    INTERMEDIATE: 'Intermediate',
+    EXPERT: 'Expert'
   }
-}
+};
 
-CONSTANTS.PRODUCT_TYPE = ['1','2', '3','4']
-
-CONSTANTS.PAYMENT_PURPOSE = {
-  Quiz: 'Purchase Eduseeker Quiz'
-}
-
-CONSTANTS.DIFFICULT_LEVEL = {
-  BEGINNER: 'Biginner',
-  INTERMEDIATE: 'Intermediate',
-  EXPERT: 'Expert'
-}
-
-CONSTANTS.SUBJECT=['Political Science']
-
-CONSTANTS.ERROR_TYPE = {
-  DATA_NOT_FOUND: 'DATA_NOT_FOUND',
-  BAD_REQUEST: 'BAD_REQUEST',
-  MONGO_EXCEPTION: 'MONGO_EXCEPTION',
-  ALREADY_EXISTS: 'ALREADY_EXISTS',
-  FORBIDDEN: 'FORBIDDEN',
-  UNAUTHORIZED: 'UNAUTHORIZED',
-  SUCCESS: 'SUCCESS'
-}
 
 CONSTANTS.DEFAULT = {
   INDEX: 0,
@@ -94,4 +91,4 @@ CONSTANTS.SECURITY = {
   BCRYPT_SALT: 8
 };
 
-module.exports = CONSTANTS;
+module.exports = { ...CONSTANTS };

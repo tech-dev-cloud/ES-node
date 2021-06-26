@@ -1,4 +1,4 @@
-const { DIFFICULT_LEVEL, PRODUCT_TYPE } = require('../utils/constants');
+const { PRODUCTS_TYPE, DIFFICULT_LEVEL } = require('../utils/constants');
 const MONGOOSE = require('mongoose');
 const Schema = MONGOOSE.Schema;
 
@@ -17,9 +17,9 @@ let schema = new Schema({
   benefits: [{ type: String }],
   // requirements: { type: String },
   // description: { type: String },
-  productType: { type: String, enum: Object.values(PRODUCT_TYPE), default: PRODUCT_TYPE.QUIZ },
+  productType: { type: String, enum: Object.values(PRODUCTS_TYPE), default: PRODUCTS_TYPE.QUIZ },
   questionList: [{ type: Schema.Types.ObjectId, ref: 'question' }],
-  totalQuestions: { type:Number },
+  totalQuestions: { type: Number },
   attemptTime: { type: Number },
   isDeleted: { type: Boolean, default: false }
 });
