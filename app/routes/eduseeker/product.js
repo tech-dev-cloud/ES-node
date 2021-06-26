@@ -1,6 +1,6 @@
 
 const JOI = require('joi');
-const { USER_ROLE, PRODUCT_TYPE } = require('../../utils/constants');
+const { USER_ROLE, PRODUCTS_TYPE } = require('../../utils/constants');
 const { productController } = require('../../controllers');
 const routeUtils = require('../../utils/routeUtils');
 
@@ -59,7 +59,7 @@ const routes = [
         limit: JOI.number(),
         skip: JOI.number().min(0),
         product_id: routeUtils.validation.mongooseId,
-        type: JOI.string().valid(PRODUCT_TYPE)
+        type: JOI.string().valid(PRODUCTS_TYPE)
       },
       group: `${MODULE.group}`,
       description: 'Api to get Products',
@@ -83,7 +83,7 @@ const routes = [
         enrolled: JOI.boolean(),
         product_ids: JOI.string(),
         payment_request_id: JOI.string(),
-        type: JOI.string().valid(PRODUCT_TYPE)
+        type: JOI.string().valid(PRODUCTS_TYPE)
       },
       group: `${MODULE.group}`,
       description: 'Api to get Products',
