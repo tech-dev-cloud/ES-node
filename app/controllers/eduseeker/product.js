@@ -320,11 +320,19 @@ let productController = {
                 if (!request.body.rating) {
                     throw 'rating is required';
                 }
-                let data = await productService.isProductPurchased(request.body.object_id, request.user._id);
-                if (data.purchased) {
-                    obj = new Comment({ ...request.body, created_by: request.user._id });
+                if (request.body._id) {
+                    await Comment.findOneAndUpdate({ _id: request.body.review_id, created_by: request.user._id }, request.body).lean();
+                    response.status(200).json({
+                        success: true,
+                    });
+                    return;
                 } else {
-                    throw 'user does not purchase this product yet';
+                    let data = await productService.isProductPurchased(request.body.object_id, request.user._id);
+                    if (data.purchased) {
+                        obj = new Comment({ ...request.body, created_by: request.user._id });
+                    } else {
+                        throw 'user does not purchase this product yet';
+                    }
                 }
             } else {
                 obj = new Comment({ ...request.body, created_by: request.user._id });

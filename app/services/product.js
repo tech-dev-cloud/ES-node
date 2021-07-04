@@ -172,7 +172,9 @@ let service = {
                     }
                     product.image = product.image.map(prod_image => prod_image.image_path);
                     product['weburl'] = service.getRedirectUrl(product.type);
-                    product['rating'] = await service.getProductRating(product_id);
+                    let obj = await service.getProductRating(product_id);
+                    product['rating'] = obj.rating;
+                    product['reviews'] = obj.counts;
                 }
                 resolve(product);
             })
@@ -217,9 +219,9 @@ let service = {
         let data = await Comment.find({ object_id: product_id, type: params.review_type.product_review }, { rating: 1 }).lean();
         if (data && data.length) {
             let sum = data.reduce((acc, curvalue) => acc + curvalue.rating, 0);
-            return Math.ceil(sum / data.length);
+            return { rating: Math.ceil(sum / data.length), counts: data.length };
         }
-        return 0;
+        return { rating: Math.ceil(sum / data.length), counts: data.length };
     }
 }
 module.exports = { productService: service, ProductService: ProductService };

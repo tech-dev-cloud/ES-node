@@ -215,7 +215,8 @@ const routes = [
         type: JOI.string().valid(['product_review', 'lecture_query', 'feedback']).required(),
         object_id: routeUtils.validation.mongooseId,
         parent_id: routeUtils.validation.mongooseId,
-        rating: JOI.number()
+        rating: JOI.number(),
+        review_id: routeUtils.validation.mongooseId
       },
       group: 'Reviews',
       description: 'Api to add review',
