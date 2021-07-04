@@ -190,6 +190,7 @@ let productController = {
                     if (request.query.enrolled && product_user_review_promise.length) {
                         if (product_user_review_promise[index] && product_user_review_promise[index].length) {
                             currentProduct.userRating = {
+                                review_id: product_user_review_promise[index][0]._id,
                                 rating: product_user_review_promise[index][0].rating,
                                 review: product_user_review_promise[index][0].message
                             }
