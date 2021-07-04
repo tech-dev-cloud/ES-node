@@ -192,7 +192,7 @@ let productController = {
                             currentProduct.userRating = {
                                 review_id: product_user_review_promise[index][0]._id,
                                 rating: product_user_review_promise[index][0].rating,
-                                review: product_user_review_promise[index][0].message
+                                message: product_user_review_promise[index][0].message
                             }
                         }
                     }
