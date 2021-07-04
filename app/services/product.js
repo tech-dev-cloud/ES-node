@@ -221,7 +221,7 @@ let service = {
             let sum = data.reduce((acc, curvalue) => acc + curvalue.rating, 0);
             return { rating: Math.ceil(sum / data.length), counts: data.length };
         }
-        return { rating: Math.ceil(sum / data.length), counts: data.length };
+        return { rating: 0, counts: 0 };
     }
 }
 module.exports = { productService: service, ProductService: ProductService };
