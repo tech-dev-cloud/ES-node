@@ -29,6 +29,11 @@ const CONSTANTS = {
       TEXT: 2
     }
   },
+  LOGIN_TYPE: {
+    EDUSEEKER: 'password',
+    GOOGLE: 'google',
+    FACEBOOK: 'fb'
+  },
   ERROR_TYPE: {
     DATA_NOT_FOUND: 'DATA_NOT_FOUND',
     BAD_REQUEST: 'BAD_REQUEST',
@@ -48,6 +53,11 @@ const CONSTANTS = {
     BEGINNER: 'Biginner',
     INTERMEDIATE: 'Intermediate',
     EXPERT: 'Expert'
+  },
+  review_type: {
+    product_review: "product_review",
+    lecture_query: "lecture_query",
+    feedback: "feedback"
   }
 };
 

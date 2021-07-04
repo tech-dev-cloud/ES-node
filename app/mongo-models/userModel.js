@@ -9,7 +9,20 @@ const user = new schema({
   role: [{ type: Number, enum: Object.values(USER_ROLE) }],
   password: { type: String, require: true },
   resetPasswordToken: { type: String },
-  createdAt: { type: Date, default: Date.now() }
+  profile_pic: { type: String },
+  createdAt: { type: Date, default: Date.now() },
+  googleDetails: {
+    name: { type: String, trim: true },
+    phoneNumber: { type: String },
+    profile_pic: { type: String },
+    id: { type: String }
+  },
+  fbDetails: {
+    name: { type: String, trim: true },
+    phoneNumber: { type: String },
+    profile_pic: { type: String },
+    id: { type: String }
+  }
 })
 
 user.set("timestamps", true);

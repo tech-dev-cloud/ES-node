@@ -1,5 +1,5 @@
 const JOI = require('joi');
-const {USER_ROLE}=require('../../utils/constants');
+const { USER_ROLE, LOGIN_TYPE } = require('../../utils/constants');
 const { authController } = require('../../controllers');
 
 const routes = [
@@ -9,9 +9,7 @@ const routes = [
     joiSchemaForSwagger: {
       body: JOI.object({
         name: JOI.string().required().description('User name'),
-        // role: JOI.array().items(JOI.number().valid(Object.values(USER_ROLE))).required(),
         email: JOI.string().email().required().description('User email for registration'),
-        phoneNumber: JOI.string().optional('Phone number'),
         password: JOI.string().description('Password')
       }),
       group: 'Authentication',
@@ -75,6 +73,24 @@ const routes = [
     },
     auth: [USER_ROLE.TEACHER, USER_ROLE.STUDENT, USER_ROLE.ADMIN],
     handler: authController.logoutSession
+  },
+  {
+    path: '/socail/login',
+    method: 'POST',
+    joiSchemaForSwagger: {
+      body: {
+        login_type: JOI.string().valid(Object.values(LOGIN_TYPE)).required(),
+        email: JOI.string().required(),
+        name: JOI.string().required(),
+        profile_pic: JOI.string(),
+        phoneNumber: JOI.string(),
+        id: JOI.string(),
+      },
+      group: 'Authentication',
+      description: 'Api socail login',
+      model: 'socailLogin'
+    },
+    handler: authController.socailLogin
   }
 ];
 

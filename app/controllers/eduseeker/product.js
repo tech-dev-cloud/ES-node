@@ -9,6 +9,7 @@ const { aws } = require('../../services/aws');
 const common = require('../../utils/common');
 const { productService } = require('../../services');
 let { Product } = require('../../models/shop');
+const { review_type } = require('../../utils/constants');
 let productController = {
     /**
      * Handler to create product 
@@ -160,7 +161,7 @@ let productController = {
                     product_ids.push(enrolledProducts[index].product_id);
                 }
             }
-            product_ids = enrolledProducts.map(obj => obj.product_id);
+            // product_ids = enrolledProducts.map(obj => obj.product_id);
         } else {
             let condition = { status: true, isPublish: true };
             if (request.query.type) {
@@ -169,28 +170,36 @@ let productController = {
             product_ids = await ProductModel.find(condition, { _id: 1 }).sort({ priority: -1 }).lean();
             product_ids = product_ids.map(obj => obj._id);
         }
+        let product_promise = [];
+        let product_user_review_promise = [];
         for (let i = 0; i < product_ids.length; i++) {
-            let currentProduct = await productService.getProduct(product_ids[i]);
-            if (currentProduct) {
-                // currentProduct.image = currentProduct.image.map(prod_image => prod_image.image_path);
-                // if (currentProduct.type == params.product_types.bulk) {
-                //     currentProduct['sub_products'] = await Promise.all(currentProduct.sub_products.map(async (product_id) => {
-                //         let obj = await common.getProduct(product_id);
-                //         if (obj) {
-                //             obj.image = obj.image.map(prod_image => prod_image.image_path);
-                //             obj['discountPercent'] = Math.round((currentProduct.strikeprice - currentProduct.price) * 100 / currentProduct.strikeprice);
-                //         }
-                //         return obj;
-                //     }))
-                // } else if (currentProduct.type == params.product_types.notes && request.query.enrolled) {
-                //     let docs = await Document.find({ product_id: currentProduct._id, status: true }, { _id: 1, filename: 1, url: 1, size: 1, mime_type: 1 }).lean();
-                //     currentProduct['docs'] = docs;
-                // }
-                // if (request.user) {
-                //     currentProduct.isPurchased = !!(await Order.findOne({ product_id: product_ids[i], user_id: request.user._id, order_status: "Credit" }).lean());
-                // }
-                products.push(currentProduct);
+            let currentProduct = productService.getProduct(product_ids[i]);
+            if (request.query.enrolled) {
+                let user_review = productService.getUserProductReview(product_ids[i], request.user._id, review_type.product_review);
+                product_user_review_promise.push(user_review);
             }
+            product_promise.push(currentProduct);
+        }
+        try {
+            let result = await Promise.all([Promise.all(product_promise), Promise.all(product_user_review_promise)]);
+            product_promise = result[0];
+            product_user_review_promise = result[1];
+            for (let index = 0; index < product_promise.length; index++) {
+                let currentProduct = product_promise[index];
+                if (currentProduct) {
+                    if (request.query.enrolled && product_user_review_promise.length) {
+                        if (product_user_review_promise[index] && product_user_review_promise[index].length) {
+                            currentProduct.userRating = {
+                                rating: product_user_review_promise[index][0].rating,
+                                review: product_user_review_promise[index][0].message
+                            }
+                        }
+                    }
+                    products.push(currentProduct);
+                }
+            }
+        } catch (err) {
+            console.log(err)
         }
         if (!request.query.type) {
             products = _.groupBy(products, obj => obj.type);
@@ -290,6 +299,9 @@ let productController = {
             let products = await ProductModel.find({ status: true }, { _id: 1 }).lean();
             keys = products.map(obj => params.product_cache_key + obj._id.toString());
         }
+        await ProductModel.updateMany({ _id: { $in: ids } }, {
+            $set: { isPublish: true }
+        });
         redis.del(keys, (err) => {
             if (!err) {
                 response.status(200).json({

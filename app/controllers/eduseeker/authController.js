@@ -1,7 +1,9 @@
-const { EMAIL_TYPES, MONGO_ERROR, USER_ROLE } = require('../../utils/constants');
+const { EMAIL_TYPES, MONGO_ERROR, USER_ROLE, LOGIN_TYPE } = require('../../utils/constants');
 const util = require('../../utils/utils');
 const { UserModel, SessionModel } = require(`../../mongo-models`);
 const commonFunctions = require('../../utils/commonFunctions');
+const { User } = require('../../models/user');
+const { authService } = require('../../services');
 
 let controller = {
   userRegister: async (request, response) => {
@@ -40,28 +42,12 @@ let controller = {
         message: "Invalid credentials"
       })
     } else {
-      let tokenPayload = {
-        role: user.role,
-        id: user._id
-      }
-      const accessToken = commonFunctions.encryptJwt(tokenPayload);
-      let sessionPayload = {
-        userId: user._id,
-        accessToken,
-        deviceToken: request.body.deviceToken,
-        role: user.role
-      }
-      let session;
-      if (request.body.deviceToken) {
-        session = await SessionModel.findOneAndUpdate({ deviceToken: request.body.deviceToken }, sessionPayload, { upsert: true, new: true }).lean();
-      } else {
-        session = await (new SessionModel(sessionPayload).save());
-      }
+      let token = await authService.createUserSession(user, LOGIN_TYPE.EDUSEEKER, null);
       response.status(200).json({
         success: true,
         message: "Login successfull",
         data: {
-          accessToken: session.accessToken,
+          accessToken: token,
           name: user.name
         }
       })
@@ -127,6 +113,41 @@ let controller = {
       success: true,
       message: "Logout successfully",
     })
+  },
+  socailLogin: async (request, response) => {
+    let { email } = request.body;
+    let existingUser = await UserModel.findOne({ email }).lean();
+    let user = {};
+    let user_responseData = {
+      name: request.body.name,
+      email,
+      profile_pic: request.body.profile_pic
+    };
+    try {
+      if (!existingUser) {
+        user = new User(request.body, request.body.login_type, request.body);
+      } else {
+        user = new User(existingUser, request.body.login_type, request.body);
+      }
+      UserModel.findOneAndUpdate({ email }, user, { upsert: true, new: true }).then(async (saved_user) => {
+        saved_user = saved_user.toObject()
+        let token = await authService.createUserSession(saved_user, request.body.login_type, null);
+        user_responseData['accessToken'] = token;
+        response.status(200).json({
+          success: true,
+          message: 'User created successfully',
+          data: user_responseData
+        });
+      });
+    } catch (err) {
+      console.log(err)
+      response.status(500).json({
+        success: true,
+        message: 'Internal server error',
+        debug: err
+      });
+    }
+
   }
 }
 

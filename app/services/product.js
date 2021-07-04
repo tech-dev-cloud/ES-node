@@ -210,7 +210,7 @@ let service = {
         return data;
     },
     getUserProductReview: async (object_id, created_by, type) => {
-        return Comment.find({ object_id, created_by, type }).lean();
+        return await Comment.find({ object_id, created_by, type }).lean();
 
     },
     getProductRating: async (product_id) => {

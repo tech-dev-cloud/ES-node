@@ -7,7 +7,29 @@ const util = require('../utils/utils');
 const mongoose = require('mongoose');
 const params = require('../../config/env/development_params.json');
 
-let authService = {};
+let authService = {
+  createUserSession: async (user, login_type, deviceToken) => {
+    let tokenPayload = {
+      role: user.role,
+      id: user._id
+    }
+    const accessToken = commonFunctions.encryptJwt(tokenPayload);
+    let sessionPayload = {
+      userId: user._id,
+      accessToken,
+      deviceToken: deviceToken,
+      role: user.role,
+      loginType: login_type
+    }
+    let session;
+    if (deviceToken) {
+      session = await SessionModel.findOneAndUpdate({ deviceToken: deviceToken }, sessionPayload, { upsert: true, new: true }).lean();
+    } else {
+      session = await (new SessionModel(sessionPayload).save());
+    }
+    return session.accessToken;
+  }
+};
 /**
  * function to authenticate user.
  */
