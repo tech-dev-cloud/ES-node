@@ -46,7 +46,8 @@ let controller = {
         message: "Login successfull",
         data: {
           accessToken: token,
-          name: user.name
+          name: user.name,
+          ...(user.profile_pic ? { profile_pic: user.profile_pic } : {})
         }
       })
     }
