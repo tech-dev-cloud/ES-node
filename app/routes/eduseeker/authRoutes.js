@@ -10,6 +10,7 @@ const routes = [
       body: JOI.object({
         name: JOI.string().required().description('User name'),
         email: JOI.string().email().required().description('User email for registration'),
+        phoneNumber: JOI.string().required().description('User phone number'),
         password: JOI.string().description('Password')
       }),
       group: 'Authentication',
@@ -25,6 +26,7 @@ const routes = [
       body: {
         deviceToken: JOI.string(),
         email: JOI.string().email().required(),
+        login_type: JOI.string(),
         password: JOI.string().required()
       },
       group: 'Authentication',

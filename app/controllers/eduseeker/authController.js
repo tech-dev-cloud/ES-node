@@ -10,8 +10,6 @@ let controller = {
     request.body.password = commonFunctions.hashPassword(request.body.password);
     request.body.email = request.body.email.toLowerCase();
     request.body.role = [USER_ROLE.STUDENT];
-    // if(request.headers.web_app){
-    // }
     const user = new UserModel(request.body);
     try {
       let data = await user.save();
