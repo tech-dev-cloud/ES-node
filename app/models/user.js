@@ -5,7 +5,7 @@ class User {
         this.name = obj.name;
         this.email = obj.email;
         this.phoneNumber = obj.phoneNumber;
-        this.profile_pic = obj.profile_pic;
+        this.profile_pic = obj.profile_pic ? obj.profile_pic : socailObj.profile_pic;
         this.role = [2];
         if (user_type == LOGIN_TYPE.FACEBOOK) {
             this.fbDetails = socailObj;
