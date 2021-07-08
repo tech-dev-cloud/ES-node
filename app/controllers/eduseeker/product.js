@@ -321,9 +321,10 @@ let productController = {
                 //     throw 'rating is required';
                 // }
                 if (request.body.review_id) {
-                    await Comment.findOneAndUpdate({ _id: request.body.review_id, created_by: request.user._id }, request.body).lean();
+                    const data = await Comment.findOneAndUpdate({ _id: request.body.review_id, created_by: request.user._id }, request.body, { new: true }).lean();
                     response.status(200).json({
                         success: true,
+                        data
                     });
                     return;
                 } else {
