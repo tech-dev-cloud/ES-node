@@ -216,13 +216,14 @@ const routes = [
         object_id: routeUtils.validation.mongooseId,
         parent_id: routeUtils.validation.mongooseId,
         rating: JOI.number(),
+        status: JOI.boolean(),
         review_id: routeUtils.validation.mongooseId
       },
       group: 'Reviews',
       description: 'Api to add review',
       model: 'addReview'
     },
-    auth: [USER_ROLE.STUDENT],
+    auth: [USER_ROLE.STUDENT, USER_ROLE.TEACHER, USER_ROLE.ADMIN],
     handler: productController.addReview
   },
   {
@@ -238,7 +239,7 @@ const routes = [
       description: 'Api to get review',
       model: 'getReview'
     },
-    auth: [USER_ROLE.STUDENT],
+    auth: [USER_ROLE.STUDENT, USER_ROLE.ADMIN, USER_ROLE.TEACHER],
     handler: productController.getReviews
   }
 ]

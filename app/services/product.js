@@ -86,8 +86,8 @@ let service = {
             purchased: false
         }
     },
-    async getComments(object_id, parent_comment_id, type, last_doc_id, limit) {
-        let $match = { type };
+    async getComments(object_id, parent_comment_id, review_type, last_doc_id, limit) {
+        let $match = { type: review_type };
         // let $sort = { _id: 1 };
         if (last_doc_id) {
             $match._id = { $gt: last_doc_id };
@@ -222,6 +222,6 @@ let service = {
             return { rating: Math.ceil(sum / data.length), counts: data.length };
         }
         return { rating: 0, counts: 0 };
-    }
+    },
 }
 module.exports = { productService: service, ProductService: ProductService };

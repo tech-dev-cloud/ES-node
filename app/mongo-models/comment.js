@@ -8,6 +8,7 @@ let schema = new Schema({
     approved_type: { type: String, enum: ['main', 'detail', 'pending'], default: 'pending' },
     rating: { type: Number },
     priority: { type: Number },
+    status: { type: Boolean, default: true },
     created_by: { type: Schema.Types.ObjectId, ref: 'user' },
     is_edited: { type: Boolean, default: false },
     parent_id: { type: Schema.Types.ObjectId }

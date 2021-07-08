@@ -9,7 +9,7 @@ const { aws } = require('../../services/aws');
 const common = require('../../utils/common');
 const { productService } = require('../../services');
 let { Product } = require('../../models/shop');
-const { review_type } = require('../../utils/constants');
+const { review_type, USER_ROLE } = require('../../utils/constants');
 let productController = {
     /**
      * Handler to create product 
@@ -317,10 +317,10 @@ let productController = {
         let obj;
         try {
             if (review_type == 'product_review') {
-                if (!request.body.rating) {
-                    throw 'rating is required';
-                }
-                if (request.body._id) {
+                // if (!request.body.rating) {
+                //     throw 'rating is required';
+                // }
+                if (request.body.review_id) {
                     await Comment.findOneAndUpdate({ _id: request.body.review_id, created_by: request.user._id }, request.body).lean();
                     response.status(200).json({
                         success: true,
@@ -352,15 +352,20 @@ let productController = {
         }
     },
     getReviews: async (request, response) => {
+
         let last_doc_id = request.query.last_doc_id;
         let limit = request.query.limit || 3;
         const object_id = request.query.object_id;
-        const type = request.query.type;
-        let comments = await productService.getComments(object_id, null, type, last_doc_id, limit);
+        const review_type = request.query.type;
+
+        // if (request.user.role.some(role => role == USER_ROLE.TEACHER) && !request.user.role.some(role => role == USER_ROLE.ADMIN)) {
+
+        // }
+        let comments = await productService.getComments(object_id, null, review_type, last_doc_id, limit);
         let subComments = [];
-        if (type != params.review_type.product_review) {
+        if (review_type != params.review_type.product_review) {
             for (let index = 0; index < comments.length; index++) {
-                let promise = productService.getComments(null, comments[index]._id, type, comments[index]._id, 999999);
+                let promise = productService.getComments(null, comments[index]._id, review_type, comments[index]._id, 999999);
                 subComments[index] = promise;
             };
             let data = await Promise.all(subComments);
