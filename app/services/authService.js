@@ -5,8 +5,8 @@ const { SessionModel, UserModel } = require(`../mongo-models`);
 const commonFunctions = require('../utils/commonFunctions');
 const util = require('../utils/utils');
 const mongoose = require('mongoose');
-const config = require('../../../config/config');
-let params = require(`../../../config/env/${config.NODE_ENV}_params.json`);
+const config = require('../../config/config');
+let params = require(`../../config/env/${config.NODE_ENV}_params.json`);
 
 let authService = {
   createUserSession: async (user, login_type, deviceToken) => {
@@ -26,7 +26,9 @@ let authService = {
     if (userActiveSession && userActiveSession.length >= params.userSessionLimit) {
       const expiredSessionIds = userActiveSession.map(session => session._id);
       expiredSessionIds.splice(expiredSessionIds.length - 1, 1);
-      SessionModel.deleteMany({ _id: { $in: expiredSessionIds } });
+      SessionModel.deleteMany({ _id: { $in: expiredSessionIds } }).then(res => {
+        console.log("done")
+      });
     }
     session = await (new SessionModel(sessionPayload).save());
     return session.accessToken;
