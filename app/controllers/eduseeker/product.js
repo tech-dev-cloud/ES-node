@@ -316,25 +316,17 @@ let productController = {
         let review_type = request.body.type;
         let obj;
         try {
-            if (review_type == 'product_review') {
-                // if (!request.body.rating) {
-                //     throw 'rating is required';
-                // }
-                if (request.body.review_id) {
-                    const data = await Comment.findOneAndUpdate({ _id: request.body.review_id, created_by: request.user._id }, request.body, { new: true }).lean();
+            if (review_type == review_type.product_review) {
+                let data = await productService.isProductPurchased(request.body.object_id, request.user._id);
+                if (data) {
+                    const data = await Comment.findOneAndUpdate({ _id: request.body.review_id, created_by: request.user._id }, request.body, { new: true, upsert: true }).lean();
                     response.status(200).json({
                         success: true,
                         data
                     });
                     return;
-                } else {
-                    let data = await productService.isProductPurchased(request.body.object_id, request.user._id);
-                    if (data.purchased) {
-                        obj = new Comment({ ...request.body, created_by: request.user._id });
-                    } else {
-                        throw 'user does not purchase this product yet';
-                    }
                 }
+                throw 'user does not purchase this product yet';
             } else {
                 obj = new Comment({ ...request.body, created_by: request.user._id });
             }
