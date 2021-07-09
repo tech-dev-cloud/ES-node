@@ -14,6 +14,10 @@ let schema = new Schema({
     learning: [{ type: String }],
     cover_image: { type: String },
     promo_video_url: { type: String },
+    early_birds_offer: [{
+        price: { type: Number },
+        enrolled_limit: { type: Number }
+    }],
     type: { type: String, enum: ['notes', 'quiz', 'bulk', 'course'] }, // 1->PDF/notes/e-books, 2->quiz, 3->Bulk Pack, 4-> course
     priority: { type: Number, default: 0 },
     similar_products: [{ type: Schema.Types.ObjectId }],
