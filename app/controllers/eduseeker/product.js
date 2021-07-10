@@ -10,6 +10,7 @@ const common = require('../../utils/common');
 const { productService } = require('../../services');
 let { Product } = require('../../models/shop');
 const { review_type, USER_ROLE } = require('../../utils/constants');
+const logger = require('../../../config/winston');
 let productController = {
     /**
      * Handler to create product 
@@ -153,15 +154,7 @@ let productController = {
         let product_ids = [];
         let products = [];
         if (request.query.enrolled) {
-            let enrolledProducts = await Order.find({ user_id: request.user._id, product_type: { $ne: 'bulk' }, $or: [{ order_status: 'Free' }, { order_status: 'Credit' }] }, { product_id: 1, validity: 1 }).sort({ _id: -1 }).lean();
-            for (let index = 0; index < enrolledProducts.length; index++) {
-                if (enrolledProducts[index].validity && enrolledProducts[index].validity > new Date()) {
-                    product_ids.push(enrolledProducts[index].product_id);
-                } else if (!enrolledProducts[index].validity) {
-                    product_ids.push(enrolledProducts[index].product_id);
-                }
-            }
-            // product_ids = enrolledProducts.map(obj => obj.product_id);
+            product_ids=await productService.getEnrolledProductIds(request.user._id);
         } else {
             let condition = { status: true, isPublish: true };
             if (request.query.type) {
@@ -200,7 +193,7 @@ let productController = {
                 }
             }
         } catch (err) {
-            console.log(err)
+            logger.error(err);
         }
         if (!request.query.type) {
             products = _.groupBy(products, obj => obj.type);
@@ -250,11 +243,8 @@ let productController = {
             let product = new Product(result[0]);
             let obj = result[1];
             product['purchaseStatus'] = obj.purchased;
-            // if (result[2] && (result[2] * 2) > 50) {
-
-
             product['totalEnrolled'] = result[2] * 2 || 0;
-            // }
+
             if (product.type == params.product_types.bulk) {
                 product['sub_products'] = await Promise.all(product.sub_products.map(async (product_id) => {
                     let obj = await productService.getProduct(product_id);
