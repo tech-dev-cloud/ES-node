@@ -248,7 +248,7 @@ let service = {
         return product_ids;
     },
     applyEarlyBirdOffer(product){
-        for(let index=0;index<product.early_birds_offer;index++){
+        for(let index=0;index<product.early_birds_offer.length;index++){
             if(product.totalEnrolled<=product.early_birds_offer[index].enrolled_limit){
                 product.price=product.early_birds_offer[index].price;
                 break;
