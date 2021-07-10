@@ -235,7 +235,7 @@ let service = {
         }
         return { rating: 0, counts: 0 };
     },
-    getEnrolledProductIds(user_id){
+    async getEnrolledProductIds(user_id){
         let product_ids=[];
         let enrolledProducts = await Order.find({ user_id: user_id, product_type: { $ne: 'bulk' }, $or: [{ order_status: 'Free' }, { order_status: 'Credit' }] }, { product_id: 1, validity: 1 }).sort({ _id: -1 }).lean();
         for (let index = 0; index < enrolledProducts.length; index++) {
