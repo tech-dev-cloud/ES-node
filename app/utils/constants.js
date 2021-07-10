@@ -62,7 +62,8 @@ const CONSTANTS = {
   order_status: {
     pending: 'Pending',
     credit: 'Credit',
-    failed: 'Failed'
+    failed: 'Failed',
+    Free:'Free'
   }
 };
 
