@@ -9,7 +9,7 @@ const { aws } = require('../../services/aws');
 const common = require('../../utils/common');
 const { productService } = require('../../services');
 let { Product } = require('../../models/shop');
-const { review_type, USER_ROLE } = require('../../utils/constants');
+const { review_type, USER_ROLE, order_status } = require('../../utils/constants');
 const logger = require('../../../config/winston');
 let productController = {
     /**
@@ -238,12 +238,17 @@ let productController = {
                 [
                     productService.getProduct(request.params.product_id),
                     productService.isProductPurchased(product_id, request.user),
-                    productService.totalEnrolled(product_id)
                 ]);
             let product = new Product(result[0]);
+            const enrolledStatus=[];
+            if(product.type==params.product_types.course){
+                enrolledStatus.push(order_status.credit);
+            }
+            let count=await productService.totalEnrolled(product_id, enrolledStatus);
+            product['totalEnrolled']=enrolledStatus.length?count:count * 2;
+               
             let obj = result[1];
             product['purchaseStatus'] = obj.purchased;
-            product['totalEnrolled'] = result[2] * 2 || 0;
 
             if (product.type == params.product_types.bulk) {
                 product['sub_products'] = await Promise.all(product.sub_products.map(async (product_id) => {
