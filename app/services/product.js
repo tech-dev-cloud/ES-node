@@ -180,7 +180,7 @@ let service = {
                     }
                     let result=await Promise.all(promise);
                     obj=result[0];
-                    if(result[1]){
+                    if(result[1]>=0){
                         product['totalEnrolled']=result[1];
                         service.applyEarlyBirdOffer(product);
                     }
