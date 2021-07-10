@@ -5,8 +5,8 @@
     "quiz_question_key": "quiz_question_",
     "quiz_question_expiry": 500,
     "default_user": "600be4282cc2fcd777ad854c",
-    "backend_server": "http://devapi.eduseeker.in",
-    "frontend_server": "http://devweb.eduseeker.in",
+    "backend_server": "https://devapi.eduseeker.in",
+    "frontend_server": "https://devweb.eduseeker.in",
     "payment_webhook": "/api/payment/webhook",
     "payment_redirection": "/order-confirm",
     "product_types": {
@@ -19,5 +19,6 @@
         "product_review": "product_review",
         "lecture_query": "lecture_query",
         "feedback": "feedback"
-    }
+    },
+    "userSessionLimit": 2
 }

@@ -11,7 +11,7 @@ let schema = new Schema({
     product_image: [{ type: String }],
     payment_request_id: { type: String },
     final_price: { type: Number },
-    order_status: { type: String, default: 'Pending' },
+    order_status: { type: String, default: 'Pending' }, //Credit, Pending, Failed
     validity: { type: Date }
 });
 schema.index({ user_id: 1 }, { unique: false });

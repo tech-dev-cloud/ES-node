@@ -58,6 +58,11 @@ const CONSTANTS = {
     product_review: "product_review",
     lecture_query: "lecture_query",
     feedback: "feedback"
+  },
+  order_status: {
+    pending: 'Pending',
+    credit: 'Credit',
+    failed: 'Failed'
   }
 };
 

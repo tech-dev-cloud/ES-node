@@ -3,6 +3,7 @@ const config = require('../../config/config');
 let params = require(`../../config/env/${config.NODE_ENV}_params.json`);
 const redis = require('../../config/redisConnection');
 const { VideoContentModel, Order, Comment, Product, ProductQuestionMap, Document } = require("../mongo-models");
+const { order_status } = require('../utils/constants');
 class ProductService {
     constructor() { }
     async getCourseContent(product_id, enrolled = false) {
@@ -96,9 +97,9 @@ let service = {
             $match.object_id = object_id;
         }
         $match.parent_id = parent_comment_id || null;
-        if (!parent_comment_id) {
-            // $sort = { _id: -1 };
-        }
+        // if (!parent_comment_id) {
+        //     $sort = { _id: -1 };
+        // }
         let $lookup = { from: 'users', localField: 'created_by', foreignField: '_id', as: 'user' };
         let $unwind = '$user';
         let $project = { "user.createdAt": 0, "user.password": 0 };
@@ -120,12 +121,12 @@ let service = {
         }
         return weburl;
     },
-    async totalEnrolled(product_id) {
-        let count = await Order.find({ product_id }).count();
+    async totalEnrolled(product_id, orderStatus = []) {
+        orderStatus = orderStatus.length ? orderStatus : Object.values(order_status);
+        let count = await Order.find({ product_id, order_status: { $in: orderStatus } }).count();
         return count;
     },
     getProduct: async (product_id) => {
-        console.log("Type of===", typeof product_id)
         let cacheKey = `${params.product_cache_key}${product_id.toString()}`;
         return new Promise((resolve, reject) => {
             redis.get(cacheKey, async (err, someData) => {
@@ -172,7 +173,17 @@ let service = {
                     }
                     product.image = product.image.map(prod_image => prod_image.image_path);
                     product['weburl'] = service.getRedirectUrl(product.type);
-                    let obj = await service.getProductRating(product_id);
+                    let obj = service.getProductRating(product_id);
+                    let promise=[obj];
+                    if(product.type==params.product_types.course && product.early_birds_offer && product.early_birds_offer.length){
+                        promise.push(service.totalEnrolled(product._id, [order_status.credit]))
+                    }
+                    let result=await Promise.all(promise);
+                    obj=result[0];
+                    if(result[1]){
+                        product['totalEnrolled']=result[1];
+                        service.applyEarlyBirdOffer(product);
+                    }
                     product['rating'] = obj.rating;
                     product['reviews'] = obj.counts;
                 }
@@ -223,5 +234,27 @@ let service = {
         }
         return { rating: 0, counts: 0 };
     },
+    async getEnrolledProductIds(user_id){
+        let product_ids=[];
+        let enrolledProducts = await Order.find({ user_id: user_id, product_type: { $ne: 'bulk' }, $or: [{ order_status: 'Free' }, { order_status: 'Credit' }] }, { product_id: 1, validity: 1 }).sort({ _id: -1 }).lean();
+        for (let index = 0; index < enrolledProducts.length; index++) {
+            if (enrolledProducts[index].validity && enrolledProducts[index].validity > new Date()) {
+                product_ids.push(enrolledProducts[index].product_id);
+            } else if (!enrolledProducts[index].validity) {
+                product_ids.push(enrolledProducts[index].product_id);
+            }
+        }
+        return product_ids;
+    },
+    applyEarlyBirdOffer(product){
+        for(let index=0;index<product.early_birds_offer.length;index++){
+            if(product.totalEnrolled<=product.early_birds_offer[index].enrolled_limit){
+                product['discountPrice']=product.strikeprice-product.early_birds_offer[index].price;
+                product.price=product.early_birds_offer[index].price;
+                product['discountPercent'] = Math.ceil((product.strikeprice - product.price) * 100 / product.strikeprice);
+                break;
+            }
+        }
+    }
 }
 module.exports = { productService: service, ProductService: ProductService };
