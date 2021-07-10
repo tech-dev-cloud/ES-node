@@ -28,6 +28,7 @@ class Product {
         this.status = obj.status;
         this.validity = obj.validity;
         this.isPublish = obj.isPublish;
+        this.discountPrice=obj.discountPrice;
         this.product_meta = obj.product_meta;
         this.created_by = obj.created_by;
         this.sub_products = obj.sub_products;
@@ -39,7 +40,6 @@ class Product {
         this.initRedirectUrl();
     }
     initRedirectUrl() {
-        console.log("type----", this.type)
         switch (this.type) {
             case params.product_types.course:
                 this.weburl = `course-1`;
