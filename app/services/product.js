@@ -250,6 +250,7 @@ let service = {
     applyEarlyBirdOffer(product){
         for(let index=0;index<product.early_birds_offer.length;index++){
             if(product.totalEnrolled<=product.early_birds_offer[index].enrolled_limit){
+                product.discountPrice=product.strikeprice-product.early_birds_offer[index].price;
                 product.price=product.early_birds_offer[index].price;
                 product['discountPercent'] = Math.ceil((product.strikeprice - product.price) * 100 / product.strikeprice);
                 break;
