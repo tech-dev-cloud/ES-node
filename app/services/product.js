@@ -3,7 +3,7 @@ const config = require('../../config/config');
 let params = require(`../../config/env/${config.NODE_ENV}_params.json`);
 const redis = require('../../config/redisConnection');
 const { VideoContentModel, Order, Comment, Product, ProductQuestionMap, Document } = require("../mongo-models");
-const { order_status } = require('../utils/constants');
+const { order_status, review_type } = require('../utils/constants');
 class ProductService {
     constructor() { }
     async getCourseContent(product_id, enrolled = false) {
@@ -87,9 +87,9 @@ let service = {
             purchased: false
         }
     },
-    async getComments(object_id, status, parent_comment_id, review_type, last_doc_id, limit) {
-        let $match = { type: review_type};
-        if(status!=undefined){
+    async getComments(object_id, status, parent_comment_id, reviewType, last_doc_id, limit) {
+        let $match = { type: reviewType};
+        if(status){
             $match.status=status;
         }
         if (last_doc_id) {
@@ -99,7 +99,7 @@ let service = {
             $match.object_id = object_id;
         }
         $match.parent_id = parent_comment_id || null;
-        const $sort={approved_type:1};
+        const $sort=(reviewType==review_type.product_review)?{approved_type:1}:{_id:1};
         let $lookup = { from: 'users', localField: 'created_by', foreignField: '_id', as: 'user' };
         let $unwind = '$user';
         let $project = { "user.createdAt": 0, "user.password": 0 };

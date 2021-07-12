@@ -243,14 +243,18 @@ const routes = [
     handler: productController.getReviews
   },
   {
-    path: '/api/reviews/:id',
+    path: '/api/reviews',
     method: 'PUT',
     joiSchemaForSwagger: {
       body: {
         object_id: routeUtils.validation.mongooseId,
         type: JOI.string().valid(['product_review', 'lecture_query', 'feedback']),
         status:JOI.boolean(),
+        rating:JOI.number(),
+        message:JOI.string(),
         approved_type:JOI.number().valid([1,2,3]).description('1=>Top, 2=>middle, 3=>low'),
+        id:routeUtils.validation.mongooseId,
+        email:JOI.string()
       },
       group: 'Reviews',
       description: 'Api to update review status',

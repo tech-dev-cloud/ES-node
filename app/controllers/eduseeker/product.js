@@ -308,13 +308,13 @@ let productController = {
         })
     },
     addReview: async (request, response) => {
-        let review_type = request.body.type;
+        let reviewType = request.body.type;
         let obj;
         try {
-            if (review_type == review_type.product_review) {
+            if (reviewType == review_type.product_review) {
                 let data = await productService.isProductPurchased(request.body.object_id, request.user._id);
                 if (data) {
-                    const data = await Comment.findOneAndUpdate({ _id: request.body.review_id, created_by: request.user._id }, request.body, { new: true, upsert: true }).lean();
+                    const data = await Comment.findOneAndUpdate({ object_id: request.body.object_id, created_by: request.user._id }, request.body, { new: true, upsert: true, setDefaultsOnInsert:true }).lean();
                     response.status(200).json({
                         success: true,
                         data
@@ -344,11 +344,11 @@ let productController = {
         let limit = request.query.limit || 990;
         const object_id = request.query.object_id;
         const review_type = request.query.type;
-        let comments = await productService.getComments(object_id, null, review_type, last_doc_id, limit);
+        let comments = await productService.getComments(object_id,null, null, review_type, last_doc_id, limit);
         let subComments = [];
         if (review_type != params.review_type.product_review) {
             for (let index = 0; index < comments.length; index++) {
-                let promise = productService.getComments(null, comments[index]._id, review_type, comments[index]._id, 999999);
+                let promise = productService.getComments(null,null, comments[index]._id, review_type, comments[index]._id, 999999);
                 subComments[index] = promise;
             };
             let data = await Promise.all(subComments);
@@ -373,9 +373,12 @@ let productController = {
                 if(product.created_by!=request.user._id){
                     throw "You can't changes this comment status"  
                 }
-                Comment.updateOne({_id:request.params.id},request.body).then(res=>{
-
-                });
+                if(request.body.id){
+                    await Comment.findOneAndUpdate({_id:request.body.id},request.body)
+                }else{
+                    let obj=new Comment(request.body);
+                    await obj.save();
+                }
             }
             response.status(200).send();
         }catch(err){

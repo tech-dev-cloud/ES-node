@@ -5,7 +5,7 @@ let schema = new Schema({
     message: { type: String },
     type: { type: String, enum: ['product_review', 'lecture_query', 'feedback'] },
     object_id: { type: Schema.Types.ObjectId, required: true },
-    approved_type: { type: String, enum: [1,2,3], default: 3 },// 1=> Top, 2=>medium, 3=> Low
+    approved_type: { type: Number, enum: [1,2,3], default: 3 },// 1=> Top, 2=>medium, 3=> Low
     rating: { type: Number },
     priority: { type: Number },
     status: { type: Boolean, default: true },
