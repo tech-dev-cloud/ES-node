@@ -90,6 +90,25 @@ const routes = [
     },
     auth: [USER_ROLE.TEACHER,USER_ROLE.ADMIN],
     handler: paymentController.getOrders
+  },
+  {
+    path: `/api/orders`,
+    method: 'POST',
+    joiSchemaForSwagger: {
+      headers: JOI.object({
+        'authorization': JOI.string().required()
+      }).unknown(),
+      body:{
+        price:JOI.number(),
+        email:JOI.string(),
+        product_ids:JOI.array().items(routeUtils.validation.mongooseId)
+      },
+      group: MODULE.group,
+      description: 'Get Orders',
+      model: 'PaymentSuccess'
+    },
+    auth: [USER_ROLE.TEACHER,USER_ROLE.ADMIN],
+    handler: paymentController.addOrderAfterPayment
   }
 ]
 

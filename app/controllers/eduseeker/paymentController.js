@@ -1,10 +1,12 @@
 var CryptoJS = require("crypto-js");
 const MESSAGES = require('../../utils/messages');
 const { paymentService, productService } = require('../../services');
-const { Order } = require('../../mongo-models');
+const { Order, UserModel } = require('../../mongo-models');
 const config = require('../../../config/config');
 let params = require(`../../../config/env/${config.NODE_ENV}_params.json`);
 const common = require('../../utils/common');
+const product = require("../../services/product");
+const { order_status } = require("../../utils/constants");
 
 const paymentController = {
   createOrder: async (request, response) => {
@@ -138,6 +140,52 @@ const paymentController = {
         message: 'something went wrong',
         err
       })
+    })
+  },
+  async addOrderAfterPayment(request, response){
+    const promises=[];
+    const productIds=request.body.product_ids;
+    for(let index=0;index<productIds.length;index++){
+      promises.push(productService.getProduct(productIds[index]));
+    }
+    let products=await Promise.all(promises);
+    let user=await UserModel.findOne({email:request.body.email},{_id:1}).lean();
+    try{
+      if(!products.some(product=>product.created_by==request.user._id)){
+        throw 'Unauthorize access'
+      }
+      if(!user){
+        throw 'this account is not found';
+      }
+    }catch(err){
+      response.status(400).json({
+        success:false,
+        message:err
+      });
+      return;
+    }
+  
+    let validity;
+    if(product.validity){
+      validity= new Date();
+      validity = new Date(validity.setMonth(validity.getMonth() + product.validity));
+    }
+    for(let index=0;index<products.length;index++){
+      let order=new Order({
+        product_id:products[index]._id,
+        product_name:products[index].name,
+        product_type:products.type,
+        product_image:[product.cover_image],
+        final_price:request.body.price,
+        user_id:user._id,
+        validity,
+        order_status:order_status.credit
+      });
+      await order.save();
+    }
+    response.status(200).json({
+      success:true,
+      message:'User enrolled successfully'
     })
   }
 }

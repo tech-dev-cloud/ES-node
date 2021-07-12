@@ -340,15 +340,10 @@ let productController = {
         }
     },
     getReviews: async (request, response) => {
-
         let last_doc_id = request.query.last_doc_id;
-        let limit = request.query.limit || 3;
+        let limit = request.query.limit || 990;
         const object_id = request.query.object_id;
         const review_type = request.query.type;
-
-        // if (request.user.role.some(role => role == USER_ROLE.TEACHER) && !request.user.role.some(role => role == USER_ROLE.ADMIN)) {
-
-        // }
         let comments = await productService.getComments(object_id, null, review_type, last_doc_id, limit);
         let subComments = [];
         if (review_type != params.review_type.product_review) {
@@ -368,6 +363,27 @@ let productController = {
             success: true,
             data: { comments }
         })
+    },
+    async updateReviewStatus(request, response){
+        const object_id=request.body.object_id;
+        const type= request.body.type;
+        try{
+            if(type==params.review_type.product_review){
+                const product=await productService.getProduct(object_id);
+                if(product.created_by!=request.user._id){
+                    throw "You can't changes this comment status"  
+                }
+                Comment.updateOne({_id:request.params.id},request.body).then(res=>{
+
+                });
+            }
+            response.status(200).send();
+        }catch(err){
+            response.status(400).json({
+                success:false,
+                message:err
+            })
+        }
     }
 }
 let commonF = {

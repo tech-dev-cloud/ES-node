@@ -87,9 +87,11 @@ let service = {
             purchased: false
         }
     },
-    async getComments(object_id, parent_comment_id, review_type, last_doc_id, limit) {
-        let $match = { type: review_type };
-        // let $sort = { _id: 1 };
+    async getComments(object_id, status, parent_comment_id, review_type, last_doc_id, limit) {
+        let $match = { type: review_type};
+        if(status!=undefined){
+            $match.status=status;
+        }
         if (last_doc_id) {
             $match._id = { $gt: last_doc_id };
         }
@@ -97,14 +99,12 @@ let service = {
             $match.object_id = object_id;
         }
         $match.parent_id = parent_comment_id || null;
-        // if (!parent_comment_id) {
-        //     $sort = { _id: -1 };
-        // }
+        const $sort={approved_type:1};
         let $lookup = { from: 'users', localField: 'created_by', foreignField: '_id', as: 'user' };
         let $unwind = '$user';
         let $project = { "user.createdAt": 0, "user.password": 0 };
         let $limit = limit;
-        let query = [{ $match }, { $lookup }, { $unwind }, { $project }, { $limit }];
+        let query = [{ $match },{$sort}, { $lookup }, { $unwind }, { $project }, { $limit }];
         let data = await Comment.aggregate(query);
         return data;
     },
@@ -248,7 +248,7 @@ let service = {
     },
     applyEarlyBirdOffer(product){
         for(let index=0;index<product.early_birds_offer.length;index++){
-            if(product.totalEnrolled<=product.early_birds_offer[index].enrolled_limit){
+            if(product.totalEnrolled<product.early_birds_offer[index].enrolled_limit){
                 product['discountPrice']=product.strikeprice-product.early_birds_offer[index].price;
                 product.price=product.early_birds_offer[index].price;
                 product['discountPercent'] = Math.ceil((product.strikeprice - product.price) * 100 / product.strikeprice);
