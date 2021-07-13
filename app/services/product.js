@@ -88,6 +88,9 @@ let service = {
         }
     },
     async getComments(object_id, status, parent_comment_id, reviewType, last_doc_id, limit) {
+        if(!last_doc_id){
+            return [];
+        }
         let $match = { type: reviewType};
         if(status){
             $match.status=status;

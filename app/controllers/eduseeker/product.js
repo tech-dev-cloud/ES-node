@@ -348,7 +348,7 @@ let productController = {
         let subComments = [];
         if (review_type != params.review_type.product_review) {
             for (let index = 0; index < comments.length; index++) {
-                let promise = productService.getComments(null,null, comments[index]._id, review_type, comments[index]._id, 999999);
+                let promise = productService.getComments(null,null, comments[index]._id, review_type, null, 999999);
                 subComments[index] = promise;
             };
             let data = await Promise.all(subComments);
