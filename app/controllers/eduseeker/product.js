@@ -1,7 +1,7 @@
 const async = require('async');
 const _ = require('lodash');
 const Mongoose = require('mongoose');
-const { Product: ProductModel, ProductImage, ProductQuestionMap, Document, Order, Comment } = require('../../mongo-models');
+const { Product: ProductModel, ProductImage, ProductQuestionMap, Document, Order, Comment, UserModel } = require('../../mongo-models');
 const config = require('../../../config/config');
 let params = require(`../../../config/env/${config.NODE_ENV}_params.json`);
 const redis = require('../../../config/redisConnection');
@@ -370,14 +370,16 @@ let productController = {
         try{
             if(type==params.review_type.product_review){
                 const product=await productService.getProduct(object_id);
-                if(product.created_by!=request.user._id){
+                if(product.created_by!=request.user._id.toString()){
                     throw "You can't changes this comment status"  
                 }
                 if(request.body.id){
                     await Comment.findOneAndUpdate({_id:request.body.id},request.body)
                 }else{
-                    let obj=new Comment(request.body);
-                    await obj.save();
+                    const user=await UserModel.findOne({email:request.body.email},{_id:1}).lean();
+                    let obj=new Comment({...request.body, created_by:user._id});
+                    let data=await obj.save();
+                    console.log("=-=-=-=", data)
                 }
             }
             response.status(200).send();
