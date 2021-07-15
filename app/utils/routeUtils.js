@@ -8,6 +8,7 @@ const swJson = require('../services/swaggerService');
 const { authService } = require('../services/authService');
 const { file } = require('../controllers');
 const logger = require('../../config/winston');
+const { SOMETHING_WENT_WRONG } = require('./errorCodes');
 
 const storage = multer.diskStorage({
   destination: 'uploads/',
@@ -112,22 +113,18 @@ const dataValidation = (route) => {
 const getHandlerMethod = (route) => {
   const { handler } = route;
   return (req, res) => {
-    logger.info(`${route.method}: ${route.path}`)
-    // let payload = {
-    //   ...(req || {}).body,
-    //   ...(req || {}).query,
-    //   ...(req || {}).params,
-    //   user: (req || {}).user,
-    //   file: req.file,
-    //   web_app:req.headers['web-app']
-    // }
+    logger.info(`${route.method}: ${route.path}`);
     try{
-      handler(req, res);
+      handler(req, res).then(res=>{}).catch(err=>{
+        logger.error(err)
+        res.status(err.statusCode).json({
+          success:false,
+          message: err.message,
+          type:err.type
+        })
+
+      });
     }catch(err){
-      res.status(500).json({
-        success:false,
-        message:'Something went wrong'
-      })
     }
     // .then(result => {
     //   if (result) {

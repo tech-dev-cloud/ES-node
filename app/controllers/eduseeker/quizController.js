@@ -3,6 +3,7 @@ const MESSAGES = require('../../utils/messages');
 const { quizService, productService } = require('../../services');
 const { PaymentModel, ProductQuestionMap, Order } = require('../../mongo-models');
 const common = require('../../utils/common');
+const { NOT_ENROLLED } = require('../../utils/errorCodes');
 
 let controller = {}
 
@@ -72,11 +73,12 @@ controller.getDataToPlay = async (request, response) => {
       data: { questions, product }
     })
   } else {
-    response.status(400).json({
-      success: false,
-      message: 'You have to purchase this quiz',
+    throw NOT_ENROLLED;
+    // response.status(400).json({
+    //   success: false,
+    //   message: 'You have to purchase this quiz',
 
-    })
+    // })
   }
 }
 

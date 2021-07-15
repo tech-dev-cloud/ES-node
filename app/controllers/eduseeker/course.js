@@ -1,5 +1,7 @@
 const config = require('../../../config/config');
+const logger = require('../../../config/winston');
 const { Product, VideoContentModel } = require('../../mongo-models');
+const { UNAUTHORIZED, SOMETHING_WENT_WRONG } = require('../../utils/errorCodes');
 const params = require(`../../../config/env/${config.NODE_ENV}_params.json`);
 const controller = {
     createCourse: async (request, response) => {
@@ -41,11 +43,12 @@ const controller = {
                 message: 'Successfully updated'
             })
         } catch (err) {
-            console.log(err);
-            response.status(500).json({
-                success: false,
-                message: err.message
-            })
+            logger.error(err);
+            throw SOMETHING_WENT_WRONG;
+            // response.status(500).json({
+            //     success: false,
+            //     message: err.message
+            // })
         }
     },
     getCourseByID: async (request, response) => {

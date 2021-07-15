@@ -7,6 +7,7 @@ let params = require(`../../../config/env/${config.NODE_ENV}_params.json`);
 const common = require('../../utils/common');
 const product = require("../../services/product");
 const { order_status } = require("../../utils/constants");
+const { SOMETHING_WENT_WRONG } = require("../../utils/errorCodes");
 
 const paymentController = {
   createOrder: async (request, response) => {
@@ -135,11 +136,12 @@ const paymentController = {
         data: { orders: result[0], stats: result[1][0] }
       })
     }).catch(err => {
-      response.status(500).json({
-        success: false,
-        message: 'something went wrong',
-        err
-      })
+      throw SOMETHING_WENT_WRONG;
+      // response.status(500).json({
+      //   success: false,
+      //   message: 'something went wrong',
+      //   err
+      // })
     })
   },
   async addOrderAfterPayment(request, response){

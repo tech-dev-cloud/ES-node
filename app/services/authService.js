@@ -6,6 +6,7 @@ const commonFunctions = require('../utils/commonFunctions');
 const util = require('../utils/utils');
 const mongoose = require('mongoose');
 const config = require('../../config/config');
+const { UNAUTHORIZED, DEVICE_LOGIN_LIMIT_EXCEED } = require('../utils/errorCodes');
 let params = require(`../../config/env/${config.NODE_ENV}_params.json`);
 
 let authService = {
@@ -24,11 +25,12 @@ let authService = {
     }
     const userActiveSession = await SessionModel.find({ userId: user._id }).lean();
     if (userActiveSession && userActiveSession.length >= params.userSessionLimit) {
-      const expiredSessionIds = userActiveSession.map(session => session._id);
-      expiredSessionIds.splice(expiredSessionIds.length - 1, 1);
-      SessionModel.deleteMany({ _id: { $in: expiredSessionIds } }).then(res => {
-        console.log("done")
-      });
+      // const expiredSessionIds = userActiveSession.map(session => session._id);
+      // expiredSessionIds.splice(expiredSessionIds.length - 1, 1);
+      // SessionModel.deleteMany({ _id: { $in: expiredSessionIds } }).then(res => {
+      //   console.log("done")
+      // });
+      throw DEVICE_LOGIN_LIMIT_EXCEED;
     }
     session = await (new SessionModel(sessionPayload).save());
     return session.accessToken;

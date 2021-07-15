@@ -15,20 +15,13 @@ let controller = {
   },
   /** Function to Update Question */
   updateQuestion: async (request, response) => {
-    const exist = await QuestionModel.findById(request.params.id).lean();
-    if (!exist) {
-      response.status(400).json({
-        success: false,
-        message: "Data not found"
-      })
-    } else {
-      let data = await QuestionModel.updateOne({ _id: request.params.id }, request.body);
-      response.status(200).json({
-        success: true,
-        message: "Question updated successfully",
-        data
-      })
-    }
+    // const exist = await QuestionModel.findById(request.params.id).lean();
+    let data = await QuestionModel.updateOne({ _id: request.params.id }, request.body,{upsert:true, new :true});
+    response.status(200).json({
+      success: true,
+      message: "Question updated successfully",
+      data
+    })
   },
   /** Function to find Question */
   getQuestions: async (request, response) => {

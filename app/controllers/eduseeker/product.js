@@ -6,11 +6,12 @@ const config = require('../../../config/config');
 let params = require(`../../../config/env/${config.NODE_ENV}_params.json`);
 const redis = require('../../../config/redisConnection');
 const { aws } = require('../../services/aws');
-const common = require('../../utils/common');
+// const common = require('../../utils/common');
 const { productService } = require('../../services');
 let { Product } = require('../../models/shop');
 const { review_type, USER_ROLE, order_status } = require('../../utils/constants');
 const logger = require('../../../config/winston');
+const {NOT_ENROLLED}=require('../../utils/errorCodes');
 let productController = {
     /**
      * Handler to create product 
@@ -262,12 +263,13 @@ let productController = {
             if (enrolled) {
                 if (!product.purchaseStatus) {
                     let data = {};
-                    response.status(400).json({
-                        success: false,
-                        message: 'You have not enroll for this course',
-                        data
-                    });
-                    return;
+                    throw NOT_ENROLLED;
+                    // response.status(400).json({
+                    //     success: false,
+                    //     message: 'You have not enroll for this course',
+                    //     data
+                    // });
+                    // return;
                 }
                 await product.userRatingReview(request.user._id);
             }
@@ -280,7 +282,7 @@ let productController = {
                 data: { ...product, ...responsePayload }
             })
         } catch (err) {
-            console.log(err)
+            throw err;
         }
     },
     flushProductsCache: async (request, response) => {
@@ -321,7 +323,7 @@ let productController = {
                     });
                     return;
                 }
-                throw 'user does not purchase this product yet';
+                throw NOT_ENROLLED;
             } else {
                 obj = new Comment({ ...request.body, created_by: request.user._id });
             }
@@ -332,11 +334,12 @@ let productController = {
                 data: comment
             });
         } catch (err) {
-            console.log(err)
-            response.status(400).json({
-                success: false,
-                message: err
-            })
+            throw err;
+            // console.log(err)
+            // response.status(400).json({
+            //     success: false,
+            //     message: err
+            // })
         }
     },
     getReviews: async (request, response) => {

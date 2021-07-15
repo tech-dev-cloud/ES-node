@@ -5,6 +5,8 @@ const webp = require('webp-converter');
 const { aws } = require('../../services');
 const config = require('../../../config/config');
 const common = require('../../utils/common');
+const logger = require('../../../config/winston');
+const { SOMETHING_WENT_WRONG } = require('../../utils/errorCodes');
 
 let file = {
   uploadFile: async (request, response) => {
@@ -25,11 +27,12 @@ let file = {
         data
       })
     }).catch(err => {
-      response.status(500).json({
-        success: false,
-        message: 'Something went wrong',
-        err
-      })
+      throw SOMETHING_WENT_WRONG;
+      // response.status(500).json({
+      //   success: false,
+      //   message: 'Something went wrong',
+      //   err
+      // })
     })
   },
   uploadToS3(filepath, ContentType, filename) {
