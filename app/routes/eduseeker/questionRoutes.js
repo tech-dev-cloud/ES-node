@@ -8,7 +8,7 @@ const MODULE = {
 }
 const routes = [
   {
-    path: `/api/${MODULE.name}`,
+    path: `/api/question`,
     method: 'POST',
     joiSchemaForSwagger: {
       headers: JOI.object({
@@ -32,7 +32,7 @@ const routes = [
     handler: questionController.createQuestion
   },
   {
-    path: `/api/${MODULE.name}/:id`,
+    path: `/api/question/:id`,
     method: 'PUT',
     joiSchemaForSwagger: {
       headers: JOI.object({

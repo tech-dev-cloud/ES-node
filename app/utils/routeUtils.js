@@ -117,12 +117,18 @@ const getHandlerMethod = (route) => {
     try{
       handler(req, res).then(res=>{}).catch(err=>{
         logger.error(err)
-        res.status(err.statusCode).json({
+        if(err){
+          res.status(err.statusCode).json({
+            success:false,
+            message: err.message,
+            type:err.type
+          })
+          return;
+        }
+        res.status(500).json({
           success:false,
-          message: err.message,
-          type:err.type
+          message: 'Something went wrong'
         })
-
       });
     }catch(err){
     }

@@ -1,10 +1,9 @@
-const responseHelper = require('../../utils/responseHelper');
-const MESSAGES = require('../../utils/messages');
+const {USER_ROLE}=require('../../utils/constants');
 const { QuestionModel } = require('../../mongo-models');
 let controller = {
   /** Function to create Question */
   createQuestion: async (request, response) => {
-    request.body.createdBy = request.user.userId;
+    request.body.createdBy = request.user._id;
     const question = new QuestionModel(request.body);
     let data = await question.save();
     response.status(200).json({
@@ -25,7 +24,11 @@ let controller = {
   },
   /** Function to find Question */
   getQuestions: async (request, response) => {
-    let data = await QuestionModel.find({ subjectId: request.query.subjectId }, ["_id", "options", "correctOption", "subjectId", "question", "description", "moduleId", "type"]).lean();
+    const match={subjectId: request.query.subjectId};
+    if(!request.user.role.some(role=>role==USER_ROLE.ADMIN)){
+      match['createdBy']=request.user._id;
+    }
+    let data = await QuestionModel.find(match, ["_id", "options", "correctOption", "subjectId", "question", "description", "moduleId", "type"]).lean();
     response.status(200).json({
       success: true,
       message: "Questions fetched successfully",

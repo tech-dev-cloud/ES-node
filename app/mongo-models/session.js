@@ -8,7 +8,8 @@ const schema = new Schema({
   loginType: { type: String, enum: Object.values(LOGIN_TYPE) },
   accessToken: { type: String, required: true },
   deviceToken: { type: String },
-  role: [{ type: Number, enum: Object.values(USER_ROLE) }]
+  role: [{ type: Number, enum: Object.values(USER_ROLE) }],
+  loginLimitExceed:{type:Boolean}
 })
 
 schema.set("timestamps", true);

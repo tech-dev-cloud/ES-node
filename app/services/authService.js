@@ -25,12 +25,14 @@ let authService = {
     }
     const userActiveSession = await SessionModel.find({ userId: user._id }).lean();
     if (userActiveSession && userActiveSession.length >= params.userSessionLimit) {
-      // const expiredSessionIds = userActiveSession.map(session => session._id);
-      // expiredSessionIds.splice(expiredSessionIds.length - 1, 1);
-      // SessionModel.deleteMany({ _id: { $in: expiredSessionIds } }).then(res => {
+      const expiredSessionIds = userActiveSession.map(session => session._id);
+      expiredSessionIds.splice(expiredSessionIds.length - 1, 1);
+      SessionModel.deleteMany({ _id: { $in: expiredSessionIds } }).then(res => {
+        console.log("done")
+      });
+      // SessionModel.updateMany({ _id: { $in: expiredSessionIds } },{$set:{loginLimitExceed:true}}).then(res => {
       //   console.log("done")
       // });
-      throw DEVICE_LOGIN_LIMIT_EXCEED;
     }
     session = await (new SessionModel(sessionPayload).save());
     return session.accessToken;
@@ -47,9 +49,13 @@ authService.userValidate = (authType) => {
       }
       let responseObject = responseHelper.createErrorResponse(ERROR_TYPE.UNAUTHORIZED, MESSAGES.USER.UNAUTHORIZED);
       return response.status(responseObject.statusCode).json(responseObject);
-    }).catch(() => {
-      let responseObject = responseHelper.createErrorResponse(ERROR_TYPE.UNAUTHORIZED, MESSAGES.USER.UNAUTHORIZED);
-      return response.status(responseObject.statusCode).json(responseObject);
+    }).catch(err => {
+      // let responseObject = responseHelper.createErrorResponse(ERROR_TYPE.UNAUTHORIZED, MESSAGES.USER.UNAUTHORIZED);
+      response.status(err.statusCode).json({
+        success:false,
+        message:err.message,
+        type:err.type
+      });
     });
   };
 };
@@ -65,6 +71,9 @@ let validateUser = async (request, authType) => {
       let authenticatedUser = await SessionModel.findOne({ accessToken: request.headers.authorization }).lean();
       if (authenticatedUser) {
         if (authType && authType.length) {
+          // if(authenticatedUser.loginLimitExceed){
+          //   throw DEVICE_LOGIN_LIMIT_EXCEED;
+          // }
           if (authType.some(role => authenticatedUser.role.includes(role)) || authenticatedUser.role[0] == 0) {
             request.user = await UserModel.findOne({ _id: authenticatedUser.userId }).lean();
           } else {
@@ -81,7 +90,7 @@ let validateUser = async (request, authType) => {
     }
     return true;
   } catch (err) {
-    return false;
+    throw err;
   }
 };
 

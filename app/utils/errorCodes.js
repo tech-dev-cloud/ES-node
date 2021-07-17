@@ -105,7 +105,7 @@ let errorCodes = {
     type:'SESSION_EXPIRE'
   },
   DEVICE_LOGIN_LIMIT_EXCEED:{
-    statusCode: 400,
+    statusCode: 403,
     message: 'This account is already being used on two other devices. Please log out from atleast one device to continue on this device',
     type:'DEVICE_LOGIN_LIMIT_EXCEED'
   },

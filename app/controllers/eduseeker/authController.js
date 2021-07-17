@@ -40,12 +40,11 @@ let controller = {
     const user = await UserModel.findOne({ email: request.body.email.toLowerCase() }).lean();
     if (!user || !commonFunctions.compareHash(request.body.password, user.password)) {
       throw INVALID_CREDENTIALS;
-      // response.status(400).json({
-      //   success: false,
-      //   message: "Invalid credentials"
-      // })
     } else {
       try{
+        if(request.headers.admin && (!user.role.includes(USER_ROLE.TEACHER) && !user.role.includes(USER_ROLE.ADMIN))){
+          throw UNAUTHORIZED;
+        }
         let token = await authService.createUserSession(user, LOGIN_TYPE.EDUSEEKER, null);
         response.status(200).json({
           success: true,
