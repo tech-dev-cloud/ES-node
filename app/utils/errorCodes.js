@@ -106,7 +106,7 @@ let errorCodes = {
   },
   DEVICE_LOGIN_LIMIT_EXCEED:{
     statusCode: 403,
-    message: 'This account is already being used on two other devices. Please log out from atleast one device to continue on this device',
+    message: 'This account is already being used on two other devices. If that\'s not you, please reset your password to avoid missuse your account.',
     type:'DEVICE_LOGIN_LIMIT_EXCEED'
   },
   NOT_ENROLLED:{
