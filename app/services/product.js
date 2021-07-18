@@ -107,7 +107,7 @@ let service = {
         let $unwind = '$user';
         let $project = { "user.createdAt": 0, "user.password": 0 };
         let $limit = limit;
-        let query = [{ $match },{$sort}, { $lookup }, { $unwind }, { $project }, { $limit }];
+        let query = [{ $match }, {$sort}, { $lookup }, { $unwind }, { $project }, { $limit }];
         let data = await Comment.aggregate(query);
         return data;
     },

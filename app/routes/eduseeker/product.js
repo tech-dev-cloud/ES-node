@@ -217,6 +217,7 @@ const routes = [
         parent_id: routeUtils.validation.mongooseId,
         rating: JOI.number(),
         status: JOI.boolean(),
+        priority:JOI.number(),
         review_id: routeUtils.validation.mongooseId
       },
       group: 'Reviews',

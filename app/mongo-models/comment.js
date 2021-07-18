@@ -7,7 +7,7 @@ let schema = new Schema({
     object_id: { type: Schema.Types.ObjectId, required: true },
     approved_type: { type: Number, enum: [1,2,3], default: 3 },// 1=> Top, 2=>medium, 3=> Low
     rating: { type: Number },
-    priority: { type: Number },
+    priority: { type: Number, default:0 },
     status: { type: Boolean, default: true },
     created_by: { type: Schema.Types.ObjectId, ref: 'user' },
     is_edited: { type: Boolean, default: false },

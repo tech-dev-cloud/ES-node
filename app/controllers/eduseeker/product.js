@@ -362,6 +362,9 @@ let productController = {
                 }
             }
         }
+        if(review_type==params.review_type.product_review){
+            comments.sort((a,b)=>b.priority-a.priority);
+        }
         response.status(200).json({
             success: true,
             data: { comments }
