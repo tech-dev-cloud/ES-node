@@ -217,7 +217,6 @@ const routes = [
         parent_id: routeUtils.validation.mongooseId,
         rating: JOI.number(),
         status: JOI.boolean(),
-        priority:JOI.number(),
         review_id: routeUtils.validation.mongooseId
       },
       group: 'Reviews',
@@ -252,6 +251,7 @@ const routes = [
         type: JOI.string().valid(['product_review', 'lecture_query', 'feedback']),
         status:JOI.boolean(),
         rating:JOI.number(),
+        priority:JOI.number(),
         message:JOI.string(),
         approved_type:JOI.number().valid([1,2,3]).description('1=>Top, 2=>middle, 3=>low'),
         id:routeUtils.validation.mongooseId,
