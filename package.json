@@ -37,7 +37,8 @@
     "swagger-ui-express": "^4.1.4",
     "vimeo": "^2.1.1",
     "webp-converter": "^2.3.0",
-    "winston": "^3.3.3"
+    "winston": "^3.3.3",
+    "winston-daily-rotate-file": "^4.5.5"
   },
   "devDependencies": {
     "@types/vscode": "^1.51.0",

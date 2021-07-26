@@ -1,12 +1,13 @@
 const MONGOOSE = require('mongoose');
 const Schema = MONGOOSE.Schema;
 
-let schema = new Schema({
+const schema = new Schema({
   name: { type: String, required: true, unique: true },
-  status: { type: Boolean, default: false },
-  isDeleted: { type: Boolean, default: false }
+  status: { type: Boolean, default: true },
+  isDeleted: { type: Boolean, default: false },
+  // exams: [{ type: Schema.Types.ObjectId, ref: 'terms' }],
 });
 
 schema.set('timestamps', true);
-let SubjectModel = MONGOOSE.model('subject', schema);
+const SubjectModel = MONGOOSE.model('subject', schema);
 module.exports = { SubjectModel };

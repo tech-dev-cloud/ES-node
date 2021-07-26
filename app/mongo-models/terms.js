@@ -1,11 +1,11 @@
-const { Schema, model } = require('mongoose');
+const { Schema, model, connections } = require('mongoose');
 
-let schema = new Schema({
+const schema = new Schema({
   term: { type: String, required: true, unique: true },
-  parent_id: { type: Schema.Types.ObjectId },
+  parent_id: { type: Schema.Types.ObjectId, ref: 'terms' },
   description: { type: String },
-  status: { type: Boolean }
+  status: { type: Boolean },
 });
 
-let TermsModel = model('term', schema);
+const TermsModel = model('term', schema);
 module.exports = { TermsModel };

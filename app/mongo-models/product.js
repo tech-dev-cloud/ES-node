@@ -18,7 +18,7 @@ let schema = new Schema({
         price: { type: Number },
         enrolled_limit: { type: Number }
     }],
-    type: { type: String, enum: ['notes', 'quiz', 'bulk', 'course'] }, // 1->PDF/notes/e-books, 2->quiz, 3->Bulk Pack, 4-> course
+    type: { type: String, enum: ['notes', 'quiz', 'bulk', 'course', 'test_seriese'] }, // 1->PDF/notes/e-books, 2->quiz, 3->Bulk Pack, 4-> course
     priority: { type: Number, default: 0 },
     similar_products: [{ type: Schema.Types.ObjectId }],
     isDraft: { type: Boolean, default: false },
