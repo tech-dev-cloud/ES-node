@@ -63,6 +63,7 @@ const controller = {
       'question',
       'description',
       'moduleId',
+      'topicId',
       'type',
     ]).lean();
     response.status(200).json({
