@@ -19,4 +19,5 @@ module.exports = {
   ...require('./order'),
   ...require('./videoContent'),
   ...require('./comment'),
-}
+  ...require('./topics'),
+};

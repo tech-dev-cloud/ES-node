@@ -132,37 +132,24 @@ const getHandlerMethod = (route) => {
   const { handler } = route;
   return (req, res) => {
     logger.info(`${route.method}: ${route.path}`);
-    try {
-      handler(req, res)
-        .then((res) => {})
-        .catch((err) => {
+    handler(req, res)
+      .then((res) => {})
+      .catch((err) => {
+        if (err.statusCode) {
           logger.error(err);
-          if (err) {
-            console.log(err);
-            res.status(err.statusCode).json({
-              success: false,
-              message: err.message,
-              type: err.type,
-            });
-            return;
-          }
-          res.status(500).json({
+          res.status(err.statusCode).json({
             success: false,
-            message: 'Something went wrong',
+            message: err.message,
+            type: err.type,
           });
+          return;
+        }
+        res.status(500).json({
+          success: false,
+          message: 'Something went wrong',
+          err: err.message,
         });
-    } catch (err) {}
-    // .then(result => {
-    //   if (result) {
-    //     res.status(200).json(result);
-    //   } else {
-    //     res.sendStatus(200);
-    //   }
-    // }).catch(error => {
-    //   logger.error('API Error'+error);
-    //   console.log(error);
-    //   res.status(400).json(error)
-    // });
+      });
   };
 };
 

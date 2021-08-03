@@ -1,6 +1,6 @@
 const JOI = require('joi');
+const { quizController } = require('../../modules/quiz/quizController');
 const { USER_ROLE, DIFFICULT_LEVEL } = require('../../utils/constants');
-const { quizController } = require('../../controllers');
 const routeUtils = require('../../utils/routeUtils');
 
 const routes = [
@@ -16,6 +16,8 @@ const routes = [
         subjectId: routeUtils.validation.mongooseId,
         headline: JOI.string(),
         difficultLevel: JOI.string().valid(Object.values(DIFFICULT_LEVEL)),
+        exam: JOI.string(),
+        type: JOI.string(),
         questionList: JOI.array().items(routeUtils.validation.mongooseId),
         attemptTime: JOI.number().required(),
       },
@@ -27,20 +29,22 @@ const routes = [
     handler: quizController.createQuiz,
   },
   {
-    path: '/api/quiz/:quizId',
+    path: '/api/quiz/:id',
     method: 'PUT',
     joiSchemaForSwagger: {
       headers: JOI.object({
         authorization: JOI.string().required(),
       }).unknown(),
       params: {
-        quizId: routeUtils.validation.mongooseId.required(),
+        id: routeUtils.validation.mongooseId.required(),
       },
       body: {
         title: JOI.string(),
         subjectId: routeUtils.validation.mongooseId,
         headline: JOI.string(),
         difficultLevel: JOI.string().valid(Object.values(DIFFICULT_LEVEL)),
+        type: JOI.string(),
+        exam: JOI.string(),
         questionList: JOI.array().items(routeUtils.validation.mongooseId),
         attemptTime: JOI.number(),
       },
@@ -57,7 +61,7 @@ const routes = [
     joiSchemaForSwagger: {
       headers: JOI.object({
         authorization: JOI.string().required(),
-        admin: JOI.boolean().default(false),
+        // admin: JOI.boolean().default(false),
       }).unknown(),
       query: {
         skip: JOI.number(),
@@ -69,34 +73,25 @@ const routes = [
       model: 'GetQuiz',
     },
     auth: [USER_ROLE.TEACHER, USER_ROLE.ADMIN],
-    handler: quizController.getQuizList,
+    handler: quizController.getQuiz,
   },
-  // {
-  //   path: `/api/${MODULE.name}/enrolled`,
-  //   method: 'GET',
-  //   joiSchemaForSwagger: {
-  //     headers: JOI.object({
-  //       'authorization': JOI.string().required()
-  //     }).unknown(),
-  //     group: `${MODULE.group}`,
-  //     description: 'Api to get Quiz List',
-  //     model: 'GetEnrolledQuiz'
-  //   },
-  //   auth: [USER_ROLE.STUDENT],
-  //   handler: quizController.getEnrolledQuiz
-  // },
   {
-    path: '/api/quiz/:quizId',
+    path: '/api/quiz/:id',
     method: 'GET',
     joiSchemaForSwagger: {
+      headers: JOI.object({
+        authorization: JOI.string().required(),
+        // admin: JOI.boolean().default(false),
+      }).unknown(),
       params: JOI.object({
-        quizId: routeUtils.validation.mongooseId,
+        id: routeUtils.validation.mongooseId,
       }),
       group: 'QUIZ',
       description: 'Api to get Quiz by ID',
       model: 'GetQuiz',
     },
-    handler: quizController.getQuizByID,
+    auth: [USER_ROLE.TEACHER, USER_ROLE.ADMIN],
+    handler: quizController.getQuizById,
   },
   // {
   //   path: `/api/${MODULE.name}/play/:product_id`,
@@ -115,23 +110,23 @@ const routes = [
   //   auth: [USER_ROLE.STUDENT],
   //   handler: quizController.getDataToPlay,
   // },
-  {
-    path: '/api/quiz/:quizId',
-    method: 'DELETE',
-    joiSchemaForSwagger: {
-      headers: JOI.object({
-        authorization: JOI.string().required(),
-      }).unknown(),
-      params: JOI.object({
-        quizId: routeUtils.validation.mongooseId,
-      }),
-      group: 'QUIZ',
-      description: 'Api to delete Quiz',
-      model: 'DeleteQuiz',
-    },
-    auth: [USER_ROLE.TEACHER, USER_ROLE.ADMIN],
-    handler: quizController.deleteQuiz,
-  },
+  // {
+  //   path: '/api/quiz/:id',
+  //   method: 'DELETE',
+  //   joiSchemaForSwagger: {
+  //     headers: JOI.object({
+  //       authorization: JOI.string().required(),
+  //     }).unknown(),
+  //     params: JOI.object({
+  //       quizId: routeUtils.validation.mongooseId,
+  //     }),
+  //     group: 'QUIZ',
+  //     description: 'Api to delete Quiz',
+  //     model: 'DeleteQuiz',
+  //   },
+  //   auth: [USER_ROLE.TEACHER, USER_ROLE.ADMIN],
+  //   handler: quizController.deleteQuiz,
+  // },
   // {
   //   path: `/api/flushCache/${MODULE.name}`,
   //   method: 'GET',

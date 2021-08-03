@@ -1,24 +1,31 @@
 {
-    "base_s3_img_url": "https://eduseeker-image-bucket.s3.ap-south-1.amazonaws.com/",
-    "product_cache_key": "product_",
-    "product_cache_expiry": 200000,
-    "quiz_question_key": "quiz_question_",
-    "quiz_question_expiry": 500,
-    "default_user": "600be4282cc2fcd777ad854c",
-    "backend_server": "https://devapi.eduseeker.in",
-    "frontend_server": "https://devweb.eduseeker.in",
-    "payment_webhook": "/api/payment/webhook",
-    "payment_redirection": "/order-confirm",
-    "product_types": {
-        "notes": "notes",
-        "quiz": "quiz",
-        "bulk": "bulk",
-        "course": "course"
-    },
-    "review_type": {
-        "product_review": "product_review",
-        "lecture_query": "lecture_query",
-        "feedback": "feedback"
-    },
-    "userSessionLimit": 2
+  "base_s3_img_url": "https://eduseeker-image-bucket.s3.ap-south-1.amazonaws.com/",
+  "product_cache_key": "product_",
+  "product_cache_expiry": 200000,
+  "quiz_question_key": "quiz_question_",
+  "quiz_question_expiry": 500,
+  "default_user": "600be4282cc2fcd777ad854c",
+  "backend_server": "https://devapi.eduseeker.in",
+  "frontend_server": "https://devweb.eduseeker.in",
+  "payment_webhook": "/api/payment/webhook",
+  "payment_redirection": "/order-confirm",
+  "product_types": {
+    "notes": "notes",
+    "quiz": "quiz",
+    "bulk": "bulk",
+    "course": "course"
+  },
+  "review_type": {
+    "product_review": "product_review",
+    "lecture_query": "lecture_query",
+    "feedback": "feedback"
+  },
+  "userSessionLimit": 2,
+  "mongo": {
+    "db": "eduseeker",
+    "host": "localhost",
+    "port": 27017,
+    "username": "",
+    "password": ""
+  }
 }

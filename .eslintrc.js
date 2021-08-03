@@ -20,5 +20,6 @@ module.exports = {
     quotes: ['error', 'single'],
     'no-var': 2,
     'prefer-const': 'error',
+    'no-undef': 'error',
   },
 };

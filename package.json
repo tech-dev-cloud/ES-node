@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js --ignore ./swagger.json",
+    "start": "nodemon pm2 start  server.js --ignore ./swagger.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

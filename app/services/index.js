@@ -1,12 +1,11 @@
 module.exports = {
   ...require('./authService'),
-  ...require('./subjectService'),
+  ...require('../modules/subjects/service'),
   ...require('./questionService'),
   ...require('./unitService'),
-  ...require('./quizService'),
   ...require('./paymentService'),
   ...require('./userService'),
   ...require('./performanceService'),
   ...require('./aws'),
-  ...require('./product')
-}
+  ...require('./product'),
+};

@@ -1,11 +1,23 @@
-const { EMAIL_TYPES, MONGO_ERROR, USER_ROLE, LOGIN_TYPE } = require('../../utils/constants');
+const {
+  EMAIL_TYPES,
+  MONGO_ERROR,
+  USER_ROLE,
+  LOGIN_TYPE,
+} = require('../../utils/constants');
 const util = require('../../utils/utils');
 const { UserModel, SessionModel } = require(`../../mongo-models`);
 const commonFunctions = require('../../utils/commonFunctions');
 const { User } = require('../../models/user');
 const { authService } = require('../../services');
 const logger = require('../../../config/winston');
-const { SOMETHING_WENT_WRONG, DUPLICATE_ENTRY, INVALID_CREDENTIALS, EMAIL_NOT_FOUND, UNAUTHORIZED, SESSION_EXPIRE } = require('../../utils/errorCodes');
+const {
+  SOMETHING_WENT_WRONG,
+  DUPLICATE_ENTRY,
+  INVALID_CREDENTIALS,
+  EMAIL_NOT_FOUND,
+  UNAUTHORIZED,
+  SESSION_EXPIRE,
+} = require('../../utils/errorCodes');
 
 let controller = {
   userRegister: async (request, response) => {
@@ -17,18 +29,21 @@ let controller = {
       let data = await user.save();
       response.status(200).json({
         success: true,
-        message: "User registered successfully",
-        data
-      })
+        message: 'User registered successfully',
+        data,
+      });
     } catch (err) {
       if (err.code == MONGO_ERROR.DUPLICATE) {
-        throw {...DUPLICATE_ENTRY, message:DUPLICATE_ENTRY.message.replace('{{key}}', 'Account')}
+        throw {
+          ...DUPLICATE_ENTRY,
+          message: DUPLICATE_ENTRY.message.replace('{{key}}', 'Account'),
+        };
         // response.status(400).json({
         //   success: false,
         //   message: "Account already exist"
         // })
       } else {
-        throw SOMETHING_WENT_WRONG
+        throw SOMETHING_WENT_WRONG;
         // response.status(SOMETHING_WENT_WRONG).json({
         //   success: false,
         //   message: "Something went wrong"
@@ -37,26 +52,39 @@ let controller = {
     }
   },
   userLogin: async (request, response) => {
-    const user = await UserModel.findOne({ email: request.body.email.toLowerCase() }).lean();
-    if (!user || !commonFunctions.compareHash(request.body.password, user.password)) {
+    const user = await UserModel.findOne({
+      email: request.body.email.toLowerCase(),
+    }).lean();
+    if (
+      !user ||
+      !commonFunctions.compareHash(request.body.password, user.password)
+    ) {
       throw INVALID_CREDENTIALS;
     } else {
-      try{
-        if(request.headers.admin && (!user.role.includes(USER_ROLE.TEACHER) && !user.role.includes(USER_ROLE.ADMIN))){
+      try {
+        if (
+          request.headers.admin &&
+          !user.role.includes(USER_ROLE.TEACHER) &&
+          !user.role.includes(USER_ROLE.ADMIN)
+        ) {
           throw UNAUTHORIZED;
         }
-        let token = await authService.createUserSession(user, LOGIN_TYPE.EDUSEEKER, null);
+        let token = await authService.createUserSession(
+          user,
+          LOGIN_TYPE.EDUSEEKER,
+          null
+        );
         response.status(200).json({
           success: true,
-          message: "Login successfull",
+          message: 'Login successfull',
           data: {
             accessToken: token,
             name: user.name,
-            ...(user.profile_pic ? { profile_pic: user.profile_pic } : {})
-          }
-        })
-      }catch(err){
-        throw err
+            ...(user.profile_pic ? { profile_pic: user.profile_pic } : {}),
+          },
+        });
+      } catch (err) {
+        throw err;
       }
     }
   },
@@ -72,16 +100,16 @@ let controller = {
       let expireTime = new Date();
       let resetPayload = {
         _id: user._id,
-        expireTime: expireTime.setHours(expireTime.getHours() + 5)
-      }
+        expireTime: expireTime.setHours(expireTime.getHours() + 5),
+      };
       user.resetPasswordToken = commonFunctions.encryptJwt(resetPayload);
       await user.save();
       try {
         await util.sendEmailSES(user, EMAIL_TYPES.FORGOT_PASSWORD);
         response.status(200).json({
           success: true,
-          message: "Please check you email to reset password"
-        })
+          message: 'Please check you email to reset password',
+        });
       } catch (err) {
         throw UNAUTHORIZED;
         // response.status(500).json({
@@ -92,9 +120,11 @@ let controller = {
     }
   },
   resetTokenVerification: async (request, response) => {
-    let user = await UserModel.findOne({ resetPasswordToken: request.body.token }).lean()
+    let user = await UserModel.findOne({
+      resetPasswordToken: request.body.token,
+    }).lean();
     if (!user) {
-      throw SESSION_EXPIRE
+      throw SESSION_EXPIRE;
       // response.status(400).json({
       //   success: false,
       //   message: "Invalid Token"
@@ -102,19 +132,26 @@ let controller = {
     } else {
       let obj = commonFunctions.decryptJwt(user.resetPasswordToken);
       if (obj.expireTime < Date.now()) {
-        throw SESSION_EXPIRE
+        throw SESSION_EXPIRE;
         // response.status(400).json({
         //   success: false,
         //   message: "Token expired"
         // })
       } else {
-        let updateData = { password: commonFunctions.hashPassword(request.body.password), resetPasswordToken: null };
-        let data = await UserModel.findByIdAndUpdate(obj._id, { $set: updateData }, { new: true });
+        let updateData = {
+          password: commonFunctions.hashPassword(request.body.password),
+          resetPasswordToken: null,
+        };
+        let data = await UserModel.findByIdAndUpdate(
+          obj._id,
+          { $set: updateData },
+          { new: true }
+        );
         response.status(200).json({
           success: true,
-          message: "Password rest successfully",
-          data
-        })
+          message: 'Password rest successfully',
+          data,
+        });
       }
     }
   },
@@ -122,8 +159,8 @@ let controller = {
     await SessionModel.deleteOne({ _id: request.user._id });
     response.status(200).json({
       success: true,
-      message: "Logout successfully",
-    })
+      message: 'Logout successfully',
+    });
   },
   socailLogin: async (request, response) => {
     let { email } = request.body;
@@ -132,7 +169,7 @@ let controller = {
     let userResponseData = {
       name: request.body.name,
       email,
-      profile_pic: request.body.profile_pic
+      profile_pic: request.body.profile_pic,
     };
     try {
       if (!existingUser) {
@@ -141,23 +178,26 @@ let controller = {
         user = new User(existingUser, request.body.login_type, request.body);
       }
       UserModel.findOneAndUpdate({ email }, user, { upsert: true, new: true })
-      .then(async (saved_user) => {
-        userResponseData['accessToken'] = await authService.createUserSession(saved_user.toObject(), request.body.login_type, null);
-        response.status(200).json({
-          success: true,
-          message: 'User created successfully',
-          data: userResponseData
+        .then(async (saved_user) => {
+          userResponseData['accessToken'] = await authService.createUserSession(
+            saved_user.toObject(),
+            request.body.login_type,
+            null
+          );
+          response.status(200).json({
+            success: true,
+            message: 'User created successfully',
+            data: userResponseData,
+          });
+        })
+        .catch((err) => {
+          throw err;
         });
-      }).catch(err=>{
-        throw err;
-      });
     } catch (err) {
       logger.err(err);
       throw SOMETHING_WENT_WRONG;
     }
-
-  }
-}
-
+  },
+};
 
 module.exports = { authController: controller };

@@ -1,8 +1,8 @@
 'use strict';
 
 const JOI = require('joi');
+const { subjectController } = require('../../modules/subjects/controller');
 const { USER_ROLE } = require('../../utils/constants');
-const { subjectController } = require('../../controllers');
 const routeUtils = require('../../utils/routeUtils');
 
 // options({ allowUnknown: true })
@@ -34,6 +34,42 @@ const routes = [
     },
     auth: [USER_ROLE.TEACHER, USER_ROLE.ADMIN],
     handler: subjectController.createSubject,
+  },
+  {
+    method: 'PUT',
+    path: '/api/subject/:id',
+    joiSchemaForSwagger: {
+      headers: JOI.object({
+        authorization: JOI.string().required(),
+      }).unknown(),
+      params: {
+        id: routeUtils.validation.mongooseId.required(),
+      },
+      body: {
+        name: JOI.string(),
+        status: JOI.boolean(),
+        modules: JOI.array().items(
+          JOI.object({
+            _id: routeUtils.validation.mongooseId,
+            subjectId: routeUtils.validation.mongooseId,
+            name: JOI.string(),
+            topics: JOI.array().items(
+              JOI.object({
+                _id: routeUtils.validation.mongooseId,
+                subjectId: routeUtils.validation.mongooseId,
+                moduleId: routeUtils.validation.mongooseId,
+                name: JOI.string(),
+              })
+            ),
+          })
+        ),
+      },
+      group: 'Subjects',
+      description: 'Api to update new Subject',
+      model: 'UpdateSubject',
+    },
+    auth: [USER_ROLE.TEACHER, USER_ROLE.ADMIN],
+    handler: subjectController.updateSubject,
   },
   {
     method: 'GET',
