@@ -144,11 +144,8 @@ const getHandlerMethod = (route) => {
           });
           return;
         }
-        res.status(500).json({
-          success: false,
-          message: 'Something went wrong',
-          err: err.message,
-        });
+        logger.error(err);
+        throw err;
       });
   };
 };

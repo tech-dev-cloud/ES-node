@@ -1,3 +1,14 @@
+const _ = require('lodash');
+const { PerformanceModel, Topics } = require('../../mongo-models');
+const { ProductService } = require('../../services');
+const {
+  getQuizQuestions,
+  getProductMapQuestion,
+  checkUserAnswer,
+  topicBasedChecking,
+} = require('../../services/quiz');
+const common = require('../../utils/common');
+const { DB, quiz_result } = require('../../utils/constants');
 const QuizService = require('./quizService');
 
 const controller = {
@@ -32,15 +43,16 @@ const controller = {
     }
   },
   async getQuiz(request, response) {
+    const skip = parseInt(request.query.skip) || 0;
+    const limit = parseInt(request.query.limit) || 20;
+    const search = request.query.searchString;
     const quizService = new QuizService();
     try {
-      const data = await quizService.getQuiz(
-        {
-          createdBy: request.user._id,
-        },
-        request.query.skip,
-        request.query.limit
-      );
+      const match = { createdBy: request.user._id };
+      if (search) {
+        match['$text'] = { $search: search };
+      }
+      const data = await quizService.getQuiz(match, skip, limit);
       response.status(200).json({
         success: true,
         message: 'Quiz created successfully',
@@ -52,133 +64,170 @@ const controller = {
   },
   async getQuizById(request, response) {
     const quizService = new QuizService();
-    try {
-      const data = await quizService.getQuiz(
-        {
-          createdBy: request.user._id,
-          _id: request.params.id,
-        },
-        0,
-        1
-      );
-      response.status(200).json({
-        success: true,
-        message: 'Quiz created successfully',
-        data: data[0],
-      });
-    } catch (err) {
-      throw err;
+    const data = await quizService.getQuiz(
+      {
+        createdBy: request.user._id,
+        _id: request.params.id,
+      },
+      0,
+      1
+    );
+    response.status(200).json({
+      success: true,
+      message: 'Quiz created successfully',
+      data: data[0],
+    });
+  },
+  async getDataToPlay(request, response) {
+    let questions;
+    let product;
+    let existingAttempt;
+    const data =
+      request.query.type == 'quiz'
+        ? (await getQuizQuestions(request.params.product_id))[0]
+        : await getProductMapQuestion(request.params.product_id);
+
+    if (request.body.resume_doc_id) {
+      existingAttempt = await PerformanceModel.findOne({
+        _id: request.body.resume_doc_id,
+      }).lean();
     }
+    if (request.query.type == 'quiz') {
+      questions = data.questionData;
+      delete data.questionData;
+      product = _.pick(data, [
+        'title',
+        'exam',
+        'type',
+        'attemptTime',
+        'totalQuestions',
+        'difficultLevel',
+      ]);
+      delete product.questionList;
+    } else {
+      questions = data.map((obj) => obj.questionData);
+      const obj = new ProductService();
+      product = await obj.getProduct(request.params.product_id);
+      product = {
+        title: product.name,
+        attemptTime: product.product_meta.time_limit,
+        totalQuestions: product.product_meta.totalQuestions,
+      };
+    }
+    response.status(200).json({
+      success: true,
+      data: {
+        product,
+        questions,
+        ...(existingAttempt ? { existingAttempt } : {}),
+      },
+    });
+  },
+  async getQuizResult(request, response) {
+    let responseObject = {};
+    let cutOffMeet = false;
+    const attemptData = await PerformanceModel.findOne({
+      product_id: request.params.quizID,
+      user_id: request.user._id,
+      status: DB.QUIZ_PLAY_STATUS.COMPLETED,
+    }).lean();
+    let questionsData;
+    let topicPerformanceData;
+    const timeTaken = {
+      minutes: 0,
+      seconds: 0,
+    };
+    if (attemptData.type == 'quiz') {
+      questionsData = await getQuizQuestions(attemptData.product_id);
+      const data = topicBasedChecking(
+        questionsData,
+        attemptData.userAnswers,
+        _
+      );
+      topicPerformanceData = data.topicPerformance;
+      const topicIds = topicPerformanceData.map((obj) => obj.topicId);
+      let topics = await Topics.find(
+        { _id: { $in: topicIds } },
+        { name: 1, _id: 1 }
+      ).lean();
+      topics = _.keyBy(topics, '_id');
+      topicPerformanceData = topicPerformanceData.map((obj) => ({
+        ...obj,
+        topicName: topics[obj.topicId].name,
+      }));
+      timeTaken.minutes =
+        questionsData.attemptTime -
+        attemptData.remainingTime.hours * 60 +
+        attemptData.remainingTime.minutes;
+      timeTaken.seconds = attemptData.remainingTime.seconds - 60;
+    } else {
+      const productService = new ProductService();
+      const product = await productService.getProduct(attemptData.product_id);
+      cutOffMeet = attemptData.finalScore >= product.cutOffMeet;
+      timeTaken.minutes =
+        product.product_meta.time_limit -
+        (attemptData.remainingTime.hours * 60 +
+          attemptData.remainingTime.minutes);
+      timeTaken.seconds = 60 - attemptData.remainingTime.seconds;
+    }
+    responseObject = {
+      ...(cutOffMeet ? { ...quiz_result.pass } : { ...quiz_result.fail }),
+      ...(topicPerformanceData
+        ? { topicPerformance: topicPerformanceData }
+        : {}),
+      ...attemptData,
+      timeTaken,
+    };
+    response.status(200).json({
+      success: true,
+      data: responseObject,
+    });
+  },
+  async getLeaderBoard(request, response) {
+    let userRanking = await PerformanceModel.aggregate([
+      {
+        $match: {
+          product_id: request.params.quizID,
+          status: DB.QUIZ_PLAY_STATUS.COMPLETED,
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'user_id',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      { $unwind: '$user' },
+      { $sort: { finalScore: -1 } },
+    ]);
+    userRanking = userRanking.map((obj, index) => ({
+      ...obj,
+      rank: index + 1,
+    }));
+    let userAttemptIndex = userRanking.findIndex(
+      (obj) => obj.user_id == request.user._id
+    );
+    if (userAttemptIndex >= 3) {
+      userRanking = userRanking.splice(3, 0, {
+        ...userRanking[userAttemptIndex],
+        active: true,
+      });
+    } else if (userAttemptIndex >= 0) {
+      userRanking = userRanking.splice(0, 3);
+      userRanking[userAttemptIndex].active = true;
+    }
+    userRanking = userRanking.map((obj) => ({
+      rank: obj.rank,
+      finalScore: obj.finalScore,
+      username: obj.user.name,
+      userpic: (obj.user.googleDetails || {}).profile_pic,
+    }));
+    response.status(200).json({
+      success: true,
+      data: userRanking,
+    });
   },
 };
-
-// controller.createQuiz = async (request, response) => {
-//   const quiz = new QuizModel({
-//     ...request.body,
-//     totalQuestions: request.body.questionList.length,
-//   });
-//   quiz.save().then((res) => {
-//     response.status(200).json({
-//       success: true,
-//       message: 'Quiz created successfully',
-//     });
-//   });
-// };
-
-// controller.findResource = async (payload) => {
-//   const data = await quizService.findResource(payload);
-//   return responseHelper.createSuccessResponse(MESSAGES.QUIZ.FETCH, data);
-// };
-
-// controller.flushCache = async (payload) => {
-//   const data = await quizService.flushCache(payload);
-//   return responseHelper.createSuccessResponse('', data);
-// };
-
-// controller.getQuizList = async (request, response) => {
-//   const $match = { isDeleted: false };
-//   const $text = {};
-//   const skip = request.query.skip || 0;
-//   const limit = request.query.limit || 10;
-//   if (request.headers.admin) {
-//     $match['createdBy'] = request.user._id;
-//   }
-//   if (request.query.searchString) {
-//     $text['$search'] = request.query.searchString;
-//   }
-//   let data = await QuizModel.find({ $match, $text })
-//     .skip(skip)
-//     .limit(limit)
-//     .lean();
-//   response.status(200).json({
-//     success: true,
-//     data,
-//   });
-// };
-
-// controller.getQuizByID = async (request, response) => {
-//   const data = await QuizModel.findOne({
-//     _id: request.params.quizId,
-//     createdBy: request.user._id,
-//     isDeleted: false,
-//   }).lean();
-//   response.status(200).json({
-//     success: true,
-//     data,
-//   });
-// };
-
-// controller.updateQuiz = async (request, response) => {
-//   let quiz = await QuizModel.findOneAndUpdate(
-//     { _id: request.params.quizId, createdBy: request.user._id },
-//     { ...request.body, totalQuestions: payload.questionList.length },
-//     { new: true }
-//   ).lean();
-//   response.status(200).json({
-//     success: true,
-//     message: 'Quiz updated successfully',
-//     data: quiz,
-//   });
-// };
-
-// controller.getDataToPlay = async (request, response) => {
-//   let product_id = request.params.product_id;
-//   let questions = [];
-//   const isPurchased = await Order.findOne({
-//     product_id: product_id,
-//     user_id: request.user._id,
-//     order_status: { $in: ['Credit', 'Free'] },
-//   }).lean();
-//   if (isPurchased) {
-//     let product = await productService.getProduct(product_id);
-//     let question_ids = await ProductQuestionMap.find(
-//       { product_id },
-//       { question_id: 1 }
-//     ).lean();
-//     for (let index = 0; index < question_ids.length; index++) {
-//       let obj = await common.getQuestion(question_ids[index].question_id);
-//       if (obj) {
-//         questions.push(obj);
-//       }
-//     }
-//     response.status(200).json({
-//       success: true,
-//       message: 'Quiz Data to play',
-//       data: { questions, product },
-//     });
-//   } else {
-//     throw NOT_ENROLLED;
-//   }
-// };
-
-// controller.deleteQuiz = async (request, response) => {
-//   const data = await QuizModel.updateOne(
-//     { _id: request.params.quizId, createdBy: request.user._id },
-//     { $set: { isDeleted: true } }
-//   );
-//   response.status(200).json({
-//     success: true,
-//     data,
-//   });
-// };
 module.exports = { quizController: controller };

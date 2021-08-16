@@ -4,8 +4,6 @@ const responseHelper = require('../../utils/responseHelper');
 const common = require('../../utils/common');
 
 module.exports = class QuizService {
-  constructor() {}
-
   async addNewQuiz(data, instructorId) {
     let quiz = new QuizModel({
       ...data,
@@ -38,7 +36,7 @@ service.createQuiz = async (payload) => {
     instructor: payload.user.userId,
     totalQuestions: payload.questionList.length,
   });
-  return await quiz.save();
+  return quiz.save();
 };
 
 /**
@@ -77,7 +75,7 @@ service.flushCache = async (payload) => {
 };
 
 service.findResourceById = async (payload) => {
-  return await common.getQuizData(payload.quizId);
+  return common.getQuizData(payload.quizId);
 };
 
 service.updateQuiz = async (payload) => {
@@ -106,7 +104,7 @@ service.getDataToPlay = async (payload) => {
       foreignField: '_id',
       as: 'subjectData',
     };
-    // let performanceLookup = { from: 'performances', localField: '_id', foreignField: 'quizId', as: 'playStatus' };
+    /*// let performanceLookup = { from: 'performances', localField: '_id', foreignField: 'quizId', as: 'playStatus' };*/
     let match = { $match: { _id: payload.quizId } };
     let query = [
       match,
@@ -117,22 +115,21 @@ service.getDataToPlay = async (payload) => {
       // { $unwind: {path:`$${performanceLookup.as}`, preserveNullAndEmptyArrays:true }},
       { $project: { questionList: 0 } },
     ];
-    let data = (await QuizModel.aggregate(query))[0];
-    // if(data.playStatus && data.playStatus.status==DB.QUIZ_PLAY_STATUS.COMPLETED){
+    return (await QuizModel.aggregate(query))[0];
+    /*// if(data.playStatus && data.playStatus.status==DB.QUIZ_PLAY_STATUS.COMPLETED){
     //   data.playStatus['questionWithAns'] = _.keyBy(data.questions,'_id');
     // }
-    return data;
+    // return data;*/
   }
   throw responseHelper.createErrorResponse(ERROR_TYPE.UNAUTHORIZED);
 };
 
 service.deleteQuiz = async (payload) => {
   if (!payload.hardDelete) {
-    return await QuizModel.findOneAndDelete(
+    return QuizModel.findOneAndDelete(
       { _id: payload.quizId },
       { isDeleted: true }
     ).lean();
   }
-  return await QuizModel.deleteOne({ _id: payload.id });
+  return QuizModel.deleteOne({ _id: payload.id });
 };
-// module.exports = { quizService: service };

@@ -6,7 +6,6 @@ const {
   ProductImage,
   ProductQuestionMap,
   Document,
-  Order,
   Comment,
   UserModel,
 } = require('../../mongo-models');
@@ -14,13 +13,12 @@ const config = require('../../../config/config');
 let params = require(`../../../config/env/${config.NODE_ENV}_params.json`);
 const redis = require('../../../config/redisConnection');
 const { aws } = require('../../services/aws');
-// const common = require('../../utils/common');
-const { productService } = require('../../services');
+const { productService, ProductService } = require('../../services');
 let { Product } = require('../../models/shop');
 const {
   review_type,
-  USER_ROLE,
   order_status,
+  PRODUCTS_TYPE,
 } = require('../../utils/constants');
 const logger = require('../../../config/winston');
 const { NOT_ENROLLED } = require('../../utils/errorCodes');
@@ -33,26 +31,25 @@ let productController = {
   createProduct: async (request, response) => {
     let product_type = request.body.type;
     let product_payload = { ...request.body, created_by: request.user._id };
-    if (product_type == params.product_types.bulk) {
+    if (product_type == PRODUCTS_TYPE.bulk) {
       product_payload['sub_products'] = request.body.product_map_data.map(
         (product_id) => Mongoose.Types.ObjectId(product_id)
       );
-    } else if (product_type == params.product_types.quiz) {
+    } else if (product_type == PRODUCTS_TYPE.quiz) {
       product_payload.product_meta['totalQuestions'] =
         request.body.product_map_data.length;
+    } else if (product_type == PRODUCTS_TYPE.test_series) {
+      product_payload['quizId'] = request.body.product_map_data.map((quizId) =>
+        Mongoose.Types.ObjectId(quizId)
+      );
     }
-
     // Save Product
     let obj = new ProductModel(product_payload);
     let product = await obj.save();
-    // if (request.body.image) {
-    //     let image = new ProductImage({ ...request.body.image, product_id: product._id });
-    //     product['image'] = await image.save();
-    // }
     let data;
     if (request.body.product_map_data) {
       switch (request.body.type) {
-        case params.product_types.notes:
+        case PRODUCTS_TYPE.notes:
           data = request.body.product_map_data.map((obj) => ({
             ...obj,
             user_id: request.user._id,
@@ -60,7 +57,7 @@ let productController = {
           }));
           await Document.insertMany(data);
           break;
-        case params.product_types.quiz:
+        case PRODUCTS_TYPE.quiz:
           data = request.body.product_map_data.map((question_id) => ({
             question_id,
             product_id: product._id,
@@ -99,7 +96,7 @@ let productController = {
       match['type'] = prodcut_type;
     }
     if (request.query.searchString) {
-      match['type'] = { $ne: '3' };
+      match['type'] = { $ne: PRODUCTS_TYPE.bulk };
       match['$text'] = { $search: request.query.searchString };
     }
     try {
@@ -107,21 +104,26 @@ let productController = {
         { $match: match },
         {
           $lookup: {
-            from: 'product_images',
-            let: { id: '$_id' },
-            pipeline: [
-              { $match: { $expr: { $eq: ['$product_id', '$$id'] } } },
-              { $project: { image_path: 1 } },
-            ],
-            as: 'image',
-          },
-        },
-        {
-          $lookup: {
             from: 'products',
             localField: 'similar_products',
             foreignField: '_id',
             as: 'similar_products_info',
+          },
+        },
+        {
+          $lookup: {
+            from: 'quizzes',
+            localField: 'quizId',
+            foreignField: '_id',
+            as: 'quizData',
+          },
+        },
+        {
+          $project: {
+            'quizData.questionList': 0,
+            'quizData.createdAt': 0,
+            'quizData.updatedAt': 0,
+            'quizData.createdBy': 0,
           },
         },
         { $sort: { _id: -1 } },
@@ -134,7 +136,7 @@ let productController = {
       if (request.query.product_id) {
         productMetaData = await productService.getProductMeta(data[0].items[0]);
         responseData = { ...responseData, productMetaData };
-        if (data[0].items[0].type == params.product_types.bulk) {
+        if (data[0].items[0].type == PRODUCTS_TYPE.bulk) {
           responseData.items[0].sub_products_info = await ProductModel.find({
             _id: { $in: data[0].items[0].sub_products },
           }).lean();
@@ -150,9 +152,13 @@ let productController = {
     });
   },
   updateProductByID: async (request, response) => {
-    if (request.body.type == params.product_types.bulk) {
+    if (request.body.type == PRODUCTS_TYPE.bulk) {
       request.body['sub_products'] = request.body.product_map_data.map(
         (product_id) => Mongoose.Types.ObjectId(product_id)
+      );
+    } else if (request.body.type == PRODUCTS_TYPE.test_series) {
+      request.body['quizId'] = request.body.product_map_data.map((quizId) =>
+        Mongoose.Types.ObjectId(quizId)
       );
     }
     await ProductModel.updateOne({ _id: request.params.id }, request.body);
@@ -164,27 +170,22 @@ let productController = {
       );
     }
     switch (request.body.type) {
-      case '1': //Document Update
-        data = request.body.product_map_data.map((obj) => ({
+      case PRODUCTS_TYPE.notes: //Document Update
+        const data = request.body.product_map_data.map((obj) => ({
           ...obj,
           user_id: request.user._id,
           product_id: request.params.id,
         }));
         await Document.insertMany(data);
         break;
-      case '2': //Quiz
+      case PRODUCTS_TYPE.quiz: //Quiz
         try {
-          await commonF.updateQuiz(request.body, request.params.id);
+          commonF.updateQuiz(request.body, request.params.id);
         } catch (err) {
           console.log(err);
         }
         break;
-      case '3': //Bulk
-        try {
-          await commonF.updateQuiz(request.body, request.params.id);
-        } catch (err) {
-          console.log(err);
-        }
+      case PRODUCTS_TYPE.bulk: //Bulk
         break;
     }
     response.status(200).json({
@@ -192,8 +193,7 @@ let productController = {
       message: 'Product updated successfully',
     });
   },
-  // Get Products
-  getProducts: async (request, response) => {
+  async getProducts(request, response) {
     let data = [];
     let product_ids = [];
     let products = [];
@@ -202,10 +202,11 @@ let productController = {
         request.user._id
       );
     } else {
-      let condition = { status: true, isPublish: true };
-      if (request.query.type) {
-        condition['type'] = request.query.type;
-      }
+      let condition = {
+        status: true,
+        isPublish: true,
+        ...(request.query.type ? { type: request.query.type } : {}),
+      };
       product_ids = await ProductModel.find(condition, { _id: 1 })
         .sort({ priority: -1 })
         .lean();
@@ -213,14 +214,15 @@ let productController = {
     }
     let product_promise = [];
     let product_user_review_promise = [];
-    for (let i = 0; i < product_ids.length; i++) {
-      let currentProduct = productService.getProduct(product_ids[i]);
+    for (const productId of product_ids) {
+      let currentProduct = productService.getProduct(productId);
       if (request.query.enrolled) {
         let user_review = productService.getUserProductReview(
-          product_ids[i],
+          productId,
           request.user._id,
           review_type.product_review
         );
+
         product_user_review_promise.push(user_review);
       }
       product_promise.push(currentProduct);
@@ -236,6 +238,8 @@ let productController = {
         let currentProduct = product_promise[index];
         if (currentProduct) {
           if (request.query.enrolled && product_user_review_promise.length) {
+            const service = new ProductService();
+            await service.getProductMetaData(currentProduct, request.user._id);
             if (
               product_user_review_promise[index] &&
               product_user_review_promise[index].length
@@ -254,32 +258,7 @@ let productController = {
       logger.error(err);
     }
     if (!request.query.type) {
-      products = _.groupBy(products, (obj) => obj.type);
-      for (let key in products) {
-        let item = { title: '', weburl: '', products: products[key] };
-        if (key == params.product_types.notes) {
-          item.id = 4;
-          item.title = 'PDF/E-Books';
-          item.weburl = `pdf-${item.id}`;
-          data.push(item);
-        } else if (key == params.product_types.quiz) {
-          item.id = 3;
-          item.title = 'Quiz';
-          item.weburl = `quiz-${item.id}`;
-          data.push(item);
-        } else if (key == params.product_types.bulk) {
-          item.id = 2;
-          item.title = 'Bulk Package';
-          item.weburl = `bulk-${item.id}`;
-          data.push(item);
-        } else if (key == params.product_types.course) {
-          item.id = 1;
-          item.title = 'Courses';
-          item.weburl = `course-${item.id}`;
-          data.push(item);
-        }
-      }
-      data.sort((a, b) => a.id - b.id);
+      data = productService.categorizeProduct(products);
     }
     response.status(200).json({
       success: true,
@@ -290,59 +269,51 @@ let productController = {
   getProductDetails: async (request, response) => {
     const product_id = request.params.product_id;
     let enrolled = request.query.enrolled == 'true';
+    const prodService = new ProductService();
     let responsePayload = {};
+
     try {
       let result = await Promise.all([
-        productService.getProduct(request.params.product_id),
-        productService.isProductPurchased(product_id, request.user),
+        prodService.getProduct(request.params.product_id),
+        prodService.isProductPurchased(product_id, request.user),
       ]);
       let product = new Product(result[0]);
       const enrolledStatus = [];
-      if (product.type == params.product_types.course) {
+      if (product.type == PRODUCTS_TYPE.course) {
         enrolledStatus.push(order_status.credit);
       }
-      let count = await productService.totalEnrolled(
-        product_id,
-        enrolledStatus
-      );
+      let count = await prodService.totalEnrolled(product_id, enrolledStatus);
       product['totalEnrolled'] = enrolledStatus.length ? count : count * 2;
 
       let obj = result[1];
       product['purchaseStatus'] = obj.purchased;
-
-      if (product.type == params.product_types.bulk) {
-        product['sub_products'] = await Promise.all(
-          product.sub_products.map(async (product_id) => {
-            let obj = await productService.getProduct(product_id);
-            return obj;
-          })
-        );
-      } else if (
-        product.type == params.product_types.notes &&
-        request.query.enrolled
-      ) {
-        let docs = await Document.find(
-          { product_id: product._id, status: true },
-          { _id: 1, filename: 1, url: 1, size: 1, mime_type: 1 }
-        ).lean();
-        product['docs'] = docs;
-      }
+      await prodService.getProductMetaData(product);
+      // if (product.type == PRODUCTS_TYPE.bulk) {
+      //   product['sub_products'] = await Promise.all(
+      //     product.sub_products.map(async (product_id) => {
+      //       let obj = await productService.getProduct(product_id);
+      //       return obj;
+      //     })
+      //   );
+      // } else if (
+      //   product.type == PRODUCTS_TYPE.notes &&
+      //   request.query.enrolled
+      // ) {
+      //   let docs = await Document.find(
+      //     { product_id: product._id, status: true },
+      //     { _id: 1, filename: 1, url: 1, size: 1, mime_type: 1 }
+      //   ).lean();
+      //   product['docs'] = docs;
+      // }
       if (enrolled) {
         if (!product.purchaseStatus) {
-          let data = {};
           throw NOT_ENROLLED;
-          // response.status(400).json({
-          //     success: false,
-          //     message: 'You have not enroll for this course',
-          //     data
-          // });
-          // return;
         }
         await product.userRatingReview(request.user._id);
       }
-      if (product.type == params.product_types.course) {
-        responsePayload.contents = await product.videoContent(enrolled);
-      }
+      // if (product.type == PRODUCTS_TYPE.course) {
+      //   responsePayload.contents = await product.videoContent(enrolled);
+      // }
       response.status(200).json({
         success: true,
         message: 'Product fetched successfully',
@@ -417,11 +388,6 @@ let productController = {
       });
     } catch (err) {
       throw err;
-      // console.log(err)
-      // response.status(400).json({
-      //     success: false,
-      //     message: err
-      // })
     }
   },
   getReviews: async (request, response) => {
@@ -473,7 +439,7 @@ let productController = {
       if (type == params.review_type.product_review) {
         const product = await productService.getProduct(object_id);
         if (product.created_by != request.user._id.toString()) {
-          throw "You can't changes this comment status";
+          throw new Error("You can't changes this comment status");
         }
         if (request.body.id) {
           await Comment.findOneAndUpdate(
@@ -487,7 +453,6 @@ let productController = {
           ).lean();
           let obj = new Comment({ ...request.body, created_by: user._id });
           let data = await obj.save();
-          console.log('=-=-=-=', data);
         }
       }
       response.status(200).send();
@@ -519,7 +484,6 @@ let commonF = {
                 await image.save();
               }
             }
-            return;
           },
           updateQuizMap: async () => {
             if (payload.removed_items && payload.removed_items.length) {
@@ -535,7 +499,6 @@ let commonF = {
               }));
               await ProductQuestionMap.insertMany(data);
             }
-            return;
           },
         },
         function (err) {

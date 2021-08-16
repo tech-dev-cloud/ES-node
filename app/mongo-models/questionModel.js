@@ -13,6 +13,7 @@ const schema = new Schema({
   options: [{ type: String }],
   correctOption: [{ type: Number, required: true }],
   createdBy: { type: Schema.Types.ObjectId, ref: 'users' },
+  owner: { type: Schema.Types.ObjectId, ref: 'users' },
   status: { type: Boolean, default: false },
 });
 

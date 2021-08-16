@@ -33,11 +33,11 @@ const controller = {
       subjectId: request.query.subjectId,
       moduleId: request.query.moduleId,
       topicId: request.query.topicId,
+      ...(request.user.role.some((role) => role == USER_ROLE.ADMIN)
+        ? { owner: request.user._id }
+        : { createdBy: request.user._id }),
     };
     match = _.pickBy(match, (val) => ![undefined, null, ''].includes(val));
-    if (!request.user.role.some((role) => role == USER_ROLE.ADMIN)) {
-      match['createdBy'] = request.user._id;
-    }
     const data = await QuestionModel.find(match, [
       '_id',
       'options',

@@ -15,16 +15,16 @@ const user = new schema({
     name: { type: String, trim: true },
     phoneNumber: { type: String },
     profile_pic: { type: String },
-    id: { type: String }
+    id: { type: String },
   },
   fbDetails: {
     name: { type: String, trim: true },
     phoneNumber: { type: String },
     profile_pic: { type: String },
-    id: { type: String }
-  }
-})
+    id: { type: String },
+  },
+});
 
-user.set("timestamps", true);
-let UserModel = MONGOOSE.model('user', user);
-module.exports = { UserModel }
+user.set('timestamps', true);
+const UserModel = MONGOOSE.model('user', user);
+module.exports = { UserModel };

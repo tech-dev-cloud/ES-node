@@ -20,6 +20,8 @@ const routes = [
         type: JOI.string(),
         questionList: JOI.array().items(routeUtils.validation.mongooseId),
         attemptTime: JOI.number().required(),
+        topicId: routeUtils.validation.mongooseId,
+        moduleId: routeUtils.validation.mongooseId,
       },
       group: 'QUIZ',
       description: 'Api to create Quiz',
@@ -47,6 +49,8 @@ const routes = [
         exam: JOI.string(),
         questionList: JOI.array().items(routeUtils.validation.mongooseId),
         attemptTime: JOI.number(),
+        topicId: routeUtils.validation.mongooseId,
+        moduleId: routeUtils.validation.mongooseId,
       },
       group: 'QUIZ',
       description: 'Api to Update Quiz',
@@ -93,56 +97,63 @@ const routes = [
     auth: [USER_ROLE.TEACHER, USER_ROLE.ADMIN],
     handler: quizController.getQuizById,
   },
-  // {
-  //   path: `/api/${MODULE.name}/play/:product_id`,
-  //   method: 'GET',
-  //   joiSchemaForSwagger: {
-  //     headers: JOI.object({
-  //       authorization: JOI.string().required(),
-  //     }).unknown(),
-  //     params: JOI.object({
-  //       product_id: routeUtils.validation.mongooseId,
-  //     }),
-  //     group: `${MODULE.group}`,
-  //     description: 'Api to get Quiz data to play',
-  //     model: 'GetQuizToPlay',
-  //   },
-  //   auth: [USER_ROLE.STUDENT],
-  //   handler: quizController.getDataToPlay,
-  // },
-  // {
-  //   path: '/api/quiz/:id',
-  //   method: 'DELETE',
-  //   joiSchemaForSwagger: {
-  //     headers: JOI.object({
-  //       authorization: JOI.string().required(),
-  //     }).unknown(),
-  //     params: JOI.object({
-  //       quizId: routeUtils.validation.mongooseId,
-  //     }),
-  //     group: 'QUIZ',
-  //     description: 'Api to delete Quiz',
-  //     model: 'DeleteQuiz',
-  //   },
-  //   auth: [USER_ROLE.TEACHER, USER_ROLE.ADMIN],
-  //   handler: quizController.deleteQuiz,
-  // },
-  // {
-  //   path: `/api/flushCache/${MODULE.name}`,
-  //   method: 'GET',
-  //   joiSchemaForSwagger: {
-  //     headers: JOI.object({
-  //       authorization: JOI.string().required(),
-  //     }).unknown(),
-  //     query: JOI.object({
-  //       id: JOI.string(),
-  //     }),
-  //     group: `${MODULE.group}`,
-  //     description: 'Api to flush all Quiz from Cache',
-  //     model: 'FlushQuizCache',
-  //   },
-  //   auth: [USER_ROLE.ADMIN, USER_ROLE.TEACHER],
-  //   handler: quizController.flushCache,
-  // },
+  {
+    path: '/api/quiz/play/:product_id',
+    method: 'GET',
+    joiSchemaForSwagger: {
+      headers: JOI.object({
+        authorization: JOI.string().required(),
+      }).unknown(),
+      params: JOI.object({
+        product_id: routeUtils.validation.mongooseId,
+      }),
+      query: {
+        type: JOI.string().valid(['quiz', 'product']),
+        resume_doc_id: routeUtils.validation.mongooseId,
+      },
+      group: 'QUIZ',
+      description: 'Api to get Quiz data to play',
+      model: 'GetQuizToPlay',
+    },
+    auth: [USER_ROLE.STUDENT],
+    handler: quizController.getDataToPlay,
+  },
+  {
+    path: '/api/quiz/result/:quizID',
+    method: 'GET',
+    joiSchemaForSwagger: {
+      headers: JOI.object({
+        authorization: JOI.string().required(),
+      }).unknown(),
+      params: JOI.object({
+        quizID: routeUtils.validation.mongooseId,
+      }),
+      query: {
+        type: JOI.string().valid(['quiz', 'product']),
+      },
+      group: 'QUIZ',
+      description: 'Api get quiz result',
+      model: 'GetQuizResult',
+    },
+    auth: [USER_ROLE.STUDENT],
+    handler: quizController.getQuizResult,
+  },
+  {
+    path: '/api/leaderboard/:quizID',
+    method: 'GET',
+    joiSchemaForSwagger: {
+      headers: JOI.object({
+        authorization: JOI.string().required(),
+      }).unknown(),
+      params: JOI.object({
+        quizID: routeUtils.validation.mongooseId,
+      }),
+      group: 'QUIZ',
+      description: 'Api get quiz result',
+      model: 'GetQuizResult',
+    },
+    auth: [USER_ROLE.STUDENT],
+    handler: quizController.getLeaderBoard,
+  },
 ];
 module.exports = routes;

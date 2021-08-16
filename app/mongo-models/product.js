@@ -1,4 +1,5 @@
 const MONGOOSE = require('mongoose');
+const { PRODUCTS_TYPE } = require('../utils/constants');
 const Schema = MONGOOSE.Schema;
 
 const schema = new Schema({
@@ -22,8 +23,8 @@ const schema = new Schema({
   ],
   type: {
     type: String,
-    enum: ['notes', 'quiz', 'bulk', 'course', 'test_seriese'],
-  }, // 1->PDF/notes/e-books, 2->quiz, 3->Bulk Pack, 4-> course
+    enum: Object.values(PRODUCTS_TYPE),
+  },
   priority: { type: Number, default: 0 },
   similar_products: [{ type: Schema.Types.ObjectId }],
   isDraft: { type: Boolean, default: false },
@@ -33,6 +34,7 @@ const schema = new Schema({
   product_meta: {},
   created_by: { type: Schema.Types.ObjectId, ref: 'user' },
   sub_products: [{ type: Schema.Types.ObjectId, ref: 'products' }],
+  quizId: [{ type: Schema.Types.ObjectId, ref: 'quiz' }],
 });
 
 schema.set('timestamps', true);

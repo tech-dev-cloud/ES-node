@@ -47,6 +47,7 @@ const CONSTANTS = {
     quiz: 'quiz',
     bulk: 'bulk',
     course: 'course',
+    test_series: 'test_series',
   },
   DIFFICULT_LEVEL: {
     BEGINNER: 'Biginner',
@@ -63,6 +64,20 @@ const CONSTANTS = {
     credit: 'Credit',
     failed: 'Failed',
     Free: 'Free',
+  },
+  quiz_result: {
+    fail: {
+      title: 'Try Harder Next Time',
+      subtitle: "You didn't meet the cut-off",
+      banner:
+        'https://eduseeker-image-bucket.s3.ap-south-1.amazonaws.com/s1/1629031275258not_qualified.webp',
+    },
+    pass: {
+      title: 'Congratulations! You have passed the cut-off',
+      subtitle: 'Good Job!',
+      banner:
+        'https://eduseeker-image-bucket.s3.ap-south-1.amazonaws.com/s1/1629031275258not_qualified.webp',
+    },
   },
 };
 
