@@ -35,6 +35,7 @@ const routes = [
       body: {
         resume_doc_id: routeUtils.validation.mongooseId,
         product_id: routeUtils.validation.mongooseId,
+        type: JOI.string().valid(['quiz', 'product']),
         userAnswers: JOI.object({
           question_id: routeUtils.validation.mongooseId,
           answer: JOI.array().items(JOI.string().required()),
@@ -85,6 +86,7 @@ const routes = [
       }).unknown(),
       body: {
         product_id: routeUtils.validation.mongooseId,
+        session_id: routeUtils.validation.mongooseId,
         remainingTime: JOI.object({
           hours: JOI.number(),
           minutes: JOI.number(),

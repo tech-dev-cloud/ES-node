@@ -13,6 +13,7 @@ let controller = {};
 controller.startQuiz = async (payload) => {};
 
 controller.saveAnswer = async (request, response) => {
+  let responseObject;
   let criteria = request.body.resume_doc_id
     ? { _id: request.body.resume_doc_id }
     : {
@@ -21,7 +22,7 @@ controller.saveAnswer = async (request, response) => {
       };
   const quiz = await PerformanceModel.findOne(criteria).lean();
   let dataToUpdate;
-  if (request.body.resume_doc_id) {
+  if (quiz) {
     let index =
       quiz.userAnswers && quiz.userAnswers.length
         ? quiz.userAnswers.findIndex(
@@ -47,10 +48,14 @@ controller.saveAnswer = async (request, response) => {
         $set: { remainingTime: request.body.remainingTime },
       };
     }
-    PerformanceModel.findOneAndUpdate(criteria, dataToUpdate, {
-      new: true,
-      upsert: true,
-    }).then((res) => {});
+    responseObject = await PerformanceModel.findOneAndUpdate(
+      criteria,
+      dataToUpdate,
+      {
+        new: true,
+        upsert: true,
+      }
+    );
   } else {
     dataToUpdate = {
       product_id: request.body.product_id,
@@ -61,12 +66,13 @@ controller.saveAnswer = async (request, response) => {
       status: DB.QUIZ_PLAY_STATUS.IN_PROGRESS,
     };
     const data = new PerformanceModel(dataToUpdate);
-    data.save().then((res) => {});
+    responseObject = await data.save();
   }
 
   response.status(200).json({
     success: true,
     message: 'Answer saved successfully',
+    data: responseObject,
   });
 };
 
@@ -84,22 +90,22 @@ controller.updateStatus = async (request, response) => {
 };
 
 controller.submitQuiz = async (request, response) => {
-  let criteria = {
-    product_id: request.body.product_id,
-    user_id: request.user._id,
-  };
-  const attemtQuiz = (
-    await getUserAttemptingQuiz(criteria.user_id, criteria.product_id)
-  )[0];
+  let criteria = request.body.session_id
+    ? { _id: request.body.session_id }
+    : {
+        product_id: request.body.product_id,
+        user_id: request.user._id,
+      };
+  const attemtQuiz = (await getUserAttemptingQuiz(criteria))[0];
 
   const questions =
-    request.body.type == 'quiz'
-      ? await getQuizQuestions(request.body.product_id)
+    attemtQuiz.type == 'quiz'
+      ? (await getQuizQuestions(request.body.product_id))[0]
       : (await getProductMapQuestion(request.body.product_id)).map(
           (obj) => obj.questionData
         );
   let userAnswers = attemtQuiz.userAnswers;
-  let quizQuestions = questions;
+  let quizQuestions = questions.length ? questions : questions.questionData;
 
   const { counts } = checkUserAnswer(quizQuestions, userAnswers, _);
   counts.notAnswered =
@@ -113,12 +119,15 @@ controller.submitQuiz = async (request, response) => {
     totalScore: quizQuestions.length * 2,
     questionsWithAns: _.keyBy(quizQuestions, '_id'),
   };
-  PerformanceModel.findOneAndUpdate({ _id: attemtQuiz._id }, dataToUpdate).then(
-    (res) => {}
-  );
+  let data = await PerformanceModel.findOneAndUpdate(
+    { _id: attemtQuiz._id },
+    dataToUpdate,
+    { new: true }
+  ).lean();
   response.status(200).json({
     success: true,
     message: 'Quiz submitted successfully',
+    data,
   });
 };
 module.exports = { performanceController: controller };

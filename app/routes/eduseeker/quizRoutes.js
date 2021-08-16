@@ -119,14 +119,14 @@ const routes = [
     handler: quizController.getDataToPlay,
   },
   {
-    path: '/api/quiz/result/:quizID',
+    path: '/api/quiz/result/:docId',
     method: 'GET',
     joiSchemaForSwagger: {
       headers: JOI.object({
         authorization: JOI.string().required(),
       }).unknown(),
       params: JOI.object({
-        quizID: routeUtils.validation.mongooseId,
+        docId: routeUtils.validation.mongooseId,
       }),
       query: {
         type: JOI.string().valid(['quiz', 'product']),

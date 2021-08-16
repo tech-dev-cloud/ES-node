@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const mongoose = require('mongoose');
 const { PerformanceModel, Topics } = require('../../mongo-models');
 const { ProductService } = require('../../services');
 const {
@@ -85,12 +86,20 @@ const controller = {
     const data =
       request.query.type == 'quiz'
         ? (await getQuizQuestions(request.params.product_id))[0]
-        : await getProductMapQuestion(request.params.product_id);
+        : (await getProductMapQuestion(request.params.product_id)).map(
+            (obj) => obj.questionData
+          );
 
-    if (request.body.resume_doc_id) {
+    if (request.query.resume_doc_id) {
       existingAttempt = await PerformanceModel.findOne({
-        _id: request.body.resume_doc_id,
+        _id: request.query.resume_doc_id,
       }).lean();
+    }
+    if (existingAttempt && existingAttempt.status == 'completed') {
+      existingAttempt['questionsWithAns'] = _.keyBy(
+        data.length ? data : data.questionData,
+        '_id'
+      );
     }
     if (request.query.type == 'quiz') {
       questions = data.questionData;
@@ -105,7 +114,7 @@ const controller = {
       ]);
       delete product.questionList;
     } else {
-      questions = data.map((obj) => obj.questionData);
+      questions = data;
       const obj = new ProductService();
       product = await obj.getProduct(request.params.product_id);
       product = {
@@ -126,10 +135,11 @@ const controller = {
   async getQuizResult(request, response) {
     let responseObject = {};
     let cutOffMeet = false;
+    let strength = [];
+    let weakness = [];
+    let product;
     const attemptData = await PerformanceModel.findOne({
-      product_id: request.params.quizID,
-      user_id: request.user._id,
-      status: DB.QUIZ_PLAY_STATUS.COMPLETED,
+      _id: request.params.docId,
     }).lean();
     let questionsData;
     let topicPerformanceData;
@@ -137,15 +147,19 @@ const controller = {
       minutes: 0,
       seconds: 0,
     };
+    let obj = new ProductService();
+    product = await obj.getProduct(attemptData.product_id);
     if (attemptData.type == 'quiz') {
-      questionsData = await getQuizQuestions(attemptData.product_id);
+      questionsData = (await getQuizQuestions(attemptData.product_id))[0];
       const data = topicBasedChecking(
-        questionsData,
+        questionsData.questionData,
         attemptData.userAnswers,
         _
       );
       topicPerformanceData = data.topicPerformance;
-      const topicIds = topicPerformanceData.map((obj) => obj.topicId);
+      const topicIds = topicPerformanceData.map((obj) =>
+        mongoose.Types.ObjectId(obj.topicId)
+      );
       let topics = await Topics.find(
         { _id: { $in: topicIds } },
         { name: 1, _id: 1 }
@@ -155,14 +169,19 @@ const controller = {
         ...obj,
         topicName: topics[obj.topicId].name,
       }));
+      for (let obj of topicPerformanceData) {
+        if (obj.percentage >= 80) {
+          strength.push(obj);
+        } else if (obj.percentage <= 40) {
+          weakness.push(obj);
+        }
+      }
       timeTaken.minutes =
         questionsData.attemptTime -
-        attemptData.remainingTime.hours * 60 +
-        attemptData.remainingTime.minutes;
-      timeTaken.seconds = attemptData.remainingTime.seconds - 60;
+        (attemptData.remainingTime.hours * 60 +
+          attemptData.remainingTime.minutes);
+      timeTaken.seconds = 60 - attemptData.remainingTime.seconds;
     } else {
-      const productService = new ProductService();
-      const product = await productService.getProduct(attemptData.product_id);
       cutOffMeet = attemptData.finalScore >= product.cutOffMeet;
       timeTaken.minutes =
         product.product_meta.time_limit -
@@ -172,11 +191,10 @@ const controller = {
     }
     responseObject = {
       ...(cutOffMeet ? { ...quiz_result.pass } : { ...quiz_result.fail }),
-      ...(topicPerformanceData
-        ? { topicPerformance: topicPerformanceData }
-        : {}),
+      ...(strength.length || weakness.length ? { strength, weakness } : {}),
       ...attemptData,
       timeTaken,
+      product,
     };
     response.status(200).json({
       success: true,

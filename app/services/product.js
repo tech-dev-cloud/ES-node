@@ -60,7 +60,7 @@ class ProductService {
     if (product_type == PRODUCTS_TYPE.notes) {
       weburl = 'pdf-4';
     } else if (product_type == PRODUCTS_TYPE.quiz) {
-      weburl = 'quiz-3';
+      weburl = 'quiz-5';
     } else if (product_type == PRODUCTS_TYPE.bulk) {
       weburl = 'bulk-2';
     } else if (product_type == PRODUCTS_TYPE.course) {
@@ -354,7 +354,7 @@ const service = {
     if (product_type == PRODUCTS_TYPE.notes) {
       weburl = 'pdf-4';
     } else if (product_type == PRODUCTS_TYPE.quiz) {
-      weburl = 'quiz-3';
+      weburl = 'quiz-5';
     } else if (product_type == PRODUCTS_TYPE.bulk) {
       weburl = 'bulk-2';
     } else if (product_type == PRODUCTS_TYPE.course) {

@@ -32,8 +32,8 @@ function getProductMapQuestion(product_id) {
     { $unwind: '$questionData' },
   ]);
 }
-function getUserAttemptingQuiz(user_id, product_id, status) {
-  return PerformanceModel.find({ product_id, user_id });
+async function getUserAttemptingQuiz(crieteria) {
+  return await PerformanceModel.find(crieteria).sort({ _id: -1 }).lean();
 }
 function checkUserAnswer(totalQuestion, userAnswers, lodash) {
   totalQuestion = lodash.keyBy(totalQuestion, '_id');
@@ -68,6 +68,7 @@ function topicBasedChecking(totalQuestion, userAnswers, lodash) {
       incorrect: 0,
       notAnswered: 0,
       totalQuestions: 0,
+      percentage: 0,
     };
     for (const obj of userAnswers) {
       if (totalQuestion[obj.question_id].topicId == topicId) {
@@ -84,6 +85,8 @@ function topicBasedChecking(totalQuestion, userAnswers, lodash) {
         }
         topicCounts.totalQuestions++;
       }
+      topicCounts.percentage =
+        (topicCounts.correct / topicCounts.totalQuestions) * 100;
     }
     topicPerformance.push({ topicId, ...topicCounts });
   }
