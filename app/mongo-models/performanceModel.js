@@ -25,6 +25,7 @@ const schema = new Schema({
     },
   ],
   correct: { type: Number },
+  percentage: { type: Number },
   incorrect: { type: Number },
   notAnswered: { type: Number },
   totalScore: { type: Number },

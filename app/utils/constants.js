@@ -69,12 +69,16 @@ const CONSTANTS = {
     fail: {
       title: 'Try Harder Next Time',
       subtitle: "You didn't meet the cut-off",
+      // banner:
+      //   'https://eduseeker-image-bucket.s3.ap-south-1.amazonaws.com/dev/1629136759221Picture1.webp',
       banner:
         'https://eduseeker-image-bucket.s3.ap-south-1.amazonaws.com/s1/1629031275258not_qualified.webp',
     },
     pass: {
       title: 'Congratulations! You have passed the cut-off',
       subtitle: 'Good Job!',
+      // banner:
+      //   'https://eduseeker-image-bucket.s3.ap-south-1.amazonaws.com/dev/1629136817157Picture2%20%281%29.webp',
       banner:
         'https://eduseeker-image-bucket.s3.ap-south-1.amazonaws.com/s1/1629031275258not_qualified.webp',
     },

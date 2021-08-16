@@ -220,6 +220,11 @@ const controller = {
       { $unwind: '$user' },
       { $sort: { finalScore: -1 } },
     ]);
+    const groupedRanking = _.groupBy(userRanking, 'user_id');
+    userRanking = [];
+    for (let user_id in groupedRanking) {
+      userRanking.push(groupedRanking[user_id][0]);
+    }
     userRanking = userRanking.map((obj, index) => ({
       ...obj,
       rank: index + 1,

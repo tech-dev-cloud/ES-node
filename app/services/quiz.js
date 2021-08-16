@@ -36,12 +36,14 @@ async function getUserAttemptingQuiz(crieteria) {
   return await PerformanceModel.find(crieteria).sort({ _id: -1 }).lean();
 }
 function checkUserAnswer(totalQuestion, userAnswers, lodash) {
-  totalQuestion = lodash.keyBy(totalQuestion, '_id');
   const counts = {
     correct: 0,
     incorrect: 0,
     notAnswered: 0,
+    percentage: 0,
+    totalQuestions: totalQuestion.length,
   };
+  totalQuestion = lodash.keyBy(totalQuestion, '_id');
   for (const obj of userAnswers) {
     if (obj.answer[0] == totalQuestion[obj.question_id].correctOption[0]) {
       obj.resultStatus = DB.ANSWER_RESULT.CORRECT;
@@ -49,25 +51,32 @@ function checkUserAnswer(totalQuestion, userAnswers, lodash) {
     } else if (obj.answer[0]) {
       obj.resultStatus = DB.ANSWER_RESULT.INCORRECT;
       counts.incorrect++;
+    } else {
+      counts.notAnswered++;
     }
   }
+  counts.percentage = Math.round(
+    ((counts.correct * 2) / (counts.totalQuestions * 2)) * 100
+  );
   return { counts };
 }
 function topicBasedChecking(totalQuestion, userAnswers, lodash) {
-  const groupByTopic = lodash.groupBy(totalQuestion, 'topicId');
-  totalQuestion = lodash.keyBy(totalQuestion, '_id');
-  const topicPerformance = [];
   const counts = {
     correct: 0,
     incorrect: 0,
     notAnswered: 0,
+    percentage: 0,
+    totalQuestions: totalQuestion.length,
   };
+  const groupByTopic = lodash.groupBy(totalQuestion, 'topicId');
+  totalQuestion = lodash.keyBy(totalQuestion, '_id');
+  let topicPerformance = [];
   for (const topicId in groupByTopic) {
     const topicCounts = {
       correct: 0,
       incorrect: 0,
       notAnswered: 0,
-      totalQuestions: 0,
+      totalQuestions: groupByTopic[topicId].length,
       percentage: 0,
     };
     for (const obj of userAnswers) {
@@ -80,16 +89,21 @@ function topicBasedChecking(totalQuestion, userAnswers, lodash) {
           obj.resultStatus = DB.ANSWER_RESULT.INCORRECT;
           counts.incorrect++;
           topicCounts.incorrect++;
-        } else {
-          topicCounts.notAnswered++;
         }
-        topicCounts.totalQuestions++;
       }
-      topicCounts.percentage =
-        (topicCounts.correct / topicCounts.totalQuestions) * 100;
+      topicCounts.percentage = Math.round(
+        ((topicCounts.correct * 2) / (topicCounts.totalQuestions * 2)) * 100
+      );
     }
+    topicCounts.notAnswered =
+      topicCounts.totalQuestions -
+      (topicCounts.correct + topicCounts.incorrect);
     topicPerformance.push({ topicId, ...topicCounts });
   }
+  // topicPerformance = topicPerformance.filter((obj) => obj.totalQuestions > 5);
+  counts.percentage = Math.round(
+    ((counts.correct * 2) / (counts.totalQuestions * 2)) * 100
+  );
   return { counts, topicPerformance };
 }
 module.exports = {

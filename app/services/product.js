@@ -111,8 +111,14 @@ class ProductService {
             'difficultLevel',
             'totalQuestions',
             'attemptTime',
+            'questionList',
           ]);
-          return obj;
+          return {
+            ...obj,
+            ...(obj.questionList && obj.questionList.length
+              ? {}
+              : { pending: true }),
+          };
         });
         const playStatus = await this.getHoldQuiz(
           user_id,
@@ -153,7 +159,7 @@ class ProductService {
     return new Promise((resolve, reject) => {
       redis.get(cacheKey, async (err, someData) => {
         let product;
-        if (!err && !someData) {
+        if (err || !someData) {
           const match = {};
           match['_id'] = product_id;
           const data = await Product.aggregate([
@@ -551,16 +557,19 @@ const service = {
         data.push(item);
       } else if (key == PRODUCTS_TYPE.bulk) {
         item.id = 2;
+        item.priority = 3;
         item.title = 'Bulk Package';
         item.weburl = `bulk-${item.id}`;
         data.push(item);
       } else if (key == PRODUCTS_TYPE.course) {
         item.id = 1;
+        item.priority = 1;
         item.title = 'Courses';
         item.weburl = `course-${item.id}`;
         data.push(item);
       } else if (key == PRODUCTS_TYPE.test_series) {
         item.id = 3;
+        item.priority = 2;
         item.title = 'Test Series';
         item.weburl = `test-${item.id}`;
         data.push(item);

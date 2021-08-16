@@ -20,9 +20,11 @@ controller.saveAnswer = async (request, response) => {
         product_id: request.body.product_id,
         user_id: request.user._id,
       };
-  const quiz = await PerformanceModel.findOne(criteria).lean();
+  const quiz = await PerformanceModel.findOne(criteria)
+    .sort({ _id: -1 })
+    .lean();
   let dataToUpdate;
-  if (quiz) {
+  if (quiz && quiz.status != DB.QUIZ_PLAY_STATUS.COMPLETED) {
     let index =
       quiz.userAnswers && quiz.userAnswers.length
         ? quiz.userAnswers.findIndex(
