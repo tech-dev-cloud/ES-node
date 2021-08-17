@@ -234,7 +234,7 @@ const controller = {
       (obj) => obj.user_id == request.user._id.toString()
     );
     if (userAttemptIndex >= 3) {
-      userRanking = userRanking.splice(3, 0, {
+      userRanking.splice(3, 0, {
         ...userRanking[userAttemptIndex],
         active: true,
       });
