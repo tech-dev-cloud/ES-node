@@ -221,8 +221,8 @@ class ProductService {
           obj = result[0];
           if (result[1] >= 0) {
             product['totalEnrolled'] = result[1];
-            service.applyEarlyBirdOffer(product);
           }
+          service.applyEarlyBirdOffer(product);
           product['rating'] = obj.rating;
           product['reviews'] = obj.counts;
         }
@@ -547,11 +547,13 @@ const service = {
       const item = { title: '', weburl: '', products: products[key] };
       if (key == PRODUCTS_TYPE.notes) {
         item.id = 4;
+        item.priority = 4;
         item.title = 'PDF/E-Books';
         item.weburl = `pdf-${item.id}`;
         data.push(item);
       } else if (key == PRODUCTS_TYPE.quiz) {
         item.id = 5;
+        item.priority = 5;
         item.title = 'Quiz';
         item.weburl = `quiz-${item.id}`;
         data.push(item);
@@ -575,7 +577,7 @@ const service = {
         data.push(item);
       }
     }
-    data.sort((a, b) => a.id - b.id);
+    data.sort((a, b) => a.priority - b.priority);
     return data;
   },
 };
