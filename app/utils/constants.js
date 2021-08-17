@@ -80,7 +80,7 @@ const CONSTANTS = {
       // banner:
       //   'https://eduseeker-image-bucket.s3.ap-south-1.amazonaws.com/dev/1629136817157Picture2%20%281%29.webp',
       banner:
-        'https://eduseeker-image-bucket.s3.ap-south-1.amazonaws.com/s1/1629031275258not_qualified.webp',
+        'https://eduseeker-image-bucket.s3.amazonaws.com/dev/1629178932103QUALIFIED.webp',
     },
   },
 };
