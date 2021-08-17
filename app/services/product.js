@@ -209,7 +209,8 @@ class ProductService {
           let obj = service.getProductRating(product_id);
           const promise = [obj];
           if (
-            product.type == params.product_types.course &&
+            (product.type == params.product_types.course ||
+              product.type == params.product_types.test_series) &&
             product.early_birds_offer &&
             product.early_birds_offer.length
           ) {
@@ -221,8 +222,8 @@ class ProductService {
           obj = result[0];
           if (result[1] >= 0) {
             product['totalEnrolled'] = result[1];
+            service.applyEarlyBirdOffer(product);
           }
-          service.applyEarlyBirdOffer(product);
           product['rating'] = obj.rating;
           product['reviews'] = obj.counts;
         }
@@ -435,7 +436,8 @@ const service = {
           let obj = service.getProductRating(product_id);
           const promise = [obj];
           if (
-            product.type == params.product_types.course &&
+            (product.type == params.product_types.course ||
+              product.type == PRODUCTS_TYPE.test_series) &&
             product.early_birds_offer &&
             product.early_birds_offer.length
           ) {
