@@ -231,14 +231,15 @@ const controller = {
       rank: index + 1,
     }));
     let userAttemptIndex = userRanking.findIndex(
-      (obj) => obj.user_id == request.user._id
+      (obj) => obj.user_id == request.user._id.toString()
     );
     if (userAttemptIndex >= 3) {
       userRanking = userRanking.splice(3, 0, {
         ...userRanking[userAttemptIndex],
         active: true,
       });
-    } else if (userAttemptIndex >= 0) {
+      userRanking = userRanking.splice(0, 4);
+    } else if (userAttemptIndex >= 0 && userAttemptIndex < 3) {
       userRanking = userRanking.splice(0, 3);
       userRanking[userAttemptIndex].active = true;
     }
@@ -247,6 +248,7 @@ const controller = {
       finalScore: obj.finalScore,
       username: obj.user.name,
       userpic: (obj.user.googleDetails || {}).profile_pic,
+      ...(obj.active ? { active } : {}),
     }));
     response.status(200).json({
       success: true,
