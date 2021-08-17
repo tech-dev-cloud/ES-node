@@ -248,7 +248,7 @@ const controller = {
       finalScore: obj.finalScore,
       username: obj.user.name,
       userpic: (obj.user.googleDetails || {}).profile_pic,
-      ...(obj.active ? { active } : {}),
+      ...(obj.active ? { active: obj.active } : {}),
     }));
     response.status(200).json({
       success: true,
