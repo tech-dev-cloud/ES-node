@@ -182,13 +182,14 @@ const controller = {
           attemptData.remainingTime.minutes);
       timeTaken.seconds = 60 - attemptData.remainingTime.seconds;
     } else {
-      cutOffMeet = attemptData.finalScore >= product.cutOffMeet;
       timeTaken.minutes =
         product.product_meta.time_limit -
         (attemptData.remainingTime.hours * 60 +
           attemptData.remainingTime.minutes);
       timeTaken.seconds = 60 - attemptData.remainingTime.seconds;
     }
+    cutOffMeet = attemptData.finalScore >= 80;
+
     responseObject = {
       ...(cutOffMeet ? { ...quiz_result.pass } : { ...quiz_result.fail }),
       ...(strength.length || weakness.length ? { strength, weakness } : {}),
@@ -218,13 +219,13 @@ const controller = {
         },
       },
       { $unwind: '$user' },
-      { $sort: { finalScore: -1 } },
     ]);
     const groupedRanking = _.groupBy(userRanking, 'user_id');
     userRanking = [];
     for (let user_id in groupedRanking) {
       userRanking.push(groupedRanking[user_id][0]);
     }
+    userRanking.sort((a, b) => b.finalScore - a.finalScore);
     userRanking = userRanking.map((obj, index) => ({
       ...obj,
       rank: index + 1,
