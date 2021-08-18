@@ -279,7 +279,10 @@ let productController = {
       ]);
       let product = new Product(result[0]);
       const enrolledStatus = [];
-      if (product.type == PRODUCTS_TYPE.course) {
+      if (
+        product.type == PRODUCTS_TYPE.course ||
+        product.type == PRODUCTS_TYPE.test_series
+      ) {
         enrolledStatus.push(order_status.credit);
       }
       let count = await prodService.totalEnrolled(product_id, enrolledStatus);
