@@ -13,7 +13,8 @@
     "notes": "notes",
     "quiz": "quiz",
     "bulk": "bulk",
-    "course": "course"
+    "course": "course",
+    "test_series": "test_series"
   },
   "review_type": {
     "product_review": "product_review",
