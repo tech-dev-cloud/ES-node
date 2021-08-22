@@ -3,5 +3,6 @@
 /pids
 swagger.json
 .env
+.idea
 /uploads
 release-notes.md
