@@ -188,7 +188,7 @@ const controller = {
           attemptData.remainingTime.minutes);
       timeTaken.seconds = 60 - attemptData.remainingTime.seconds;
     }
-    cutOffMeet = attemptData.finalScore >= 130;
+    cutOffMeet = attemptData.percentage >= 65;
 
     responseObject = {
       ...(cutOffMeet ? { ...quiz_result.pass } : { ...quiz_result.fail }),

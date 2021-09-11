@@ -4,8 +4,4 @@ const { startExpress, DB } = require('./config');
 
 DB.start().then(() => {
   startExpress();
-  // migration().then(res=>{
-  // }).catch(err=>{
-  //   startExpress();
-  // })
 });
