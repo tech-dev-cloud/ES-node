@@ -10,5 +10,5 @@ module.exports = {
   ...require('./module'),
   ...require('./dashboard'),
   ...require('./course'),
-  ...require('./term'),
+  ...require('./taxonomy'),
 };

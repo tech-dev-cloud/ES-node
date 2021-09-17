@@ -20,11 +20,9 @@ const routeUtils = {};
 
 routeUtils.initRoutes = async (app, routes = []) => {
   routes.forEach((route) => {
-    const middlewares = [dataValidation(route)];
+    const middlewares = [];
     try {
-      // if (route.auth) {
       middlewares.push(authService.userValidate(route.auth));
-      // }
       if (route.joiSchemaForSwagger.formData) {
         const keys = Object.keys(route.joiSchemaForSwagger.formData);
         keys.forEach((key) => {

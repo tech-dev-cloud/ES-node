@@ -33,6 +33,7 @@ const routes = [
         cover_image: JOI.string(),
         promo_video_url: JOI.string(),
         product_map_data: JOI.array().items(JOI.any()),
+        term_ids: JOI.array().items(routeUtils.validation.mongooseId)
       },
       group: 'Product',
       description: 'Api to create Product',
@@ -148,6 +149,7 @@ const routes = [
         new_items: JOI.array().items(JOI.string()),
         removed_items: JOI.array().items(JOI.string()),
         product_map_data: JOI.array().items(JOI.any()),
+        term_ids: JOI.array().items(routeUtils.validation.mongooseId)
       },
       group: 'Product',
       description: 'Api to update product by id',

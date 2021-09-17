@@ -7,7 +7,6 @@ const {
   getUserAttemptingQuiz,
   checkUserAnswer,
 } = require('../../services/quiz');
-const { QuizResult } = require('../../mongo-models/quizResult');
 let controller = {};
 
 controller.startQuiz = async (payload) => {};

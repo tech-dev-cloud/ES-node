@@ -1,7 +1,7 @@
 const JOI = require('joi');
+const routeUtils = require('../../utils/routeUtils');
 const { USER_ROLE, DB } = require('../../utils/constants');
 const { performanceController } = require('../../controllers');
-const routeUtils = require('../../utils/routeUtils');
 
 const MODULE = {
   name: 'performance',

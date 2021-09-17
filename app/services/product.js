@@ -2,6 +2,8 @@ const _ = require('lodash');
 const config = require('../../config/config');
 const params = require(`../../config/env/${config.NODE_ENV}_params.json`);
 const redis = require('../../config/redisConnection');
+const dbQuery = require('./dbQuery/product');
+const taxonomyService=require('./taxonomy');
 const {
   VideoContentModel,
   Order,
@@ -254,6 +256,47 @@ class ProductService {
 }
 
 const service = {
+  createProduct: async (productPayload)=>{
+    switch(productPayload.type) {
+      case PRODUCTS_TYPE.bulk:
+        productPayload['sub_products'] = request.body.product_map_data.map(
+          (product_id) => Mongoose.Types.ObjectId(product_id)
+        );
+        break;
+      case PRODUCTS_TYPE.quiz:
+        productPayload.product_meta['totalQuestions'] = request.body.product_map_data.length;
+        break;
+      case PRODUCTS_TYPE.test_series:
+        productPayload['quizId'] = request.body.product_map_data.map((quizId) => Mongoose.Types.ObjectId(quizId));
+        break;
+    }
+    // Save Product in db
+    const product = await dbQuery.createProduct(productPayload);
+    let data;
+    if (productPayload.product_map_data) {
+      // Map Product Id
+      switch (productPayload.type) {
+        case PRODUCTS_TYPE.notes:
+          data = productPayload.product_map_data.map((obj) => ({
+            ...obj,
+            user_id: request.user._id,
+            product_id: product._id,
+          }));
+          await dbQuery.insertMultipleDocuments(data);
+          break;
+        case PRODUCTS_TYPE.quiz:
+          data = productPayload.product_map_data.map((question_id) => ({
+            question_id,
+            product_id: product._id,
+          }));
+          await dbQuery.productQuestionInsert(data);
+          break;
+      }
+    }
+    if(productPayload.term_ids){
+      await taxonomyService.replaceProductTaxonomy(product._id, productPayload.term_ids);
+    }
+  },
   async getCourseContent(product_id, enrolled = false) {
     const selectedContentFields = ['_id', 'title', 'lectures'];
     const lectureFields = [
@@ -287,6 +330,9 @@ const service = {
       return content;
     });
     return contents;
+  },
+  updateProduct: async ()=>{
+
   },
   /**
    * Function Check whether spesified user purchased spesific product of not
