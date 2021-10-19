@@ -8,7 +8,6 @@ const swJson = require('../services/swaggerService');
 const { authService } = require('../services/authService');
 const { file } = require('../controllers');
 const logger = require('../../config/winston');
-const { SOMETHING_WENT_WRONG } = require('./errorCodes');
 
 const storage = multer.diskStorage({
   destination: 'uploads/',
@@ -23,7 +22,7 @@ routeUtils.initRoutes = async (app, routes = []) => {
     const middlewares = [];
     try {
       middlewares.push(authService.userValidate(route.auth));
-      if (route.joiSchemaForSwagger.formData) {
+      if (route.joiSchemaForSwagger && route.joiSchemaForSwagger.formData) {
         const keys = Object.keys(route.joiSchemaForSwagger.formData);
         keys.forEach((key) => {
           middlewares.push(upload.single(key));

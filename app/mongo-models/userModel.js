@@ -11,6 +11,7 @@ const user = new schema({
   resetPasswordToken: { type: String },
   profile_pic: { type: String },
   createdAt: { type: Date, default: Date.now() },
+  emailVerified: { type: Boolean, default: false },
   googleDetails: {
     name: { type: String, trim: true },
     phoneNumber: { type: String },
