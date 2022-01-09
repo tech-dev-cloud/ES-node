@@ -8,6 +8,7 @@ const swJson = require('../services/swaggerService');
 const { authService } = require('../services/authService');
 const { file } = require('../controllers');
 const logger = require('../../config/winston');
+const responseHelper = require('./responseHelper');
 
 const storage = multer.diskStorage({
   destination: 'uploads/',
@@ -139,10 +140,10 @@ const getHandlerMethod = (route) => {
             message: err.message,
             type: err.type,
           });
-          return;
+        }else{
+          res.status(500).json(responseHelper.error.SOMETHING_WENT_WRONG());
         }
         logger.error(err);
-        throw err;
       });
   };
 };

@@ -27,6 +27,20 @@ const CONSTANTS = {
       IMAGE: 1,
       TEXT: 2,
     },
+    OFFER_TYPES: {
+      PERCENT: 'percent',
+      FIXED_DISCOUNT: 'fixed_discount',
+      FIXED_AMOUNT: 'fixed_amount',
+    },
+    OFFER_VALIDITY: {
+      MINUTE: 'm',
+      HOUR: 'h',
+      DAY: 'd',
+    },
+    PRODUCT_PRICE_TYPE: {
+      SELLING_PRICE: 'sp',
+      MRP: 'mrp',
+    },
   },
   LOGIN_TYPE: {
     EDUSEEKER: 'password',
@@ -41,6 +55,7 @@ const CONSTANTS = {
     FORBIDDEN: 'FORBIDDEN',
     UNAUTHORIZED: 'UNAUTHORIZED',
     SUCCESS: 'SUCCESS',
+    INTERNAL_SERVER_ERROR: 'INTERNAL_SERVER_ERROR',
   },
   PRODUCTS_TYPE: {
     notes: 'notes',
@@ -69,20 +84,23 @@ const CONSTANTS = {
     fail: {
       title: 'Try Harder Next Time',
       subtitle: "You didn't meet the cut-off",
-      // banner:
-      //   'https://eduseeker-image-bucket.s3.ap-south-1.amazonaws.com/dev/1629136759221Picture1.webp',
       banner:
         'https://eduseeker-image-bucket.s3.ap-south-1.amazonaws.com/s1/1629031275258not_qualified.webp',
     },
     pass: {
       title: 'Congratulations! You have passed the cut-off',
       subtitle: 'Good Job!',
-      // banner:
-      //   'https://eduseeker-image-bucket.s3.ap-south-1.amazonaws.com/dev/1629136817157Picture2%20%281%29.webp',
       banner:
         'https://eduseeker-image-bucket.s3.amazonaws.com/dev/1629178932103QUALIFIED.webp',
     },
   },
+  REGISTER_TYPE: {
+    subscribe: 'subscribe',
+    signup: 'signup',
+  },
+  MODULES:{
+    notification:'Notification'
+  }
 };
 
 CONSTANTS.DEFAULT = {

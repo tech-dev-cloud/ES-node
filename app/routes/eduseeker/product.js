@@ -1,6 +1,7 @@
 const JOI = require('joi');
 const { USER_ROLE, PRODUCTS_TYPE } = require('../../utils/constants');
 const { productController } = require('../../controllers');
+const { searchProducts } = require('../../modules/product/controller');
 const routeUtils = require('../../utils/routeUtils');
 
 const routes = [
@@ -33,7 +34,7 @@ const routes = [
         cover_image: JOI.string(),
         promo_video_url: JOI.string(),
         product_map_data: JOI.array().items(JOI.any()),
-        term_ids: JOI.array().items(routeUtils.validation.mongooseId)
+        term_ids: JOI.array().items(routeUtils.validation.mongooseId),
       },
       group: 'Product',
       description: 'Api to create Product',
@@ -149,7 +150,7 @@ const routes = [
         new_items: JOI.array().items(JOI.string()),
         removed_items: JOI.array().items(JOI.string()),
         product_map_data: JOI.array().items(JOI.any()),
-        term_ids: JOI.array().items(routeUtils.validation.mongooseId)
+        term_ids: JOI.array().items(routeUtils.validation.mongooseId),
       },
       group: 'Product',
       description: 'Api to update product by id',
@@ -275,6 +276,19 @@ const routes = [
     },
     auth: [USER_ROLE.ADMIN, USER_ROLE.TEACHER],
     handler: productController.updateReviewStatus,
+  },
+  {
+    path: '/api/searchProducts',
+    method: 'GET',
+    joiSchemaForSwagger: {
+      query: JOI.object({
+        searchString: JOI.string(),
+      }),
+      group: 'Product',
+      description: 'Api Search Products',
+      model: 'SearchProducts',
+    },
+    handler: searchProducts,
   },
 ];
 module.exports = routes;

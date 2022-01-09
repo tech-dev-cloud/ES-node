@@ -1,6 +1,6 @@
-const taxonomyService = require('../../services/taxonomy');
+const taxonomyService = require('./service');
 const taxonomy = {
-  createTaxonomy: async (request, response) => {
+  addNewCategory: async (request, response) => {
     taxonomyService
       .createNewTaxonomy(request.body)
       .then((res) => {

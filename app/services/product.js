@@ -3,7 +3,7 @@ const config = require('../../config/config');
 const params = require(`../../config/env/${config.NODE_ENV}_params.json`);
 const redis = require('../../config/redisConnection');
 const dbQuery = require('./dbQuery/product');
-const taxonomyService=require('./taxonomy');
+const taxonomyService = require('../modules/category/service');
 const {
   VideoContentModel,
   Order,
@@ -20,6 +20,7 @@ const {
   PRODUCTS_TYPE,
   DB,
 } = require('../utils/constants');
+const { getProductOffers } = require('../modules/offer/service');
 
 class ProductService {
   constructor() {}
@@ -256,18 +257,21 @@ class ProductService {
 }
 
 const service = {
-  createProduct: async (productPayload)=>{
-    switch(productPayload.type) {
+  createProduct: async (productPayload) => {
+    switch (productPayload.type) {
       case PRODUCTS_TYPE.bulk:
         productPayload['sub_products'] = request.body.product_map_data.map(
           (product_id) => Mongoose.Types.ObjectId(product_id)
         );
         break;
       case PRODUCTS_TYPE.quiz:
-        productPayload.product_meta['totalQuestions'] = request.body.product_map_data.length;
+        productPayload.product_meta['totalQuestions'] =
+          request.body.product_map_data.length;
         break;
       case PRODUCTS_TYPE.test_series:
-        productPayload['quizId'] = request.body.product_map_data.map((quizId) => Mongoose.Types.ObjectId(quizId));
+        productPayload['quizId'] = request.body.product_map_data.map((quizId) =>
+          Mongoose.Types.ObjectId(quizId)
+        );
         break;
     }
     // Save Product in db
@@ -293,8 +297,11 @@ const service = {
           break;
       }
     }
-    if(productPayload.term_ids){
-      await taxonomyService.replaceProductTaxonomy(product._id, productPayload.term_ids);
+    if (productPayload.term_ids) {
+      await taxonomyService.replaceProductTaxonomy(
+        product._id,
+        productPayload.term_ids
+      );
     }
   },
   async getCourseContent(product_id, enrolled = false) {
@@ -331,9 +338,7 @@ const service = {
     });
     return contents;
   },
-  updateProduct: async ()=>{
-
-  },
+  updateProduct: async () => {},
   /**
    * Function Check whether spesified user purchased spesific product of not
    * @param {*} product_id
@@ -435,6 +440,7 @@ const service = {
         if (!err && !someData) {
           const match = {};
           match['_id'] = product_id;
+          // Get Product Images, mentor info, and product data
           const data = await Product.aggregate([
             { $match: match },
             {
@@ -470,6 +476,7 @@ const service = {
         }
         if (product) {
           if (product.strikeprice) {
+            // calculate discount percentage
             product['discountPercent'] = Math.ceil(
               ((product.strikeprice - product.price) * 100) /
                 product.strikeprice
@@ -479,8 +486,13 @@ const service = {
             (prod_image) => prod_image.image_path
           );
           product['weburl'] = service.getRedirectUrl(product.type);
+          // Get Product rating
           let obj = service.getProductRating(product_id);
           const promise = [obj];
+
+          promise.push(getProductOffers(product._id));
+
+          // Get totoal enrollment
           if (
             (product.type == params.product_types.course ||
               product.type == PRODUCTS_TYPE.test_series) &&
@@ -493,7 +505,8 @@ const service = {
           }
           const result = await Promise.all(promise);
           obj = result[0];
-          if (result[1] >= 0) {
+          product['offers'] = result[1];
+          if (result[2] >= 0) {
             product['totalEnrolled'] = result[1];
             service.applyEarlyBirdOffer(product);
           }

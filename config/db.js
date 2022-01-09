@@ -1,16 +1,15 @@
 const MONGOOSE = require('mongoose');
-const logger=require('./winston');
-// require('dotenv').config();
+const logger = require('./winston');
 
 module.exports = {
   URL: `mongodb://localhost:27017/${process.env.DB_NAME || 'eduseeker'}`,
-  options:{
+  options: {
     useNewUrlParser: true,
-    useUnifiedTopology: true, 
-    useFindAndModify: false
+    useUnifiedTopology: true,
+    useFindAndModify: false,
   },
   start: async function () {
     await MONGOOSE.connect(this.URL, this.options);
-    logger.info(`mongodb is connected on ${this.URL}` )
-  }
-}
+    logger.info(`mongodb is connected on ${this.URL}`);
+  },
+};

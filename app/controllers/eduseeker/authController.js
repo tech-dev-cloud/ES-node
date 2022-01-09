@@ -3,6 +3,7 @@ const {
   MONGO_ERROR,
   USER_ROLE,
   LOGIN_TYPE,
+  REGISTER_TYPE,
 } = require('../../utils/constants');
 const util = require('../../utils/utils');
 const { UserModel, SessionModel } = require(`../../mongo-models`);
@@ -24,32 +25,31 @@ let controller = {
     request.body.password = commonFunctions.hashPassword(request.body.password);
     request.body.email = request.body.email.toLowerCase();
     request.body.role = [USER_ROLE.STUDENT];
-    const user = new UserModel(request.body);
+    const userExist = await authService.getUserByEmail(request.body.email);
+    let resData;
     try {
-      let data = await user.save();
-      response.status(200).json({
-        success: true,
-        message: 'User registered successfully',
-        data,
-      });
+      if (userExist && userExist.registerType == REGISTER_TYPE.subscribe) {
+        request.body.registerType = REGISTER_TYPE.signup;
+        resData = await authService.updateUser(userExist._id, request.body);
+      } else {
+        const user = new UserModel(request.body);
+        resData = await user.save();
+      }
     } catch (err) {
       if (err.code == MONGO_ERROR.DUPLICATE) {
         throw {
           ...DUPLICATE_ENTRY,
           message: DUPLICATE_ENTRY.message.replace('{{key}}', 'Account'),
         };
-        // response.status(400).json({
-        //   success: false,
-        //   message: "Account already exist"
-        // })
       } else {
         throw SOMETHING_WENT_WRONG;
-        // response.status(SOMETHING_WENT_WRONG).json({
-        //   success: false,
-        //   message: "Something went wrong"
-        // })
       }
     }
+    response.status(200).json({
+      success: true,
+      message: 'User registered successfully',
+      data: resData,
+    });
   },
   userLogin: async (request, response) => {
     const user = await UserModel.findOne({
@@ -176,6 +176,9 @@ let controller = {
         user = new User(request.body, request.body.login_type, request.body);
       } else {
         user = new User(existingUser, request.body.login_type, request.body);
+        if (existingUser.registerType == REGISTER_TYPE.subscribe) {
+          user.registerType = REGISTER_TYPE.signup;
+        }
       }
       UserModel.findOneAndUpdate({ email }, user, { upsert: true, new: true })
         .then(async (saved_user) => {

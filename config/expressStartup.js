@@ -53,7 +53,6 @@ const expressStartup = async () => {
   app.listen(process.env.PORT || 4000, '0.0.0.0', () => {
     console.log(process.env.PORT);
     logger.info('server is start at port ', process.env.PORT || 4000);
-    // console.log('server is start at ', process.env.PORT || 4000);
   });
 };
 module.exports = expressStartup;

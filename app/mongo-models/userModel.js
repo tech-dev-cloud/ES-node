@@ -1,5 +1,5 @@
 const MONGOOSE = require('mongoose');
-const { USER_ROLE } = require('../utils/constants');
+const { USER_ROLE, REGISTER_TYPE } = require('../utils/constants');
 const schema = MONGOOSE.Schema;
 
 const user = new schema({
@@ -12,6 +12,7 @@ const user = new schema({
   profile_pic: { type: String },
   createdAt: { type: Date, default: Date.now() },
   emailVerified: { type: Boolean, default: false },
+  registerType: { type: String, enum: Object.values(REGISTER_TYPE) },
   googleDetails: {
     name: { type: String, trim: true },
     phoneNumber: { type: String },

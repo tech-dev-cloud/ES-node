@@ -10,4 +10,6 @@ module.exports = [
   ...require('./modules'),
   ...require('./dashboard'),
   ...require('./course'),
-]
+  ...require('./terms'),
+  ...require('./userRoutes'),
+];
