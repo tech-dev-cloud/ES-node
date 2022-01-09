@@ -5,16 +5,18 @@ module.exports = {
   UPDATE_SUCCESS: 'Record updated successfully',
   INVALID_TOKEN: 'Session expired',
   ERROR: 'action failed',
-  ACCOUNT_NOT_EXIST: 'Account doesn\'t exist ',
+  ACCOUNT_NOT_EXIST: "Account doesn't exist ",
   ACCOUNT_ALREADY_EXIST: 'Account already exist',
   MONGOERROR: 'Database error',
-  RESET_PASSWORD_LINK_SENT: 'Email Sent to Registered user with reset password link',
+  RESET_PASSWORD_LINK_SENT:
+    'Email Sent to Registered user with reset password link',
   EMAIL_VERIFICATION: 'Please verify email.',
   VIDEO_EXIST: 'Video exist.',
   BAD_REQUEST: 'Bad Request.',
   DUPLICATE_TRASACTION: 'Duplicate transaction',
   FILE_UPLOAD_SUCCESS: 'File successfully uploaded',
   INVALID_OLD_PASSWORD: 'Invalid Old Password',
+  SOMETHING_WENT_WRONG: 'Something went wrong.',
   NOT_FOUND: 'Not found.',
   FILE_FORMAT_NOT_SUPPORTED: 'File format not supported.',
   USER: {
@@ -26,7 +28,8 @@ module.exports = {
     SOMETHING_WENT_WRONG: 'Something went wrong.',
     LOGGED_IN_SUCCESSFULLY: 'Logged in successfully.',
     LOGGED_OUT_SUCCESSFULLY: 'Logged out successfully.',
-    USER_ALREADY_EXISTS_WITH_SAME_USERNAME: 'User already exists with same username.',
+    USER_ALREADY_EXISTS_WITH_SAME_USERNAME:
+      'User already exists with same username.',
     USER_FETCHED_SUCCESSFULLY: 'User fetched successfully.',
     USERS_FETCHED_SUCCESSFULLY: 'Users fetched successfully.',
     USER_UPDATED_SUCCESSFULLY: 'User updated successfully.',
@@ -35,21 +38,21 @@ module.exports = {
     NOTIFICATION_FETCHED_SUCCESSFULLY: 'Notification fetched successfully.',
     NOTIFICATION_CREATED_SUCCESSFULLY: ' Notification created successfully.',
     PASSWORD_CHANGED: 'Password changed successfully',
-    EXIST: 'This user already exist.'
+    EXIST: 'This user already exist.',
   },
   SUBJECT: {
     CREATE: 'Subject created successfully',
     FETCH: 'Subject fetched successfully',
     UPDATE: 'Subject updated successfully',
     DELETE: 'Subject deleted successfully',
-    DUPLICATE: 'This subject already exist'
+    DUPLICATE: 'This subject already exist',
   },
   UNIT: {
     CREATE: 'Unit created successfully',
     FETCH: 'Unit fetched successfuly',
     UPDATE: 'Unit updated successfully',
     DELETE: 'Unit deleted successfully',
-    DUPLICATE: 'This Unit already exist'
+    DUPLICATE: 'This Unit already exist',
   },
   QUESTION: {
     CREATE: 'Question created successfully',
@@ -63,11 +66,10 @@ module.exports = {
     CREATE: 'Quiz created successfully',
     FETCH: 'Quiz fetched successfully',
     DUPLICATE: 'Already enrolled for quiz',
-    CLEAR_CACHE:"Cache clear successfull"
+    CLEAR_CACHE: 'Cache clear successfull',
   },
   PAYMENT: {
     SUCCESS: 'Payment Request Sent',
-    DUPLICATE: 'Dupliceate entry'
-  }
-
-}
+    DUPLICATE: 'Dupliceate entry',
+  },
+};

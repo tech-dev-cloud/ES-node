@@ -4,22 +4,22 @@ const { userController } = require('../../controllers');
 
 const MODULE = {
   name: 'user',
-  group: 'User'
-}
+  group: 'User',
+};
 const routes = [
   {
     path: `/api/${MODULE.name}/products`,
     method: 'GET',
     joiSchemaForSwagger: {
       headers: JOI.object({
-        'authorization': JOI.string().required()
+        authorization: JOI.string().required(),
       }).unknown(),
       group: MODULE.group,
       description: 'Api to get user purchased products',
-      model: 'CreatePayment'
+      model: 'CreatePayment',
     },
     auth: [USER_ROLE.STUDENT],
-    handler: userController.findUserProducts
+    handler: userController.findUserProducts,
   }
-]
+];
 module.exports = routes;

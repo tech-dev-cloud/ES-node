@@ -22,54 +22,21 @@ const {
 } = require('../../utils/constants');
 const logger = require('../../../config/winston');
 const { NOT_ENROLLED } = require('../../utils/errorCodes');
+
 let productController = {
-  /**
-   * Handler to create product
-   * @param {*} request
-   * @param {*} response
-   */
   createProduct: async (request, response) => {
-    let product_type = request.body.type;
     let product_payload = { ...request.body, created_by: request.user._id };
-    if (product_type == PRODUCTS_TYPE.bulk) {
-      product_payload['sub_products'] = request.body.product_map_data.map(
-        (product_id) => Mongoose.Types.ObjectId(product_id)
-      );
-    } else if (product_type == PRODUCTS_TYPE.quiz) {
-      product_payload.product_meta['totalQuestions'] =
-        request.body.product_map_data.length;
-    } else if (product_type == PRODUCTS_TYPE.test_series) {
-      product_payload['quizId'] = request.body.product_map_data.map((quizId) =>
-        Mongoose.Types.ObjectId(quizId)
-      );
-    }
-    // Save Product
-    let obj = new ProductModel(product_payload);
-    let product = await obj.save();
-    let data;
-    if (request.body.product_map_data) {
-      switch (request.body.type) {
-        case PRODUCTS_TYPE.notes:
-          data = request.body.product_map_data.map((obj) => ({
-            ...obj,
-            user_id: request.user._id,
-            product_id: product._id,
-          }));
-          await Document.insertMany(data);
-          break;
-        case PRODUCTS_TYPE.quiz:
-          data = request.body.product_map_data.map((question_id) => ({
-            question_id,
-            product_id: product._id,
-          }));
-          await ProductQuestionMap.insertMany(data);
-          break;
-      }
-    }
-    response.status(200).json({
-      success: true,
-      message: 'Product created successfully',
-      data: product,
+    productService.createProduct(product_payload).then(res=>{
+      response.status(200).json({
+        success: true,
+        message: 'Product created successfully',
+      });
+    }).catch(err=>{
+      response.status(500).json({
+        success: false,
+        message: 'Something went wrong',
+        debug: err
+      });
     });
   },
   mapProductQuiz: async (request, response) => {
@@ -162,13 +129,6 @@ let productController = {
       );
     }
     await ProductModel.updateOne({ _id: request.params.id }, request.body);
-    if (request.body.image) {
-      await ProductImage.update(
-        { product_id: request.params.id },
-        { product_id: request.params.id, ...request.body.image },
-        { upsert: true }
-      );
-    }
     switch (request.body.type) {
       case PRODUCTS_TYPE.notes: //Document Update
         const data = request.body.product_map_data.map((obj) => ({

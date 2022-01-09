@@ -7,7 +7,6 @@ const {
   getUserAttemptingQuiz,
   checkUserAnswer,
 } = require('../../services/quiz');
-const { QuizResult } = require('../../mongo-models/quizResult');
 let controller = {};
 
 controller.startQuiz = async (payload) => {};
@@ -99,7 +98,7 @@ controller.submitQuiz = async (request, response) => {
         user_id: request.user._id,
       };
   const attemtQuiz = (await getUserAttemptingQuiz(criteria))[0];
-
+  attemtQuiz.type = attemtQuiz.type ? attemtQuiz.type : 'quiz;';
   const questions =
     attemtQuiz.type == 'quiz'
       ? (await getQuizQuestions(request.body.product_id))[0]
