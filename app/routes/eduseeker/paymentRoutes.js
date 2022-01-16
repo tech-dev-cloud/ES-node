@@ -1,21 +1,20 @@
-
 const JOI = require('joi');
 const { USER_ROLE } = require('../../utils/constants');
 const { paymentController } = require('../../controllers');
 const routeUtils = require('../../utils/routeUtils');
 
-let MODULE = {
+const MODULE = {
   name: 'payment',
-  group: 'Payment'
-}
+  group: 'Payment',
+};
 
 const routes = [
   {
-    path: `/api/${MODULE.name}`,
+    path: '/api/payment',
     method: 'POST',
     joiSchemaForSwagger: {
       headers: JOI.object({
-        'authorization': JOI.string().required()
+        authorization: JOI.string().required(),
       }).unknown(),
       body: {
         productId: routeUtils.validation.mongooseId,
@@ -23,30 +22,30 @@ const routes = [
       },
       group: MODULE.group,
       description: 'Api to create Payment request',
-      model: 'CreatePayment'
+      model: 'CreatePayment',
     },
     auth: [USER_ROLE.STUDENT],
-    handler: paymentController.createPayment
+    handler: paymentController.createPayment,
   },
   {
-    path: `/api/createOrder`,
+    path: '/api/createOrder',
     method: 'POST',
     joiSchemaForSwagger: {
       headers: JOI.object({
-        'authorization': JOI.string().required()
+        authorization: JOI.string().required(),
       }).unknown(),
       body: {
         productId: routeUtils.validation.mongooseId,
       },
       group: MODULE.group,
       description: 'Api to create Payment request',
-      model: 'CreatePayment'
+      model: 'CreatePayment',
     },
     auth: [USER_ROLE.STUDENT],
-    handler: paymentController.createOrder
+    handler: paymentController.createOrder,
   },
   {
-    path: `/api/${MODULE.name}/webhook`,
+    path: '/api/payment/webhook',
     method: 'POST',
     joiSchemaForSwagger: {
       formData: {
@@ -62,54 +61,54 @@ const routes = [
         payment_request_id: JOI.string(),
         purpose: JOI.string(),
         shorturl: JOI.string(),
-        status: JOI.string()
+        status: JOI.string(),
       },
       group: MODULE.group,
       description: 'webhook',
-      model: 'PaymentSuccess'
+      model: 'PaymentSuccess',
     },
     // auth: [USER_ROLE.STUDENT],
-    handler: paymentController.webhook
+    handler: paymentController.webhook,
   },
   {
-    path: `/api/orders`,
+    path: '/api/orders',
     method: 'GET',
     joiSchemaForSwagger: {
       headers: JOI.object({
-        'authorization': JOI.string().required()
+        authorization: JOI.string().required(),
       }).unknown(),
-      queery:{
-        order_status:JOI.string(),
-        createdAt:JOI.string(),
-        skip:JOI.number(),
-        limit:JOI.number()
+      queery: {
+        order_status: JOI.string(),
+        createdAt: JOI.string(),
+        skip: JOI.number(),
+        limit: JOI.number(),
       },
       group: MODULE.group,
       description: 'Get Orders',
-      model: 'PaymentSuccess'
+      model: 'PaymentSuccess',
     },
-    auth: [USER_ROLE.TEACHER,USER_ROLE.ADMIN],
-    handler: paymentController.getOrders
+    auth: [USER_ROLE.TEACHER, USER_ROLE.ADMIN],
+    handler: paymentController.getOrders,
   },
   {
-    path: `/api/orders`,
+    path: '/api/orders',
     method: 'POST',
     joiSchemaForSwagger: {
       headers: JOI.object({
-        'authorization': JOI.string().required()
+        authorization: JOI.string().required(),
       }).unknown(),
-      body:{
-        price:JOI.number(),
-        email:JOI.string(),
-        product_ids:JOI.array().items(routeUtils.validation.mongooseId)
+      body: {
+        price: JOI.number(),
+        email: JOI.string(),
+        product_ids: JOI.array().items(routeUtils.validation.mongooseId),
       },
       group: MODULE.group,
       description: 'Get Orders',
-      model: 'PaymentSuccess'
+      model: 'PaymentSuccess',
     },
-    auth: [USER_ROLE.TEACHER,USER_ROLE.ADMIN],
-    handler: paymentController.addOrderAfterPayment
-  }
-]
+    auth: [USER_ROLE.TEACHER, USER_ROLE.ADMIN],
+    handler: paymentController.addOrderAfterPayment,
+  },
+];
 
 module.exports = routes;

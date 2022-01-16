@@ -143,6 +143,7 @@ CONSTANTS.MONGO_ERROR = {
 
 CONSTANTS.EMAIL_TEMPLATE = {
   FORGOT_PASSWORD: 'public/forgot-password.html',
+  THANK_YOU: 'public/thankyou.html',
 };
 
 CONSTANTS.USER_ROLE = {

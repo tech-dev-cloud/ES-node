@@ -8,6 +8,7 @@ const common = require('../../utils/common');
 const product = require('../../services/product');
 const { order_status } = require('../../utils/constants');
 const { SOMETHING_WENT_WRONG } = require('../../utils/errorCodes');
+const { Email } = require('../../modules/notification/email-service');
 const debug = require('../../../config/debugger');
 
 const paymentController = {
@@ -102,6 +103,9 @@ const paymentController = {
           Order.insertMany(sub_products).then((res) => {});
         }
         order.save().then((res) => {});
+        const user = await UserModel.findOne({ _id: order.user_id }).lean();
+        const emailObj = new Email();
+        emailObj.publishThankyouNotification(user);
       } else {
         order.order_status = 'Failed';
         order.save().then((res) => {});
