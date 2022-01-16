@@ -7,7 +7,7 @@ const swaggerJson = require('../../config/swagger');
 const swJson = require('../services/swaggerService');
 const { authService } = require('../services/authService');
 const { file } = require('../controllers');
-const logger = require('../../config/winston');
+const Logger = require('../../config/winston');
 const responseHelper = require('./responseHelper');
 
 const storage = multer.diskStorage({
@@ -20,7 +20,7 @@ const routeUtils = {};
 
 routeUtils.initRoutes = async (app, routes = []) => {
   routes.forEach((route) => {
-    const middlewares = [];
+    const middlewares = [dataValidation(route)];
     try {
       middlewares.push(authService.userValidate(route.auth));
       if (route.joiSchemaForSwagger && route.joiSchemaForSwagger.formData) {
@@ -122,28 +122,28 @@ const dataValidation = (route) => {
         next();
       })
       .catch((err) => {
-        res.status(400).json({ error: err.message });
+        res.status(400).json({ error: err.details[0].message });
       });
   };
 };
 const getHandlerMethod = (route) => {
   const { handler } = route;
   return (req, res) => {
-    logger.info(`${route.method}: ${route.path}`);
+    Logger.info(`${route.method}: ${route.path}`);
     handler(req, res)
       .then((res) => {})
       .catch((err) => {
         if (err.statusCode) {
-          logger.error(err);
+          Logger.error(err);
           res.status(err.statusCode).json({
             success: false,
             message: err.message,
             type: err.type,
           });
-        }else{
+        } else {
           res.status(500).json(responseHelper.error.SOMETHING_WENT_WRONG());
         }
-        logger.error(err);
+        Logger.error(err);
       });
   };
 };

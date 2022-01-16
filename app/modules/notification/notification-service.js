@@ -1,0 +1,54 @@
+const Logger = require('../../../config/winston');
+const { Subscriber, Template, UserModel } = require('../../mongo-models');
+const { USER_GROUP } = require('../../utils/constants');
+const Email = require('./email-service');
+const service = {
+  addNewSubscriber: async (userData) => {
+    const data = new Subscriber(userData);
+    return data.save();
+  },
+  addNewTemplate: async (templateData) => {
+    const data = new Template(templateData);
+    return data.save();
+  },
+  updateNewTemplate: async (templateId, dataToUpdate) => {
+    return Template.updateOne({ _id: templateId }, dataToUpdate);
+  },
+  sendEmailNtification: async (templateId) => {
+    const templateObject = await Template.findOne({
+      _id: templateId,
+      status: true,
+    }).lean();
+    const users = await service.getUserGroup(templateObject.userGroup);
+    const emailObj = new Email(templateObject);
+    for (const user of users) {
+      emailObj.mapKeys(user);
+      emailObj
+        .sendEmail(user.email)
+        .then((res) => {})
+        .catch((err) => {
+          Logger.error(err);
+        });
+    }
+  },
+  getUserGroup: async (userGroup) => {
+    let users;
+    switch (userGroup) {
+      case USER_GROUP.subscribers:
+        users = await Subscriber.find({}, { email: 1, name: 1 }).lean();
+        break;
+      case USER_GROUP.registerd:
+        users = await UserModel.find({}, { email: 1, name: 1 }).lean();
+        break;
+      default:
+        const data = await Promise.all([
+          Subscriber.find({ status: true }, { email: 1, name: 1 }).lean(),
+          UserModel.find({}, { email: 1 }).lean(),
+        ]);
+        users = [...data[0], data[1]];
+        break;
+    }
+    return users;
+  },
+};
+module.exports = service;

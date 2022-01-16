@@ -98,9 +98,19 @@ const CONSTANTS = {
     subscribe: 'subscribe',
     signup: 'signup',
   },
-  MODULES:{
-    notification:'Notification'
-  }
+  MODULES: {
+    notification: 'Notification',
+  },
+  EMAIL_TYPE: {
+    OFFER: 'offer',
+    LAUNCH: 'launch',
+    THANKS_FOR_PURCHASE: 'thankyou',
+  },
+  USER_GROUP: {
+    subscribers: 'subscribers',
+    registerd: 'registered',
+    allUsers: 'all',
+  },
 };
 
 CONSTANTS.DEFAULT = {
@@ -116,11 +126,15 @@ CONSTANTS.AVAILABLE_AUTH = {
 CONSTANTS.EMAIL_STATUS = {
   SIGNUP: 'Registration alert.',
   FORGOT_PASSWORD: 'Forgot password alert.',
+  NEW_LAUNCH: '',
 };
 
 CONSTANTS.EMAIL_TYPES = {
   REGISTER_USER: 1,
   FORGOT_PASSWORD: 2,
+  NEW_LAUNCH: 3,
+  OFFER_LAUNCH: 4,
+  PURCHASE_THANKS: 5,
 };
 
 CONSTANTS.MONGO_ERROR = {

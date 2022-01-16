@@ -61,41 +61,33 @@ let controller = {
     ) {
       throw INVALID_CREDENTIALS;
     } else {
-      try {
-        if (
-          request.headers.admin &&
-          !user.role.includes(USER_ROLE.TEACHER) &&
-          !user.role.includes(USER_ROLE.ADMIN)
-        ) {
-          throw UNAUTHORIZED;
-        }
-        let token = await authService.createUserSession(
-          user,
-          LOGIN_TYPE.EDUSEEKER,
-          null
-        );
-        response.status(200).json({
-          success: true,
-          message: 'Login successfull',
-          data: {
-            accessToken: token,
-            name: user.name,
-            ...(user.profile_pic ? { profile_pic: user.profile_pic } : {}),
-          },
-        });
-      } catch (err) {
-        throw err;
+      if (
+        request.headers.admin &&
+        !user.role.includes(USER_ROLE.TEACHER) &&
+        !user.role.includes(USER_ROLE.ADMIN)
+      ) {
+        throw UNAUTHORIZED;
       }
+      let token = await authService.createUserSession(
+        user,
+        LOGIN_TYPE.EDUSEEKER,
+        null
+      );
+      response.status(200).json({
+        success: true,
+        message: 'Login successfull',
+        data: {
+          accessToken: token,
+          name: user.name,
+          ...(user.profile_pic ? { profile_pic: user.profile_pic } : {}),
+        },
+      });
     }
   },
   forgotPassword: async (request, response) => {
     const user = await UserModel.findOne({ email: request.body.email });
     if (!user) {
       throw EMAIL_NOT_FOUND;
-      // response.status(400).json({
-      //   success: false,
-      //   message: "Email does not exist"
-      // })
     } else {
       let expireTime = new Date();
       let resetPayload = {
@@ -112,10 +104,6 @@ let controller = {
         });
       } catch (err) {
         throw UNAUTHORIZED;
-        // response.status(500).json({
-        //   success: false,
-        //   message: "Something went wrong"
-        // })
       }
     }
   },

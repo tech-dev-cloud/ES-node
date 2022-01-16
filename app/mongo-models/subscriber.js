@@ -3,7 +3,8 @@ const Schema = MONGOOSE.Schema;
 
 const schema = new Schema({
   name: { type: String, required: true },
-  email: { type: String, require:true, unique:true },
+  email: { type: String, require: true, unique: true },
+  status: { type: Boolean, default: false },
 });
 
 schema.set('timestamps', true);
