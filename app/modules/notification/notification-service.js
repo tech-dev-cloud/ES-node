@@ -50,5 +50,19 @@ const service = {
     }
     return users;
   },
+  getTemplates: async (query) => {
+    const match = {
+      ...(query.type ? { type: query.type } : {}),
+      ...(query.userGroup ? { userGroup: query.userGroup } : {}),
+      ...(query.status ? { status: query.status } : {}),
+    };
+    if (query.searchString) {
+      match['$text'] = { $search: request.query.searchString };
+    }
+    return Template.find(match);
+  },
+  getTemplateById: async (templateId) => {
+    return Template.findOne({ _id: templateId }).lean();
+  },
 };
 module.exports = service;

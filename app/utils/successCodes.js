@@ -11,4 +11,8 @@ module.exports = {
     message: 'Email Notification sent',
     serverCode: 'NT_103',
   },
+  fetchTemplates: {
+    message: 'Ftech all templates successfully',
+    serverCode: 'NT_104',
+  },
 };

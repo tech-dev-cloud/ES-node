@@ -26,18 +26,21 @@ const { NOT_ENROLLED } = require('../../utils/errorCodes');
 let productController = {
   createProduct: async (request, response) => {
     let product_payload = { ...request.body, created_by: request.user._id };
-    productService.createProduct(product_payload).then(res=>{
-      response.status(200).json({
-        success: true,
-        message: 'Product created successfully',
+    productService
+      .createProduct(product_payload)
+      .then((res) => {
+        response.status(200).json({
+          success: true,
+          message: 'Product created successfully',
+        });
+      })
+      .catch((err) => {
+        response.status(500).json({
+          success: false,
+          message: 'Something went wrong',
+          debug: err,
+        });
       });
-    }).catch(err=>{
-      response.status(500).json({
-        success: false,
-        message: 'Something went wrong',
-        debug: err
-      });
-    });
   },
   mapProductQuiz: async (request, response) => {
     await ProductQuestionMap.insertMany(request.body.content);

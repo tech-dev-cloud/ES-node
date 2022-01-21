@@ -19,5 +19,9 @@ const schema = new Schema({
 });
 
 schema.set('timestamps', true);
+schema.index({ title: 'text', subject: 'text' });
+schema.index({ type: 1 }, { unique: false });
+schema.index({ userGroup: 1 }, { unique: false });
+schema.index({ status: 1 }, { unique: false });
 const Template = model('template', schema);
 module.exports = { Template };

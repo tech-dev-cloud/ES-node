@@ -5,6 +5,7 @@ const {
   successFullySubscribed,
   addNewTemplate,
   emailNotificationSent,
+  fetchTemplates,
 } = require('../../utils/successCodes');
 const service = require('./notification-service');
 module.exports = {
@@ -30,12 +31,21 @@ module.exports = {
   },
   updateTemplate: async (request, response) => {
     const data = request.body;
-    await service.updateNewTemplate(data);
+    await service.updateNewTemplate(request.params.templateId, data);
     response.status(200).json(responseHelper.success(addNewTemplate));
   },
   sendEmailNotification: async (request, response) => {
     const templateId = request.params.templateId;
     service.sendEmailNtification(templateId);
     response.status(200).json(responseHelper.success(emailNotificationSent));
+  },
+  getTemplates: async (request, response) => {
+    const query = request.query;
+    const data = await service.getTemplates(query);
+    response.status(200).json(responseHelper.success(fetchTemplates, data));
+  },
+  getTemplateById: async (request, response) => {
+    const template = await service.getTemplateById(request.params.templateId);
+    response.status(200).json(responseHelper.success(fetchTemplates, template));
   },
 };
