@@ -31,6 +31,10 @@ const service = {
         });
     }
   },
+  tempEmail: async () => {
+    const emailObj = new Email();
+    emailObj.publishThankyouNotification('damandeeps16@gmail.com');
+  },
   getUserGroup: async (userGroup) => {
     let users;
     switch (userGroup) {

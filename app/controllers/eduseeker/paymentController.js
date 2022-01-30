@@ -105,7 +105,7 @@ const paymentController = {
         order.save().then((res) => {});
         const user = await UserModel.findOne({ _id: order.user_id }).lean();
         const emailObj = new Email();
-        emailObj.publishThankyouNotification(user);
+        emailObj.publishThankyouNotification(user, product);
       } else {
         order.order_status = 'Failed';
         order.save().then((res) => {});

@@ -13,6 +13,7 @@ const {
   getTemplates,
   getTemplateById,
   updateTemplate,
+  tempEmail,
 } = require('./notification-controller');
 
 module.exports = [
@@ -157,5 +158,15 @@ module.exports = [
     },
     auth: [USER_ROLE.TEACHER],
     handler: sendEmailNotification,
+  },
+  {
+    path: '/api/temp-email',
+    method: 'POST',
+    joiSchemaForSwagger: {
+      group: MODULES.notification,
+      description: 'Api to send email notification',
+      model: 'TempEmail',
+    },
+    handler: tempEmail,
   },
 ];

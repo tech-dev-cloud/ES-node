@@ -49,10 +49,6 @@
         }
       }
     </style>
-    <script
-      src="https://use.fontawesome.com/releases/v5.15.4/js/all.js"
-      data-auto-replace-svg
-    ></script>
   </head>
   <body>
     <div class="main-container">
@@ -76,15 +72,19 @@
       <div class="message">
         <div>Hi <strong>{{username}}</strong>,</div>
         <p>
-          You have successfully purchased {{productName}}. You can access your
-          {{productName}} by clicking on the red button given below. If you have
-          any queries, please feel free to reply to this email. We will be happy
-          to help you.
+          We hope you're enjoying {{productName}}. We thought we'd quickly
+          remind you that your Subscription of {{productName}} will expire on
+          {{expireDate}}. You can renew the Subscription by replying to this
+          email.
+        </p>
+        <p>
+          Don't let an expiry date get in the way of your preparation. So don't
+          miss out, keep preparing without any interruptions!
         </p>
         <!-- Button -->
-        <div style="text-align: center; margin-top: 50px">
+        <!-- <div style="text-align: center; margin-top: 50px">
           <a href="{{landingLink}}" class="btn">{{btnText}}</a>
-        </div>
+        </div> -->
       </div>
       <table
         align="center"
@@ -100,39 +100,33 @@
         </tr>
       </table>
       <div style="padding-top: 40px; text-align: center">
-        <span style="font-size: 14px">All the best,<br />Eduseeker Team</span>
+        <span style="font-size: 14px">Eduseeker Team</span>
       </div>
       <table align="center" style="border-spacing: 1em 2em">
         <tr>
           <td>
-            <a
-              style="text-decoration: none; color: black"
-              href="http://www.instagram.com/eduseeker"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <em class="fab fa-instagram"></em>
-            </a>
+            <img
+              src="https://mercore-images.s3.eu-west-2.amazonaws.com/instagram1.png"
+              width="24px"
+              height="24px"
+              alt=""
+            />
           </td>
           <td>
-            <a
-              style="text-decoration: none; color: black"
-              href="https://www.facebook.com/theeduseeker"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <em class="fab fa-facebook-f"></em>
-            </a>
+            <img
+              src="https://mercore-images.s3.eu-west-2.amazonaws.com/twitter1.png"
+              width="24px"
+              height="24px"
+              alt=""
+            />
           </td>
           <td>
-            <a
-              style="text-decoration: none; color: black"
-              href="https://www.youtube.com/channel/UCZyh2gkLCtCPbuJhzDJ3kTg"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <em class="fab fa-youtube"></em>
-            </a>
+            <img
+              src="https://mercore-images.s3.eu-west-2.amazonaws.com/linkedin1.png"
+              width="24px"
+              height="24px"
+              alt=""
+            />
           </td>
         </tr>
       </table>

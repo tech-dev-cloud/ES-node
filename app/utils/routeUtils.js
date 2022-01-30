@@ -9,7 +9,7 @@ const { authService } = require('../services/authService');
 const { file } = require('../controllers');
 const Logger = require('../../config/winston');
 const responseHelper = require('./responseHelper');
-
+const cronjobs = require('../routes/cronjob');
 const storage = multer.diskStorage({
   destination: 'uploads/',
   filename: file.rename,
@@ -35,6 +35,7 @@ routeUtils.initRoutes = async (app, routes = []) => {
       console.log('error---->>>>', err);
     }
   });
+  cronjobs(app);
   createSwaggerUIForRoutes(app, routes);
 };
 
@@ -122,6 +123,7 @@ const dataValidation = (route) => {
         next();
       })
       .catch((err) => {
+        console.log(err);
         res.status(400).json({ error: err.details[0].message });
       });
   };
@@ -133,6 +135,7 @@ const getHandlerMethod = (route) => {
     handler(req, res)
       .then((res) => {})
       .catch((err) => {
+        console.log(err);
         if (err.statusCode) {
           Logger.error(err);
           res.status(err.statusCode).json({

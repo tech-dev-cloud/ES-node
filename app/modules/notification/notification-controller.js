@@ -48,4 +48,8 @@ module.exports = {
     const template = await service.getTemplateById(request.params.templateId);
     response.status(200).json(responseHelper.success(fetchTemplates, template));
   },
+  tempEmail: async (request, response) => {
+    service.tempEmail();
+    response.status(200).json(responseHelper.success(emailNotificationSent));
+  },
 };

@@ -55,6 +55,7 @@ let controller = {
     const user = await UserModel.findOne({
       email: request.body.email.toLowerCase(),
     }).lean();
+    console.log(user);
     if (
       !user ||
       !commonFunctions.compareHash(request.body.password, user.password)

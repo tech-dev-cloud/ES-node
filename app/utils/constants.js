@@ -111,6 +111,13 @@ const CONSTANTS = {
     registerd: 'registered',
     allUsers: 'all',
   },
+  REDIRECTION_URL: {
+    COURSE: '/learn/{{id}}?redirect=true',
+    NOTES: '/products/pdf-4/{{id}}?redirect=true',
+    QUIZ: '/products/quiz-5/{{id}}?redirect=true',
+    TEST_SERIES: '/profile?redirect=true&q=test_series',
+    BULK: '/products/bulk-2/{{id}}?redirect=true',
+  },
 };
 
 CONSTANTS.DEFAULT = {
@@ -144,6 +151,7 @@ CONSTANTS.MONGO_ERROR = {
 CONSTANTS.EMAIL_TEMPLATE = {
   FORGOT_PASSWORD: 'public/forgot-password.html',
   THANK_YOU: 'public/thankyou.html',
+  ENROLLMENT_EXPIRE: 'public/enrollment-expire.html',
 };
 
 CONSTANTS.USER_ROLE = {
