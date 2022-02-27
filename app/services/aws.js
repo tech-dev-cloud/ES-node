@@ -47,5 +47,29 @@ service.sendEmail = async (params) => {
   });
   return ses.sendEmail(params).promise();
 };
+service.getSignedURL = async (params) => {
+  const s3 = new AWS.S3({
+    accessKeyId: process.env.AWS_ACCESS_KEY,
+    secretAccessKey: process.env.AWS_SECRET_KEY,
+  });
+  return new Promise((resolve, reject) => {
+    const Key = `${Date.now()}${params.fileName}`;
+    return s3.getSignedUrl(
+      'putObject',
+      {
+        Bucket: 'eduseeker-image-bucket',
+        ContentType: params.contentType,
+        Key,
+      },
+      (err, url) => {
+        if (!err) {
+          resolve(url);
+        } else {
+          reject(err);
+        }
+      }
+    );
+  });
+};
 
 module.exports = { aws: service };

@@ -10,7 +10,7 @@
         margin: auto;
         font-family: Inter;
         color: #393939;
-        width: 40%;
+        width: 50%;
         height: min-content;
         /* border: 1px solid #8080808f; */
         padding-bottom: 40px;
@@ -49,16 +49,20 @@
         }
       }
     </style>
+    <script
+      src="https://use.fontawesome.com/releases/v5.15.4/js/all.js"
+      data-auto-replace-svg
+    ></script>
   </head>
   <body>
     <div class="main-container">
       <nav>
         <div
           style="
-            padding-top: 6px;
-            padding-bottom: 10px;
             background: #393939;
             text-align: center;
+            vertical-align: middle;
+            padding: 5px;
           "
         >
           <img
@@ -72,10 +76,11 @@
       <div class="message">
         <div>Hi <strong>{{username}}</strong>,</div>
         <p>
-          We hope you're enjoying {{productName}}. We thought we'd quickly
-          remind you that your Subscription of {{productName}} will expire on
-          {{expireDate}}. You can renew the Subscription by replying to this
-          email.
+          We hope you're enjoying <strong>{{productName}}</strong>. We thought
+          we'd quickly remind you that your Subscription of
+          <strong>{{productName}}</strong> will expire on
+          <strong>{{expireDate}}</strong>. You can renew the Subscription by
+          replying to this email.
         </p>
         <p>
           Don't let an expiry date get in the way of your preparation. So don't
@@ -100,33 +105,39 @@
         </tr>
       </table>
       <div style="padding-top: 40px; text-align: center">
-        <span style="font-size: 14px">Eduseeker Team</span>
+        <span style="font-size: 14px">All the best,<br />Team Eduseeker</span>
       </div>
       <table align="center" style="border-spacing: 1em 2em">
         <tr>
           <td>
-            <img
-              src="https://mercore-images.s3.eu-west-2.amazonaws.com/instagram1.png"
-              width="24px"
-              height="24px"
-              alt=""
-            />
+            <a
+              style="text-decoration: none; color: black"
+              href="http://www.instagram.com/eduseeker"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <em class="fab fa-instagram"></em>
+            </a>
           </td>
           <td>
-            <img
-              src="https://mercore-images.s3.eu-west-2.amazonaws.com/twitter1.png"
-              width="24px"
-              height="24px"
-              alt=""
-            />
+            <a
+              style="text-decoration: none; color: black"
+              href="https://www.facebook.com/theeduseeker"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <em class="fab fa-facebook-f"></em>
+            </a>
           </td>
           <td>
-            <img
-              src="https://mercore-images.s3.eu-west-2.amazonaws.com/linkedin1.png"
-              width="24px"
-              height="24px"
-              alt=""
-            />
+            <a
+              style="text-decoration: none; color: black"
+              href="https://www.youtube.com/channel/UCZyh2gkLCtCPbuJhzDJ3kTg"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <em class="fab fa-youtube"></em>
+            </a>
           </td>
         </tr>
       </table>

@@ -1,6 +1,7 @@
 const fs = require('fs');
 const handleBar = require('handlebars');
 const path = require('path');
+const moment = require('moment');
 const {
   EMAIL_TYPE,
   EMAIL_TEMPLATE,
@@ -11,7 +12,7 @@ const { aws } = require('../../services/aws');
 module.exports = class Email {
   constructor(obj) {
     if (obj) {
-      this.Subject = obj.subject || 'Test';
+      this.subject = obj.subject || 'Test';
       this.template = obj.template;
       this.type = obj.type;
     }
@@ -22,7 +23,7 @@ module.exports = class Email {
     const content = template(this.data);
     const obj = {
       Destination: {
-        ToAddresses: [email, 'tamit9509@gmail.com'],
+        ToAddresses: [email, 'damandeeps16@gmail.com'],
       },
       Source: 'Eduseeker<theeduseeker@gmail.com>',
       Message: {
@@ -30,10 +31,11 @@ module.exports = class Email {
           Html: { Data: content },
         },
         Subject: {
-          Data: 'Thank you for purchasing our product',
+          Data: this.subject,
         },
       },
     };
+    console.log(obj);
     return aws.sendEmail(obj);
   }
   mapKeys(user) {
@@ -56,7 +58,7 @@ module.exports = class Email {
     this.template = template;
   }
   set _subject(subject) {
-    this.Subject = subject;
+    this.subject = subject;
   }
   set _type(type) {
     this.type = type;
@@ -104,16 +106,32 @@ module.exports = class Email {
       default:
         break;
     }
-    this.data['landingLink'] = redirectionURL;
+    this.data['landingLink'] = `https://eduseeker.in${redirectionURL}`;
     this.data['btnText'] = btnText;
     this.data['username'] = user.name;
-    this.sendEmail(user.email);
+    this.data['productName'] = purchaseProductInfo.name;
+    if (['tamit9509@gmail.com'].includes(user.email)) {
+      console.log(this.data, user.email);
+      this.sendEmail(user.email).then((res) => {
+        console.log(res);
+      });
+    }
+    // this.sendEmail(user.email);
   }
-  pulishEnrollmentExpireNotification(user, templatePath) {
+  pulishEnrollmentExpireNotification(user, productData, expiryDate) {
     this.template = fs
       .readFileSync(path.resolve(EMAIL_TEMPLATE.ENROLLMENT_EXPIRE), 'utf8')
       .toString();
     this.data['currentYear'] = new Date().getFullYear();
     this.data['username'] = user.name;
+    this.data['productName'] = productData.name;
+    if (typeof expiryDate == 'object') {
+      this.data['expireDate'] = moment(expiryDate).format('YYYY-MM-DD');
+    }
+    if (['tamit9509@gmail.com'].includes(user.email)) {
+      this.sendEmail(user.email).then((res) => {
+        console.log(res);
+      });
+    }
   }
 };
