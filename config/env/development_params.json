@@ -5,7 +5,7 @@
   "quiz_question_key": "quiz_question_",
   "quiz_question_expiry": 500,
   "default_user": "600be4282cc2fcd777ad854c",
-  "backend_server": "https://devapi.eduseeker.in",
+  "backend_server": "http://15.207.57.187:4001",
   "frontend_server": "https://devweb.eduseeker.in",
   "payment_webhook": "/api/payment/webhook",
   "payment_redirection": "/order-confirm",

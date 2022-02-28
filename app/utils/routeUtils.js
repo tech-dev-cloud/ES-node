@@ -135,7 +135,6 @@ const getHandlerMethod = (route) => {
     handler(req, res)
       .then((res) => {})
       .catch((err) => {
-        console.log(err);
         if (err.statusCode) {
           Logger.error(err);
           res.status(err.statusCode).json({

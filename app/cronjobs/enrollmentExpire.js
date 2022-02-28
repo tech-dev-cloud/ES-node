@@ -4,6 +4,7 @@ const {
   EmailSubjects,
 } = require('../modules/notification/notification-constants');
 const { Order } = require('../mongo-models');
+const { PRODUCTS_TYPE } = require('../utils/constants');
 module.exports = async function (req, res) {
   const day7 = moment().add(7, 'd').format('YYYY-MM-DD');
   const day8 = moment().add(110, 'd').format('YYYY-MM-DD');
@@ -11,6 +12,7 @@ module.exports = async function (req, res) {
   const obj1 = Order.find({
     validity: { $gt: day7, $lt: day8 },
     order_status: 'Credit',
+    product_type: { $ne: PRODUCTS_TYPE.bulk },
   })
     .populate('user_id')
     .populate('product_id')
@@ -18,6 +20,7 @@ module.exports = async function (req, res) {
   const obj2 = Order.find({
     validity: { $lt: new Date() },
     order_status: 'Credit',
+    product_type: { $ne: PRODUCTS_TYPE.bulk },
   })
     .populate('user_id')
     .populate('product_id')
