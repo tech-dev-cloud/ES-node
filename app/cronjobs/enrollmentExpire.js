@@ -7,6 +7,7 @@ const { Order } = require('../mongo-models');
 module.exports = async function (req, res) {
   const day7 = moment().add(7, 'd').format('YYYY-MM-DD');
   const day8 = moment().add(110, 'd').format('YYYY-MM-DD');
+
   const obj1 = Order.find({
     validity: { $gt: day7, $lt: day8 },
     order_status: 'Credit',
@@ -25,16 +26,15 @@ module.exports = async function (req, res) {
     obj1,
     obj2,
   ]);
-  console.log(enrollmentExpiresIn7Days, enrollmentExpired);
   for (const obj of enrollmentExpiresIn7Days) {
-    if (obj.user_id && obj.product_id) {
+    if (obj.user_id && obj.product_id && obj.product_id.isPaid) {
       const initData = {
         subject: EmailSubjects.expireInXDays
           .replace('{{productName}}', obj.product_id.name)
           .replace('{{expireDate}}', obj.validity),
       };
       const email = new Email(initData);
-      email.pulishEnrollmentExpireNotification(
+      await email.pulishEnrollmentExpireNotification(
         obj.user_id,
         obj.product_id,
         obj.validity
@@ -42,7 +42,7 @@ module.exports = async function (req, res) {
     }
   }
   for (const obj of enrollmentExpired) {
-    if (obj.user_id && obj.product_id) {
+    if (obj.user_id && obj.product_id && obj.product_id.isPaid) {
       const initData = {
         subject: EmailSubjects.expireToday.replace(
           '{{productName}}',
@@ -50,7 +50,7 @@ module.exports = async function (req, res) {
         ),
       };
       const email = new Email(initData);
-      email.pulishEnrollmentExpireNotification(
+      await email.pulishEnrollmentExpireNotification(
         obj.user_id,
         obj.product_id,
         new Date()

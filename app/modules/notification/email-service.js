@@ -23,7 +23,7 @@ module.exports = class Email {
     const content = template(this.data);
     const obj = {
       Destination: {
-        ToAddresses: [email, 'damandeeps16@gmail.com'],
+        ToAddresses: [email],
       },
       Source: 'Eduseeker<theeduseeker@gmail.com>',
       Message: {
@@ -110,12 +110,9 @@ module.exports = class Email {
     this.data['btnText'] = btnText;
     this.data['username'] = user.name;
     this.data['productName'] = purchaseProductInfo.name;
-    if (['tamit9509@gmail.com'].includes(user.email)) {
-      console.log(this.data, user.email);
-      this.sendEmail(user.email).then((res) => {
-        console.log(res);
-      });
-    }
+    // if (['tamit9509@gmail.com'].includes(user.email)) {
+    return this.sendEmail(user.email);
+    // }
     // this.sendEmail(user.email);
   }
   pulishEnrollmentExpireNotification(user, productData, expiryDate) {
@@ -128,10 +125,8 @@ module.exports = class Email {
     if (typeof expiryDate == 'object') {
       this.data['expireDate'] = moment(expiryDate).format('YYYY-MM-DD');
     }
-    if (['tamit9509@gmail.com'].includes(user.email)) {
-      this.sendEmail(user.email).then((res) => {
-        console.log(res);
-      });
-    }
+    // if (['tamit9509@gmail.com'].includes(user.email)) {
+    return this.sendEmail(user.email);
+    // }
   }
 };
