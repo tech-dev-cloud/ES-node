@@ -98,9 +98,26 @@ const CONSTANTS = {
     subscribe: 'subscribe',
     signup: 'signup',
   },
-  MODULES:{
-    notification:'Notification'
-  }
+  MODULES: {
+    notification: 'Notification',
+  },
+  EMAIL_TYPE: {
+    OFFER: 'offer',
+    LAUNCH: 'launch',
+    THANKS_FOR_PURCHASE: 'thankyou',
+  },
+  USER_GROUP: {
+    subscribers: 'subscribers',
+    registerd: 'registered',
+    allUsers: 'all',
+  },
+  REDIRECTION_URL: {
+    COURSE: '/learn/{{id}}?redirect=true',
+    NOTES: '/products/pdf-4/{{id}}?redirect=true',
+    QUIZ: '/products/quiz-5/{{id}}?redirect=true',
+    TEST_SERIES: '/profile?redirect=true&q=test_series',
+    BULK: '/products/bulk-2/{{id}}?redirect=true',
+  },
 };
 
 CONSTANTS.DEFAULT = {
@@ -116,11 +133,15 @@ CONSTANTS.AVAILABLE_AUTH = {
 CONSTANTS.EMAIL_STATUS = {
   SIGNUP: 'Registration alert.',
   FORGOT_PASSWORD: 'Forgot password alert.',
+  NEW_LAUNCH: '',
 };
 
 CONSTANTS.EMAIL_TYPES = {
   REGISTER_USER: 1,
   FORGOT_PASSWORD: 2,
+  NEW_LAUNCH: 3,
+  OFFER_LAUNCH: 4,
+  PURCHASE_THANKS: 5,
 };
 
 CONSTANTS.MONGO_ERROR = {
@@ -129,6 +150,8 @@ CONSTANTS.MONGO_ERROR = {
 
 CONSTANTS.EMAIL_TEMPLATE = {
   FORGOT_PASSWORD: 'public/forgot-password.html',
+  THANK_YOU: 'public/thankyou.html',
+  ENROLLMENT_EXPIRE: 'public/enrollment-expire.html',
 };
 
 CONSTANTS.USER_ROLE = {

@@ -20,5 +20,6 @@ module.exports = {
   ...require('./videoContent'),
   ...require('./comment'),
   ...require('./topics'),
-  ...require('./subscriber')
+  ...require('./subscriber'),
+  ...require('./template'),
 };

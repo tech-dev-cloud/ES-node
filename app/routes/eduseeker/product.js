@@ -1,7 +1,7 @@
 const JOI = require('joi');
 const { USER_ROLE, PRODUCTS_TYPE } = require('../../utils/constants');
 const { productController } = require('../../controllers');
-const { searchProducts } = require('../../modules/product/controller');
+const { searchProducts } = require('../../modules/product/product-controller');
 const routeUtils = require('../../utils/routeUtils');
 
 const routes = [
