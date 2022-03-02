@@ -64,6 +64,7 @@ module.exports = class Email {
     this.type = type;
   }
   publishThankyouNotification(user, purchaseProductInfo) {
+    console.log('====', user, purchaseProductInfo);
     this.template = fs
       .readFileSync(path.resolve(EMAIL_TEMPLATE.THANK_YOU), 'utf8')
       .toString();

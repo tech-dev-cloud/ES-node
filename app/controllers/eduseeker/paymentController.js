@@ -62,7 +62,7 @@ const paymentController = {
     const payload = request.body;
     const order = await Order.findOne({
       payment_request_id: payload.payment_request_id,
-    });
+    }).populate('product_id');
     if (order && order.order_status != 'Credit') {
       const providedMac = payload.mac;
       delete payload.mac;
@@ -76,7 +76,8 @@ const paymentController = {
       const calculatedMac = CryptoJS.HmacSHA1(data, config.PRIVATE_SALT);
       order.order_status = payload.status;
       if (providedMac == calculatedMac.toString()) {
-        const product = await productService.getProduct(order.product_id);
+        const product = order.product_id;
+        // const product = await productService.getProduct(order.product_id);
         if (product.type == params.product_types.bulk) {
           let validity = new Date();
           validity = new Date(
