@@ -1,4 +1,4 @@
-let { QuestionModel } = require('../models');
+let { QuestionModel } = require('../mongo-models');
 const { MONGO_ERROR, ERROR_TYPE, DEFAULT } = require('../utils/constants');
 const MESSAGES = require('../utils/messages');
 const dbUtils = require('../utils/utils');
@@ -16,7 +16,7 @@ service.createResource = async (payload) => {
 service.updateResource = async (payload) => {
   const exist = await QuestionModel.findById(payload.questionID).lean();
   if (!exist) {
-    throw responseHelper.createErrorResponse( ERROR_TYPE.BAD_REQUEST, MESSAGES.QUESTION.NOT_FOUND);
+    throw responseHelper.createErrorResponse(ERROR_TYPE.BAD_REQUEST, MESSAGES.QUESTION.NOT_FOUND);
   }
   // if (exist.createdBy.toString() != payload.user.userId.toString()) {
   //   throw responseHelper.createErrorResponse(ERROR_TYPE.UNAUTHORIZED, MESSAGES.USER.UNAUTHORIZED);
@@ -26,7 +26,7 @@ service.updateResource = async (payload) => {
 
 /** Function to get questions */
 service.findResource = async (payload) => {
-  let match = { subjectId:payload.subjectId, isDeleted:false };
+  let match = { subjectId: payload.subjectId, isDeleted: false };
   let subjectLookup = { from: 'subjects', localField: 'subjectId', foreignField: '_id', as: 'subjectData' };
   let moduleLookup = { from: 'modules', localField: 'moduleId', foreignField: '_id', as: 'module' };
   let skip = (payload.index || DEFAULT.INDEX) * (payload.limit || DEFAULT.LIMIT);
@@ -36,8 +36,8 @@ service.findResource = async (payload) => {
     { $match: match },
     { $lookup: subjectLookup },
     { $unwind: `$${subjectLookup.as}` },
-      // { $lookup: moduleLookup },
-      // { $unwind: `$${moduleLookup.as}` },
+    // { $lookup: moduleLookup },
+    // { $unwind: `$${moduleLookup.as}` },
     {
       $group: {
         _id: null,

@@ -1,29 +1,22 @@
 module.exports = {
-  "swagger": "2.0",
+  swagger: '2.0',
 
-  "title": "Music API Documentation",
-  "info": {
+  title: 'Music API Documentation',
+  info: {
     version: '2.0.0',
     title: 'Authentication User Microservice',
     description: 'Authentication User APIs.',
-    "termsOfService": "http://swagger.io/terms/",
-    "contact": {
-      "name": "Eduseeker team"
+    termsOfService: 'http://swagger.io/terms/',
+    contact: {
+      name: 'Eduseeker team',
     },
-    "license": {
-      "name": "MIT"
-    }
+    license: {
+      name: 'MIT',
+    },
   },
-  "paths": {},
-  "definitions": {},
-  "schemes": [
-    "http",
-    "https"
-  ],
-  "consumes": [
-    "application/json"
-  ],
-  "produces": [
-    "application/json"
-  ]
+  paths: {},
+  definitions: {},
+  schemes: ['http', 'https'],
+  consumes: ['application/json'],
+  produces: ['application/json'],
 };

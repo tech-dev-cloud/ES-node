@@ -1,80 +1,125 @@
 'use strict';
 
-const Joi = require('joi');
+const JOI = require('joi');
+const { subjectController } = require('../../modules/subjects/controller');
 const { USER_ROLE } = require('../../utils/constants');
-const { subjectController } = require('../../controllers');
 const routeUtils = require('../../utils/routeUtils');
 
-const MODULE = {
-  name: 'subject'
-}
 // options({ allowUnknown: true })
-let routes = [
+const routes = [
   {
     method: 'POST',
-    path: `/api/${MODULE.name}`,
+    path: '/api/subject',
     joiSchemaForSwagger: {
-      headers: Joi.object({
-        authorization: Joi.string().required()
+      headers: JOI.object({
+        authorization: JOI.string().required(),
       }).unknown(),
       body: {
-        name: Joi.string().required(),
-        status: Joi.boolean()
+        name: JOI.string().required(),
+        status: JOI.boolean(),
+        modules: JOI.array().items(
+          JOI.object({
+            name: JOI.string(),
+            topics: JOI.array().items(
+              JOI.object({
+                name: JOI.string(),
+              })
+            ),
+          })
+        ),
       },
       group: 'Subjects',
       description: 'Api to add new Subject',
-      model: 'CreateSubject'
+      model: 'CreateSubject',
     },
     auth: [USER_ROLE.TEACHER, USER_ROLE.ADMIN],
-    handler: subjectController.createSubject
-  },
-  {
-    method: 'GET',
-    path: `/api/${MODULE.name}`,
-    joiSchemaForSwagger: {
-      query: {
-        status: Joi.boolean().optional().description('get search deleted options'),
-      },
-      group: 'Subjects',
-      description: 'Api to get Subjects',
-      model: 'GetSubjects'
-    },
-    handler: subjectController.getAllSubjects
-  },
-  {
-    method: 'GET',
-    path: `/api/${MODULE.name}/:id`,
-    joiSchemaForSwagger: {
-      params: {
-        id: routeUtils.validation.mongooseId
-      },
-      group: 'Subjects',
-      description: 'Api to get Subject by ID',
-      model: 'Get_Subject_By_ID'
-    },
-    // auth: CONSTANTS.AVAILABLE_AUTH.ADMIN,
-    handler: subjectController.getSubjectById
+    handler: subjectController.createSubject,
   },
   {
     method: 'PUT',
-    path: `/api/${MODULE.name}/:id`,
+    path: '/api/subject/:id',
     joiSchemaForSwagger: {
-      headers: Joi.object({
-        authorization: Joi.string().required()
+      headers: JOI.object({
+        authorization: JOI.string().required(),
       }).unknown(),
       params: {
-        id: routeUtils.validation.mongooseId
+        id: routeUtils.validation.mongooseId.required(),
+      },
+      body: {
+        name: JOI.string(),
+        status: JOI.boolean(),
+        modules: JOI.array().items(
+          JOI.object({
+            _id: routeUtils.validation.mongooseId,
+            subjectId: routeUtils.validation.mongooseId,
+            name: JOI.string(),
+            topics: JOI.array().items(
+              JOI.object({
+                _id: routeUtils.validation.mongooseId,
+                subjectId: routeUtils.validation.mongooseId,
+                moduleId: routeUtils.validation.mongooseId,
+                name: JOI.string(),
+              })
+            ),
+          })
+        ),
+      },
+      group: 'Subjects',
+      description: 'Api to update new Subject',
+      model: 'UpdateSubject',
+    },
+    auth: [USER_ROLE.TEACHER, USER_ROLE.ADMIN],
+    handler: subjectController.updateSubject,
+  },
+  {
+    method: 'GET',
+    path: '/api/subject',
+    joiSchemaForSwagger: {
+      query: {
+        status: JOI.boolean()
+          .optional()
+          .description('get search deleted options'),
+      },
+      group: 'Subjects',
+      description: 'Api to get Subjects',
+      model: 'GetSubjects',
+    },
+    handler: subjectController.getAllSubjects,
+  },
+  {
+    method: 'GET',
+    path: '/api/subject/:id',
+    joiSchemaForSwagger: {
+      params: {
+        id: routeUtils.validation.mongooseId,
+      },
+      group: 'Subjects',
+      description: 'Api to get Subject by ID',
+      model: 'Get_Subject_By_ID',
+    },
+    // auth: CONSTANTS.AVAILABLE_AUTH.ADMIN,
+    handler: subjectController.getSubjectById,
+  },
+  {
+    method: 'PUT',
+    path: '/api/subject/:id',
+    joiSchemaForSwagger: {
+      headers: JOI.object({
+        authorization: JOI.string().required(),
+      }).unknown(),
+      params: {
+        id: routeUtils.validation.mongooseId,
       },
       group: 'Subjects',
       description: 'Api to update Subject',
-      model: 'UpdateSuabject'
+      model: 'UpdateSuabject',
     },
     auth: [USER_ROLE.ADMIN],
-    handler: subjectController.updateSubject
+    handler: subjectController.updateSubject,
   },
   // {
   //   method: 'DELETE',
-  //   path: `/api/${MODULE.name}/:id`,
+  //   path: `'/api/subject'/:id`,
   //   joiSchemaForSwagger: {
   //     headers: Joi.object({
   //       authorization: Joi.string().required()
@@ -89,5 +134,5 @@ let routes = [
   //   auth: [USER_ROLE.ADMIN],
   //   handler: subjectController.deleteResource
   // }
-]
+];
 module.exports = routes;

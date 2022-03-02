@@ -1,12 +1,12 @@
 const InstaMojo = require('instamojo-nodejs');
 const config = require('../../config/config');
-const { Order } = require('../models');
+const { Order } = require('../mongo-models');
 
 
 let service = {};
 
 service.createPayment = async (paymentObject, product, user) => {
-  if(config.NODE_ENV=='development'){
+  if (config.NODE_ENV == 'development') {
     InstaMojo.isSandboxMode(true);
   }
   InstaMojo.setKeys(config.PRIVATE_API_KEY, config.PRIVATE_AUTH_TOKEN);
@@ -15,21 +15,21 @@ service.createPayment = async (paymentObject, product, user) => {
       if (!err) {
         let validity;
         const response = JSON.parse(res);
-        let payload={
+        let payload = {
           ...response,
           payment_request_id: response.payment_request.id,
           product_type: product.type,
           product_id: product._id,
-          product_name:product.name,
+          product_name: product.name,
           product_image: product.image,
           user_id: user._id,
-          final_price:paymentObject.amount,
-          instructor_id:product.created_by
+          final_price: paymentObject.amount,
+          instructor_id: product.created_by
         }
-        if(product.validity){
+        if (product.validity) {
           validity = new Date();
           validity = new Date(validity.setMonth(validity.getMonth() + product.validity));
-          payload['validity']=validity;
+          payload['validity'] = validity;
         }
         let payment = new Order(payload);
         await payment.save();

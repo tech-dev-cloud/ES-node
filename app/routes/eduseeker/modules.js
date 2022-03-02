@@ -1,11 +1,11 @@
 const JOI = require('joi');
-const { USER_ROLE, DEFAULT,DB } = require('../../utils/constants');
+const { USER_ROLE, DEFAULT } = require('../../utils/constants');
 const { moduleController } = require('../../controllers');
 const routeUtils = require('../../utils/routeUtils');
 
 const MODULE = {
-  name: 'modules'
-}
+  name: 'modules',
+};
 const routes = [
   // {
   //   path: `/api/${MODULE.name}`,
@@ -63,19 +63,19 @@ const routes = [
     method: 'GET',
     joiSchemaForSwagger: {
       headers: JOI.object({
-        'authorization': JOI.string().required()
+        authorization: JOI.string().required(),
       }).unknown(),
       query: {
-        subjectId:routeUtils.validation.mongooseId.required(),
+        subjectId: routeUtils.validation.mongooseId.required(),
         index: JOI.number().default(DEFAULT.INDEX).min(DEFAULT.INDEX),
-        limit: JOI.number().min(DEFAULT.LIMIT).min(0)
+        limit: JOI.number().min(DEFAULT.LIMIT).min(0),
       },
       group: 'Modules',
       description: 'Api to get Modules',
-      model: 'GetModules'
+      model: 'GetModules',
     },
     auth: [USER_ROLE.TEACHER, USER_ROLE.ADMIN],
-    handler: moduleController.GetModuleList
+    handler: moduleController.GetModuleList,
   },
   // {
   //   path: `/api/${MODULE.name}/:questionID`,
@@ -111,7 +111,6 @@ const routes = [
   //   auth: [USER_ROLE.TEACHER],
   //   handler: questionController.deleteResource
   // },
-
-]
+];
 
 module.exports = routes;
