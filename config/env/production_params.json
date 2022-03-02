@@ -23,7 +23,7 @@
   },
   "userSessionLimit": 2,
   "homeBannerRedirection": {
-    "ebooksBulk": "https://eduseeker.in/products/bulk-2/601f887bdd9dea2e92119e41",
-    "course": "https://eduseeker.in/products/course-1/60e9fb2378083518dbf52ee9"
+    "ebooksBulk": "/products/bulk-2/601f887bdd9dea2e92119e41",
+    "course": "/products/course-1/60e9fb2378083518dbf52ee9"
   }
 }
