@@ -12,7 +12,7 @@ const { aws } = require('../../services/aws');
 module.exports = class Email {
   constructor(obj) {
     if (obj) {
-      this.subject = obj.subject || 'Test';
+      this.subject = obj.subject;
       this.template = obj.template;
       this.type = obj.type;
     }
@@ -64,7 +64,6 @@ module.exports = class Email {
     this.type = type;
   }
   publishThankyouNotification(user, purchaseProductInfo) {
-    console.log('====', user, purchaseProductInfo);
     this.template = fs
       .readFileSync(path.resolve(EMAIL_TEMPLATE.THANK_YOU), 'utf8')
       .toString();
@@ -111,10 +110,7 @@ module.exports = class Email {
     this.data['btnText'] = btnText;
     this.data['username'] = user.name;
     this.data['productName'] = purchaseProductInfo.name;
-    // if (['tamit9509@gmail.com'].includes(user.email)) {
     return this.sendEmail(user.email);
-    // }
-    // this.sendEmail(user.email);
   }
   pulishEnrollmentExpireNotification(user, productData, expiryDate) {
     this.template = fs
