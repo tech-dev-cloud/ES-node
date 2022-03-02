@@ -23,7 +23,7 @@ module.exports = class Email {
     const content = template(this.data);
     const obj = {
       Destination: {
-        ToAddresses: ['tamit9509@gmail.com'],
+        ToAddresses: [email],
       },
       Source: 'Eduseeker<theeduseeker@gmail.com>',
       Message: {

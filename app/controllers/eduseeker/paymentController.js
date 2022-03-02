@@ -62,9 +62,7 @@ const paymentController = {
     const payload = request.body;
     const order = await Order.findOne({
       payment_request_id: payload.payment_request_id,
-    })
-      .populate('product_id')
-      .pupulate('user_id');
+    });
     if (order && order.order_status != 'Credit') {
       const providedMac = payload.mac;
       delete payload.mac;
@@ -78,7 +76,7 @@ const paymentController = {
       const calculatedMac = CryptoJS.HmacSHA1(data, config.PRIVATE_SALT);
       order.order_status = payload.status;
       if (providedMac == calculatedMac.toString()) {
-        const product = order.product_id;
+        const product = await productService.getProduct(order.product_id);
         if (product.type == params.product_types.bulk) {
           let validity = new Date();
           validity = new Date(
@@ -105,10 +103,11 @@ const paymentController = {
           Order.insertMany(sub_products).then((res) => {});
         }
         order.save().then((res) => {});
+        const user = await UserModel.findOne({ _id: order.user_id }).lean();
         const emailObj = new Email({
           subject: 'Thank you for purchasing ' + product.name,
         });
-        emailObj.publishThankyouNotification(order.user_id, product);
+        emailObj.publishThankyouNotification(user, product);
       } else {
         order.order_status = 'Failed';
         order.save().then((res) => {});
