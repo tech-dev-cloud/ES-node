@@ -167,7 +167,7 @@ const controller = {
       topics = _.keyBy(topics, '_id');
       topicPerformanceData = topicPerformanceData.map((obj) => ({
         ...obj,
-        topicName: topics[obj.topicId].name,
+        topicName: (topics[obj.topicId] || {}).name,
       }));
       for (let obj of topicPerformanceData) {
         if (obj.percentage >= 80) {
