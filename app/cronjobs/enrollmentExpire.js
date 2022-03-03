@@ -8,6 +8,8 @@ const { PRODUCTS_TYPE } = require('../utils/constants');
 module.exports = async function (req, res) {
   const day7 = moment().add(7, 'd').format('YYYY-MM-DD');
   const day8 = moment().add(110, 'd').format('YYYY-MM-DD');
+  const today = moment().format('YYYY-MM-DD');
+  const tomorrow = moment().add(1, 'd').format('YYYY-MM-DD');
 
   const obj1 = Order.find({
     validity: { $gt: day7, $lt: day8 },
@@ -18,7 +20,7 @@ module.exports = async function (req, res) {
     .populate('product_id')
     .lean();
   const obj2 = Order.find({
-    validity: { $lt: new Date() },
+    validity: { $gte: today, $lt: tomorrow },
     order_status: 'Credit',
     product_type: { $ne: PRODUCTS_TYPE.bulk },
   })
