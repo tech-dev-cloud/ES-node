@@ -4,7 +4,6 @@ const { paymentService, productService } = require('../../services');
 const { Order, UserModel } = require('../../mongo-models');
 const config = require('../../../config/config');
 const params = require(`../../../config/env/${config.NODE_ENV}_params.json`);
-const common = require('../../utils/common');
 const product = require('../../services/product');
 const { order_status } = require('../../utils/constants');
 const { SOMETHING_WENT_WRONG } = require('../../utils/errorCodes');
@@ -23,6 +22,7 @@ const paymentController = {
     const criteria = {
       user_id: request.user._id,
       product_id: request.body.productId,
+
       order_status: { $in: ['Free', 'Credit'] },
     };
     if (product.validity) {
@@ -107,7 +107,7 @@ const paymentController = {
         const emailObj = new Email({
           subject: 'Thank you for purchasing ' + product.name,
         });
-        emailObj.publishThankyouNotification(user, product);
+        // emailObj.publishThankyouNotification(user, product);
       } else {
         order.order_status = 'Failed';
         order.save().then((res) => {});

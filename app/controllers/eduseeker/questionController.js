@@ -1,11 +1,15 @@
 const _ = require('lodash');
+const MONGOOSE = require('mongoose');
 const { USER_ROLE } = require('../../utils/constants');
 const { QuestionModel } = require('../../mongo-models');
 const controller = {
   /** Function to create Question */
   createQuestion: async (request, response) => {
     request.body.createdBy = request.user._id;
-    const question = new QuestionModel(request.body);
+    const question = new QuestionModel({
+      ...request.body,
+      owner: new MONGOOSE.Types.ObjectId('5f4b821f8da5bf75cbd1cfb2'),
+    });
     const data = await question.save();
     response.status(200).json({
       success: true,
@@ -32,22 +36,28 @@ const controller = {
     let match = {
       subjectId: request.query.subjectId,
       moduleId: request.query.moduleId,
+      examId: request.query.examId,
       topicId: request.query.topicId,
       ...(request.user.role.some((role) => role == USER_ROLE.ADMIN)
         ? { owner: request.user._id }
         : { createdBy: request.user._id }),
     };
     match = _.pickBy(match, (val) => ![undefined, null, ''].includes(val));
-    const data = await QuestionModel.find(match, [
-      '_id',
-      'options',
-      'correctOption',
-      'subjectId',
-      'question',
-      'description',
-      'moduleId',
-      'type',
-    ]).lean();
+    let query = [{ $match: match }];
+    if (request.query.unique) {
+      query = query.concat(
+        {
+          $lookup: {
+            from: 'quizzes',
+            localField: '_id',
+            foreignField: 'questionList',
+            as: 'quiz',
+          },
+        },
+        { $match: { quiz: [] } }
+      );
+    }
+    const data = await QuestionModel.aggregate(query);
     response.status(200).json({
       success: true,
       message: 'Questions fetched successfully',
@@ -64,6 +74,7 @@ const controller = {
       'description',
       'moduleId',
       'topicId',
+      'examId',
       'type',
     ]).lean();
     response.status(200).json({

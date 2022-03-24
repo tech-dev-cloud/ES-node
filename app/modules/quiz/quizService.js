@@ -10,7 +10,7 @@ module.exports = class QuizService {
       createdBy: instructorId,
       totalQuestions: data.questionList.length,
     });
-    return await quiz.save();
+    return quiz.save();
   }
   async updateQuiz(quizId, instructorId, data) {
     return QuizModel.findOneAndUpdate(

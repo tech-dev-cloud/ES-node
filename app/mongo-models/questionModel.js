@@ -6,6 +6,7 @@ const schema = new Schema({
   subjectId: { type: Schema.Types.ObjectId, ref: 'subjects', required: true },
   moduleId: { type: Schema.Types.ObjectId, ref: 'modules' },
   topicId: { type: Schema.Types.ObjectId, ref: 'topics' },
+  examId: { type: Schema.Types.ObjectId, ref: 'exams' },
   type: { type: Number, enum: Object.values(DB.QUESTION_TYPE) },
   image: { type: String },
   question: { type: String },

@@ -60,6 +60,14 @@ const controller = {
       data,
     });
   },
+  getExams: async (request, response) => {
+    const data = await SubjectService.getExams();
+    response.status(200).json({
+      success: true,
+      message: 'get all exams',
+      data,
+    });
+  },
 };
 
 module.exports = { subjectController: controller };
