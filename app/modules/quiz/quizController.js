@@ -44,24 +44,20 @@ const controller = {
     }
   },
   async getQuiz(request, response) {
-    const skip = parseInt(request.query.skip) || 0;
     const limit = parseInt(request.query.limit) || 20;
+    const skip = (parseInt(request.query.page) - 1) * limit;
     const search = request.query.searchString;
     const quizService = new QuizService();
-    try {
-      const match = { createdBy: request.user._id };
-      if (search) {
-        match['$text'] = { $search: search };
-      }
-      const data = await quizService.getQuiz(match, skip, limit);
-      response.status(200).json({
-        success: true,
-        message: 'Quiz created successfully',
-        data,
-      });
-    } catch (err) {
-      throw err;
+    const match = { createdBy: request.user._id };
+    if (search) {
+      match['$text'] = { $search: search };
     }
+    const [data, totalCounts] = await quizService.getQuiz(match, skip, limit);
+    response.status(200).json({
+      success: true,
+      message: 'Quiz created successfully',
+      result: { data, totalCounts },
+    });
   },
   async getQuizById(request, response) {
     const quizService = new QuizService();

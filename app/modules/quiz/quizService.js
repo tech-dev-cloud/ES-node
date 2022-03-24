@@ -19,9 +19,10 @@ module.exports = class QuizService {
     ).lean();
   }
   async getQuiz($match, skip, limit) {
-    return QuizModel.find($match)
-      .skip(skip || 0)
-      .limit(limit || 10);
+    return Promise.all([
+      QuizModel.find($match).sort({ _id: -1 }).skip(skip).limit(limit),
+      QuizModel.find($match).count(),
+    ]);
   }
 };
 let service = {};
