@@ -71,6 +71,7 @@ const routes = [
         moduleId: routeUtils.validation.mongooseId,
         topicId: routeUtils.validation.mongooseId,
         examId: routeUtils.validation.mongooseId,
+        quizId: routeUtils.validation.mongooseId,
         unique: JOI.boolean(),
         index: JOI.number().default(DEFAULT.INDEX).min(DEFAULT.INDEX),
         limit: JOI.number().min(DEFAULT.LIMIT).min(0),

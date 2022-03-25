@@ -54,7 +54,9 @@ const controller = {
             as: 'quiz',
           },
         },
-        { $match: { quiz: [] } }
+        {
+          $match: { $or: [{ quiz: [] }, { 'quiz._id': request.query.quizId }] },
+        }
       );
     }
     const data = await QuestionModel.aggregate(query);
