@@ -72,7 +72,7 @@ const controller = {
     response.status(200).json({
       success: true,
       message: 'Quiz created successfully',
-      data: data[0],
+      data,
     });
   },
   async getDataToPlay(request, response) {
