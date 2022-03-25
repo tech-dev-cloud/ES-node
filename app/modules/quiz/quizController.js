@@ -52,7 +52,11 @@ const controller = {
     if (search) {
       match['$text'] = { $search: search };
     }
-    const [data, totalCounts] = await quizService.getQuiz(match, skip, limit);
+    const [data, totalCounts] = await quizService.getAllQuiz(
+      match,
+      skip,
+      limit
+    );
     response.status(200).json({
       success: true,
       message: 'Quiz created successfully',
@@ -61,14 +65,10 @@ const controller = {
   },
   async getQuizById(request, response) {
     const quizService = new QuizService();
-    const data = await quizService.getQuiz(
-      {
-        createdBy: request.user._id,
-        _id: request.params.id,
-      },
-      0,
-      1
-    );
+    const data = await quizService.getQuizById({
+      createdBy: request.user._id,
+      _id: request.params.id,
+    });
     response.status(200).json({
       success: true,
       message: 'Quiz created successfully',

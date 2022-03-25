@@ -18,11 +18,14 @@ module.exports = class QuizService {
       { ...data, totalQuestions: data.questionList.length }
     ).lean();
   }
-  async getQuiz($match, skip, limit) {
+  async getAllQuiz($match, skip, limit) {
     return Promise.all([
       QuizModel.find($match).sort({ _id: -1 }).skip(skip).limit(limit),
       QuizModel.find($match).count(),
     ]);
+  }
+  async getQuizById($match) {
+    return QuizModel.findOne($match).lean();
   }
 };
 let service = {};
