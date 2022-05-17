@@ -41,7 +41,7 @@ function checkUserAnswer(totalQuestion, userAnswers, lodash) {
     incorrect: 0,
     notAnswered: 0,
     percentage: 0,
-    totalQuestions: totalQuestion.length,
+    totalQuestions: (totalQuestion || {}).length,
   };
   totalQuestion = lodash.keyBy(totalQuestion, '_id');
   for (const obj of userAnswers) {
