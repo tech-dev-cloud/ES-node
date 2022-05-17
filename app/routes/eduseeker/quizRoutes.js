@@ -65,11 +65,10 @@ const routes = [
     joiSchemaForSwagger: {
       headers: JOI.object({
         authorization: JOI.string().required(),
-        // admin: JOI.boolean().default(false),
       }).unknown(),
       query: {
-        skip: JOI.number(),
-        limit: JOI.number(),
+        page: JOI.number().required(),
+        limit: JOI.number().required(),
         searchString: JOI.string(),
       },
       group: 'QUIZ',

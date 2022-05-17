@@ -10,7 +10,7 @@ module.exports = class QuizService {
       createdBy: instructorId,
       totalQuestions: data.questionList.length,
     });
-    return await quiz.save();
+    return quiz.save();
   }
   async updateQuiz(quizId, instructorId, data) {
     return QuizModel.findOneAndUpdate(
@@ -18,10 +18,14 @@ module.exports = class QuizService {
       { ...data, totalQuestions: data.questionList.length }
     ).lean();
   }
-  async getQuiz($match, skip, limit) {
-    return QuizModel.find($match)
-      .skip(skip || 0)
-      .limit(limit || 10);
+  async getAllQuiz($match, skip, limit) {
+    return Promise.all([
+      QuizModel.find($match).sort({ _id: -1 }).skip(skip).limit(limit),
+      QuizModel.find($match).count(),
+    ]);
+  }
+  async getQuizById($match) {
+    return QuizModel.findOne($match).lean();
   }
 };
 let service = {};

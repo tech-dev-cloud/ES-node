@@ -22,4 +22,5 @@ module.exports = {
   ...require('./topics'),
   ...require('./subscriber'),
   ...require('./template'),
+  ...require('./exam'),
 };
