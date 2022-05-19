@@ -8,7 +8,7 @@ const { PRODUCTS_TYPE } = require('../utils/constants');
 
 module.exports = async function (req, res) {
   const day7 = moment().add(7, 'd').format('YYYY-MM-DD');
-  const day8 = moment().add(110, 'd').format('YYYY-MM-DD');
+  const day8 = moment().add(8, 'd').format('YYYY-MM-DD');
   const today = moment().format('YYYY-MM-DD');
   const tomorrow = moment().add(1, 'd').format('YYYY-MM-DD');
 
@@ -37,7 +37,7 @@ module.exports = async function (req, res) {
       const initData = {
         subject: EmailSubjects.expireInXDays
           .replace('{{productName}}', obj.product_id.name)
-          .replace('{{expireDate}}', obj.validity),
+          .replace('{{expireDate}}', moment(obj.validity).format('YYYY-MM-DD')),
       };
       const email = new Email(initData);
       await email.pulishEnrollmentExpireNotification(

@@ -44,39 +44,35 @@ const controller = {
     }
   },
   async getQuiz(request, response) {
-    const skip = parseInt(request.query.skip) || 0;
     const limit = parseInt(request.query.limit) || 20;
+    const skip = (parseInt(request.query.page) - 1) * limit;
     const search = request.query.searchString;
     const quizService = new QuizService();
-    try {
-      const match = { createdBy: request.user._id };
-      if (search) {
-        match['$text'] = { $search: search };
-      }
-      const data = await quizService.getQuiz(match, skip, limit);
-      response.status(200).json({
-        success: true,
-        message: 'Quiz created successfully',
-        data,
-      });
-    } catch (err) {
-      throw err;
+    const match = { createdBy: request.user._id };
+    if (search) {
+      match['$text'] = { $search: search };
     }
-  },
-  async getQuizById(request, response) {
-    const quizService = new QuizService();
-    const data = await quizService.getQuiz(
-      {
-        createdBy: request.user._id,
-        _id: request.params.id,
-      },
-      0,
-      1
+    const [data, totalCounts] = await quizService.getAllQuiz(
+      match,
+      skip,
+      limit
     );
     response.status(200).json({
       success: true,
       message: 'Quiz created successfully',
-      data: data[0],
+      result: { data, totalCounts },
+    });
+  },
+  async getQuizById(request, response) {
+    const quizService = new QuizService();
+    const data = await quizService.getQuizById({
+      createdBy: request.user._id,
+      _id: request.params.id,
+    });
+    response.status(200).json({
+      success: true,
+      message: 'Quiz created successfully',
+      data,
     });
   },
   async getDataToPlay(request, response) {

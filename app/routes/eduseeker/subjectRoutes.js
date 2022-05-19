@@ -117,22 +117,19 @@ const routes = [
     auth: [USER_ROLE.ADMIN],
     handler: subjectController.updateSubject,
   },
-  // {
-  //   method: 'DELETE',
-  //   path: `'/api/subject'/:id`,
-  //   joiSchemaForSwagger: {
-  //     headers: Joi.object({
-  //       authorization: Joi.string().required()
-  //     }).options({ allowUnknown: true }),
-  //     params: {
-  //       id: routeUtils.validation.mongooseId
-  //     },
-  //     group: 'Subjects',
-  //     description: 'Api to delete Subject',
-  //     model: 'Delete_Subject'
-  //   },
-  //   auth: [USER_ROLE.ADMIN],
-  //   handler: subjectController.deleteResource
-  // }
+  {
+    method: 'GET',
+    path: '/api/exams',
+    joiSchemaForSwagger: {
+      headers: JOI.object({
+        authorization: JOI.string().required(),
+      }).options({ allowUnknown: true }),
+      group: 'Subjects',
+      description: 'Api to Get all Exams',
+      model: 'GetExams',
+    },
+    auth: [USER_ROLE.ADMIN, USER_ROLE.TEACHER],
+    handler: subjectController.getExams,
+  },
 ];
 module.exports = routes;

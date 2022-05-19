@@ -1,5 +1,10 @@
 const _ = require('lodash');
-const { Module, SubjectModel, Topics } = require('../../mongo-models');
+const {
+  Module,
+  SubjectModel,
+  Topics,
+  ExamModel,
+} = require('../../mongo-models');
 module.exports = class SubjectService {
   constructor() {}
 
@@ -102,60 +107,7 @@ module.exports = class SubjectService {
       });
     }
   }
+  static getExams() {
+    return ExamModel.find({ status: true }).lean();
+  }
 };
-
-// const service = {};
-
-// /** Function to create a subject */
-// service.createResorce = async (payload) => {
-//   const subject = new SubjectModel(payload);
-//   try {
-//     return await subject.save();
-//   } catch (err) {
-//     if (err.code == MONGO_ERROR.DUPLICATE) {
-//       throw responseHelper.createErrorResponse(
-//         ERROR_TYPE.ALREADY_EXISTS,
-//         MESSAGES.SUBJECT.DUPLICATE
-//       );
-//     }
-//     throw err;
-//   }
-// };
-
-// /** Function to get All Subject */
-// service.findResource = async (payload) => {
-//   return await SubjectModel.find({ isDeleted: false }).lean();
-// };
-
-// /** Function to get Subject By ID */
-// service.findResourceByID = async (payload) => {
-//   return await SubjectModel.findById(payload.id).lean();
-// };
-
-// /** Function to update Subject */
-// service.updateResource = async (payload) => {
-//   try {
-//     return await SubjectModel.findByIdAndUpdate(payload.id, payload).lean;
-//   } catch (err) {
-//     if (err.code == MONGO_ERROR.DUPLICATE) {
-//       throw responseHelper.createErrorResponse(
-//         ERROR_TYPE.ALREADY_EXISTS,
-//         MESSAGES.SUBJECT.DUPLICATE
-//       );
-//     }
-//     throw err;
-//   }
-// };
-
-// /**Function to delete Subject */
-// service.deleteResource = async (payload) => {
-//   if (!payload.hardDelete) {
-//     return await SubjectModel.findOneAndDelete(
-//       { _id: payload.id },
-//       { isDeleted: true }
-//     ).lean();
-//   }
-//   return await SubjectModel.deleteOne({ _id: payload.id });
-// };
-
-// module.exports = { subjectService: service };

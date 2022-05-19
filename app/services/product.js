@@ -1,6 +1,6 @@
 const _ = require('lodash');
-const { config } = require('../../config/config');
-console.log(config.NODE_ENV);
+const moment = require('moment');
+const config = require('../../config/config');
 const params = require(`../../config/env/${config.NODE_ENV}_params.json`);
 const redis = require('../../config/redisConnection');
 const dbQuery = require('./dbQuery/product');
@@ -142,16 +142,29 @@ class ProductService {
     }
   }
   async isProductPurchased(product_id, user_id) {
-    const purchaseData = await Order.findOne({
+    const purchaseData = await Order.find({
       product_id,
       user_id: user_id,
       order_status: { $in: ['Credit', 'Free'] },
     }).lean();
-    if (purchaseData) {
-      return {
-        purchased: true,
-        validity: purchaseData.validity,
-      };
+
+    if (purchaseData && purchaseData.length) {
+      const product = purchaseData.find((obj) => {
+        if (!obj.validity) {
+          return true;
+        }
+        return obj.validity > new Date();
+      });
+      if (product) {
+        return {
+          purchased: true,
+          validity: product.validity,
+        };
+      } else {
+        return {
+          purchased: false,
+        };
+      }
     } else {
       return {
         purchased: false,
@@ -587,7 +600,14 @@ const service = {
     )
       .sort({ _id: -1 })
       .lean();
-    product_ids = enrolledProducts.map((product) => product.product_id);
+    product_ids = enrolledProducts
+      .filter((product) => {
+        if (!product.validity) {
+          return true;
+        }
+        return product.validity >= new Date() ? true : false;
+      })
+      .map((product) => product.product_id);
     return product_ids;
   },
   applyEarlyBirdOffer(product) {

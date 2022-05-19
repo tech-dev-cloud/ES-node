@@ -12,7 +12,7 @@ const path = require('path');
 //apiKeys for Mailjet
 const CONSTANTS = require('../utils/constants');
 
-let utils = {};
+const utils = {};
 
 /**
  * incrypt password in case user login implementation
@@ -47,7 +47,7 @@ utils.sendEmailSES = (user, type) => {
     Destination: {
       ToAddresses: [user.email],
     },
-    Source: 'no-reply@eduseeker.in',
+    Source: 'Eduseeker<theeduseeker@gmail.com>',
     Message: {
       Body: {
         Html: { Data: content },
