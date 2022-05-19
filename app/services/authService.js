@@ -15,7 +15,7 @@ const {
   DEVICE_LOGIN_LIMIT_EXCEED,
 } = require('../utils/errorCodes');
 const { SessionModel, UserModel } = require('../mongo-models');
-const params = require(`../../config/env/${config.NODE_ENV}_params.json`);
+const params = require('../../config/env/development_params.json');
 
 const authService = {
   createUserSession: async (user, login_type, deviceToken) => {

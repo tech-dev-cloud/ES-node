@@ -1,7 +1,7 @@
 const MONGOOSE = require('mongoose');
 const Schema = MONGOOSE.Schema;
 
-let schema = new Schema({
+const schema = new Schema({
   message: { type: String },
   type: { type: String, enum: ['product_review', 'lecture_query', 'feedback'] },
   object_id: { type: Schema.Types.ObjectId, required: true },

@@ -1,4 +1,4 @@
-const config = require('../../../config/config');
+const { config } = require('../../../config/config');
 const logger = require('../../../config/winston');
 const { Product, VideoContentModel } = require('../../mongo-models');
 const { SOMETHING_WENT_WRONG } = require('../../utils/errorCodes');

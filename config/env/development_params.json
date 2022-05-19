@@ -32,5 +32,21 @@
   "homeBannerRedirection": {
     "ebooksBulk": "/products/bulk-2/601f887bdd9dea2e92119e41",
     "course": "/products/course-1/60e9fb2378083518dbf52ee9"
+  },
+  "userAuthentication": "user_",
+  "preUserAuthentication": "user_prelogin_",
+  "userAuthenticationExpire": 10000,
+  "emailVerifySession": "email_verify_",
+  "emailVerifySessionExpire": 200,
+  "OTP": "otp_",
+  "loginOTPExpire": 10000,
+  "OTPSendBlock": "otp_sendblock_",
+  "OTPBlockExpire": 10000,
+  "OTPAttempt": "otp_attempt_",
+  "newOTPSend": "otp_newsend_",
+  "newOTPSendExpire": 60,
+  "solr": {
+    "ip": "localhost",
+    "port": 8983
   }
 }

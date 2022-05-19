@@ -1,5 +1,7 @@
 const MONGOOSE = require('mongoose');
+const { registerType } = require('../modules/users/user-constant');
 const { USER_ROLE, REGISTER_TYPE } = require('../utils/constants');
+const { GENDER } = require('../utils/server-constant');
 const schema = MONGOOSE.Schema;
 
 const user = new schema({
@@ -10,9 +12,16 @@ const user = new schema({
   password: { type: String, require: true },
   resetPasswordToken: { type: String },
   profile_pic: { type: String },
-  createdAt: { type: Date, default: Date.now() },
+  gender: { type: String, enum: Object.values(GENDER) },
+  registerType: { type: String, enum: Object.values(registerType) },
+  mobileVerified: { type: Boolean, default: false },
   emailVerified: { type: Boolean, default: false },
-  registerType: { type: String, enum: Object.values(REGISTER_TYPE) },
+  emailVerificationToken: { type: String },
+  address: {
+    city: { type: String },
+    state: { type: String },
+    country: { type: String },
+  },
   googleDetails: {
     name: { type: String, trim: true },
     phoneNumber: { type: String },

@@ -116,18 +116,6 @@ routeUtils.validation = {
   // emptyString: Joi.string().allow('').optional()
 };
 
-const dataValidation = (route) => {
-  return (req, res, next) => {
-    joiValidation(req, route)
-      .then(() => {
-        next();
-      })
-      .catch((err) => {
-        console.log(err);
-        res.status(400).json({ error: err.details[0].message });
-      });
-  };
-};
 const getHandlerMethod = (route) => {
   const { handler } = route;
   return (req, res) => {
@@ -135,6 +123,7 @@ const getHandlerMethod = (route) => {
     handler(req, res)
       .then((res) => {})
       .catch((err) => {
+        console.log(err);
         if (err.statusCode) {
           Logger.error(err);
           res.status(err.statusCode).json({

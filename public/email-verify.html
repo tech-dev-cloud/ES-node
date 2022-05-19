@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .main-container {
+        margin: auto;
+        font-family: Inter;
+        color: #393939;
+        width: 50%;
+        height: min-content;
+        /* border: 1px solid #8080808f; */
+        padding-bottom: 40px;
+        padding-top: 10px;
+      }
+      .message {
+        padding-top: 40px;
+        font-size: 20px;
+        line-height: 30px;
+        justify-self: start;
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+      .btn {
+        color: #ffffff;
+        background-color: #c92223;
+        text-decoration: none;
+        font-size: 20px;
+        font-weight: 600;
+        padding: 14px 55px;
+        border-radius: 7px;
+      }
+      @media (min-width: 320px) and (max-width: 767px) {
+        .main-container {
+          width: 100%;
+          font-size: 16px;
+          line-height: 25px;
+        }
+        .message {
+          font-size: 16px;
+          line-height: 26px;
+        }
+        .btn {
+          font-size: 16px;
+          padding: 11px 41px;
+        }
+      }
+    </style>
+    <script
+      src="https://use.fontawesome.com/releases/v5.15.4/js/all.js"
+      data-auto-replace-svg
+    ></script>
+  </head>
+  <body>
+    <div class="main-container">
+      <nav>
+        <div
+          style="
+            background: #393939;
+            text-align: center;
+            vertical-align: middle;
+            padding: 5px;
+          "
+        >
+          <img
+            src="https://eduseeker-image-bucket.s3.amazonaws.com/s1/1642923528711logo.webp"
+            width="210px"
+            alt="eduseeker-logo"
+          />
+        </div>
+      </nav>
+      <div style="text-align: center">
+        <div style="padding-top: 80px; text-align: center">
+          <img
+            src="https://mercore-images.s3.eu-west-2.amazonaws.com/Group+657.png"
+            width="100px"
+          />
+        </div>
+        <div style="padding-top: 40px">
+          <span
+            style="
+              font-family: Inter;
+              font-style: normal;
+              font-weight: 600;
+              font-size: 25px;
+              line-height: 30px;
+            "
+            >Confirm your email</span
+          >
+        </div>
+        <div
+          style="
+            padding-top: 40px;
+            font-size: 20px;
+            line-height: 30px;
+            justify-self: center;
+          "
+        >
+          <div>
+            <span
+              >Hello {{username}}, Thank you for signing up with Eduseeker!<br />Click
+              the link below to confirm your email address and set your
+              password.</span
+            >
+          </div>
+        </div>
+        <div style="padding-top: 60px">
+          <div style="text-align: center; margin-top: 50px">
+            <a href="{{landingLink}}" class="btn">Confirm email</a>
+          </div>
+        </div>
+      </div>
+      <table
+        align="center"
+        style="
+          padding-top: 40px;
+          font-size: 20px;
+          line-height: 30px;
+          width: 100%;
+        "
+      >
+        <tr>
+          <td><hr /></td>
+        </tr>
+      </table>
+      <div style="padding-top: 40px; text-align: center">
+        <span style="font-size: 14px">All the best,<br />Team Eduseeker</span>
+      </div>
+      <table align="center" style="border-spacing: 1em 2em">
+        <tr>
+          <td>
+            <a
+              style="text-decoration: none; color: black"
+              href="http://www.instagram.com/eduseeker"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <em class="fab fa-instagram"></em>
+            </a>
+          </td>
+          <td>
+            <a
+              style="text-decoration: none; color: black"
+              href="https://www.facebook.com/theeduseeker"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <em class="fab fa-facebook-f"></em>
+            </a>
+          </td>
+          <td>
+            <a
+              style="text-decoration: none; color: black"
+              href="https://www.youtube.com/channel/UCZyh2gkLCtCPbuJhzDJ3kTg"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <em class="fab fa-youtube"></em>
+            </a>
+          </td>
+        </tr>
+      </table>
+      <div style="text-align: center">
+        <span style="line-height: 17px; color: #757e86"
+          >Copyright © {{currentYear}} - Eduseeker. All rights reserved.</span
+        >
+      </div>
+    </div>
+  </body>
+</html>

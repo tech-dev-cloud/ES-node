@@ -117,6 +117,7 @@ const CONSTANTS = {
     QUIZ: '/products/quiz-5/{{id}}?redirect=true',
     TEST_SERIES: '/profile?redirect=true&q=test_series',
     BULK: '/products/bulk-2/{{id}}?redirect=true',
+    EMAIL_VERIFICATION: '/auth/email-verified/{{verificationToken}}',
   },
 };
 
@@ -152,6 +153,8 @@ CONSTANTS.EMAIL_TEMPLATE = {
   FORGOT_PASSWORD: 'public/forgot-password.html',
   THANK_YOU: 'public/thankyou.html',
   ENROLLMENT_EXPIRE: 'public/enrollment-expire.html',
+  EMAIL_VERIFICATION: 'public/email-verify.html',
+  OTP_VERIFICATION: 'public/otp-verify.html',
 };
 
 CONSTANTS.USER_ROLE = {

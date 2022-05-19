@@ -39,6 +39,7 @@ module.exports = {
     NOTIFICATION_CREATED_SUCCESSFULLY: ' Notification created successfully.',
     PASSWORD_CHANGED: 'Password changed successfully',
     EXIST: 'This user already exist.',
+    SIGNUP: 'Verifaication email has sent to you registerd email address',
   },
   SUBJECT: {
     CREATE: 'Subject created successfully',
@@ -71,5 +72,8 @@ module.exports = {
   PAYMENT: {
     SUCCESS: 'Payment Request Sent',
     DUPLICATE: 'Dupliceate entry',
+  },
+  users: {
+    signUp: 'Verifaication email has sent to you registerd email address',
   },
 };

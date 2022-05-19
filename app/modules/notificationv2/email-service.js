@@ -2,6 +2,8 @@ const fs = require('fs');
 const handleBar = require('handlebars');
 const path = require('path');
 const moment = require('moment');
+const { EMAIL_SUBJECTS } = require('../../utils/constants');
+
 const {
   EMAIL_TYPE,
   EMAIL_TEMPLATE,
@@ -9,7 +11,6 @@ const {
   REDIRECTION_URL,
 } = require('../../utils/constants');
 const { aws } = require('../../services/aws');
-const { EMAIL_SUBJECTS } = require('./notification-constants');
 module.exports = class Email {
   constructor(obj) {
     if (obj) {
@@ -118,7 +119,7 @@ module.exports = class Email {
     }
     return this.sendEmail(user.email);
   }
-  async verificationEmail(user, verificationToken) {
+  verificationEmail(user, verificationToken) {
     this.subject = EMAIL_SUBJECTS.EMAIL_VERIFICATION;
     this.template = fs
       .readFileSync(path.resolve(EMAIL_TEMPLATE.EMAIL_VERIFICATION), 'utf8')

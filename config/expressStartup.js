@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const utils = require('../app/utils/routeUtils');
 const routes = require('../app/routes');
 const Logger = require('../config/winston');
+const initRoutes = require('../app/routes');
 
 const expressStartup = async () => {
   // app.use(bodyParser.json({ limit: '50mb' }));
@@ -36,7 +37,6 @@ const expressStartup = async () => {
     );
     response.header('Access-Control-Allow-Credentials', 'true');
     response.header('Access-Control-Max-Age', 1800);
-    // response.header('Content-Encoding', 'br');
     next();
   });
 
@@ -48,11 +48,10 @@ const expressStartup = async () => {
     console.log('unhandledRejection', reason);
     process.exit(1);
   });
-
-  await utils.initRoutes(app, routes);
+  initRoutes(app, EXPRESS);
+  // await utils.initRoutes(app, routes);
   app.listen(process.env.PORT || 4000, '0.0.0.0', () => {
-    console.log(process.env.PORT);
-    Logger.info('server is start at port ', process.env.PORT || 4000);
+    Logger.info('server is start at port ' + (process.env.PORT || 4000));
   });
 };
 module.exports = expressStartup;

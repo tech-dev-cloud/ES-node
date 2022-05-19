@@ -86,7 +86,7 @@ let controller = {
     }
   },
   forgotPassword: async (request, response) => {
-    const user = await UserModel.findOne({ email: request.body.email });
+    const user = await UserModel.findOne({ email: request.body.email }).lean();
     if (!user) {
       throw EMAIL_NOT_FOUND;
     } else {
@@ -95,8 +95,16 @@ let controller = {
         _id: user._id,
         expireTime: expireTime.setHours(expireTime.getHours() + 5),
       };
-      user.resetPasswordToken = commonFunctions.encryptJwt(resetPayload);
-      await user.save();
+      // user.resetPasswordToken = commonFunctions.encryptJwt(resetPayload);
+      await UserModel.updateOne(
+        { email: request.body.email },
+        {
+          $set: {
+            resetPasswordToken: commonFunctions.encryptJwt(resetPayload),
+          },
+        }
+      );
+      // await user.save();
       try {
         await util.sendEmailSES(user, EMAIL_TYPES.FORGOT_PASSWORD);
         response.status(200).json({
@@ -104,6 +112,7 @@ let controller = {
           message: 'Please check you email to reset password',
         });
       } catch (err) {
+        console.log(err);
         throw UNAUTHORIZED;
       }
     }
