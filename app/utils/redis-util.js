@@ -5,13 +5,11 @@ module.exports = class RedisWrapper {
 
   static async get(key) {
     const val = await redis.get(key);
-    console.log(val);
     return val;
   }
 
   static async ttl(key) {
     const val = await redis.ttl(key);
-    console.log(val);
     return val;
   }
 
@@ -32,7 +30,6 @@ module.exports = class RedisWrapper {
 
   static async delByPattern(keyPattern) {
     redis.keys(keyPattern, (err, keys) => {
-      console.log(keys);
       if (keys.length) {
         redis.del(keys);
       }

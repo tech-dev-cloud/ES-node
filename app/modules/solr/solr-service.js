@@ -12,7 +12,6 @@ class Solr {
     const data = await solrBuilder
       .createSolrQuery()
       .apiHit(SOLR_CORES.products);
-    console.log(data);
     return data;
   }
 }

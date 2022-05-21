@@ -46,9 +46,7 @@ const authService = {
       SessionModel.updateMany(
         { _id: { $in: expiredSessionIds } },
         { $set: { loginLimitExceed: true } }
-      ).then((res) => {
-        console.log('done');
-      });
+      ).then((res) => {});
     }
     const session = await new SessionModel(sessionPayload).save();
     return session.accessToken;

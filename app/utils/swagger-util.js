@@ -219,7 +219,6 @@ class Swagger {
   }
 }
 function createSwaggerUIForRoutes(app, routes = []) {
-  console.log(routes.length);
   const swaggerDoc = Swagger.instance();
   const swaggerInfo = swaggerJson.info;
 

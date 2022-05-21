@@ -14,7 +14,6 @@ const controller = {
       if (err && err.statusCode) {
         response.status(err.statusCode).json(err);
       }
-      console.log(err);
     }
   },
 };

@@ -8,7 +8,6 @@ function userAuthentication(authType) {
   return async (request, response, next) => {
     const accessToken = request.headers.authorization || '';
     const tokenData = decryptJwt(accessToken);
-    console.log(tokenData);
     const prefix =
       authType == userSessionType.postLogin
         ? params.userAuthentication

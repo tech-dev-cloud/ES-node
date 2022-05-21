@@ -65,7 +65,6 @@ module.exports = class SubjectService {
         },
       },
     ]);
-    console.log(data);
     this.formatSubjectData(data);
     return data;
   }
@@ -127,7 +126,6 @@ module.exports = class SubjectService {
     );
   }
   static async updateTopic(topicId, dataToUpdate) {
-    console.log(topicId, dataToUpdate);
     return Topics.findOneAndUpdate(
       { _id: mongoose.Types.ObjectId(topicId) },
       dataToUpdate,

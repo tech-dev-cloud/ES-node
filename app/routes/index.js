@@ -41,7 +41,6 @@ function initRoutes(app, express) {
 }
 
 function registerRoutes(app, router, routeVersion, routes = []) {
-  console.log('register routes', routes.length);
   routes.forEach((route) => {
     const middlewares = [dataValidation(route)];
     if (route.authType) {

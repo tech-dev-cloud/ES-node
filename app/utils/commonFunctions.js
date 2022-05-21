@@ -21,7 +21,6 @@ commonFunctions.hashPassword = (payloadString) => {
  * @param {string} hash
  */
 commonFunctions.compareHash = (payloadPassword, userPassword) => {
-  console.log(payloadPassword, userPassword);
   return BCRYPT.compareSync(payloadPassword, userPassword);
 };
 

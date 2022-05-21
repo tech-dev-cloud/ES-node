@@ -70,6 +70,7 @@ let productController = {
       match['$text'] = { $search: request.query.searchString };
     }
     try {
+      console.log(skip, limit);
       let data = await ProductModel.aggregate([
         { $match: match },
         {

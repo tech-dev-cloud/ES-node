@@ -20,7 +20,6 @@ module.exports.realtimeget = function (ids, query, core) {
  * @param {*} core : users, content
  */
 function select(query, core) {
-  console.log(query);
   return new Promise((res) => {
     getClient(core).search(query, (err, data) => (err ? res({}) : res(data)));
   });
@@ -28,7 +27,6 @@ function select(query, core) {
 
 function update(data, options, core) {
   return new Promise((res) => {
-    console.log('====>>>>>>>>>>>', data);
     getClient(core).update(data, options, (err, data) => {
       err && console.log('solr update', err);
       err ? res({}) : res(data);
