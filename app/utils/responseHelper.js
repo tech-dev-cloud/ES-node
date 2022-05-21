@@ -89,32 +89,31 @@ const RESPONSE = {
     };
   },
 };
-responseHelper.success=(obj, data)=>{
+responseHelper.success = (obj, data) => {
   return {
     ...obj,
-    status:true,
+    status: true,
     statusCode: 200,
-    ...(data?{data}:{})
-  }
-}
+    ...(data ? { data } : {}),
+  };
+};
 responseHelper.error = {
-  BAD_REQUEST: (errCode, data)=>{
-    return{
+  BAD_REQUEST: (errCode, data) => {
+    return {
       ...errCode,
-      status:false,
-      ...(data?{data}:{})
-    }
+      status: false,
+      ...(data ? { data } : {}),
+    };
   },
-  SOMETHING_WENT_WRONG: ()=>{
-    return{
-      message:'Something went wrong',
+  SOMETHING_WENT_WRONG: () => {
+    return {
+      message: 'Something went wrong',
       statusCode: 500,
-      status:false
-    }
-  }
-}
+      status: false,
+    };
+  },
+};
 responseHelper.createErrorResponse = (errorType, message) => {
-  console.log(errorType);
   return RESPONSE[errorType](message);
 };
 

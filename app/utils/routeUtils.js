@@ -123,7 +123,6 @@ const dataValidation = (route) => {
         next();
       })
       .catch((err) => {
-        console.log(err);
         res.status(400).json({ error: (err.details || [])[0].message });
       });
   };

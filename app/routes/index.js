@@ -33,14 +33,12 @@ function initRoutes(app, express) {
         v1Routes.push(route);
     }
   }
-  console.log('init routes', routes.length, v1Routes.length);
   const routerV1 = express.Router();
   registerRoutes(app, routerV1, '/v1', v1Routes);
   cronjob(app);
 }
 
 function registerRoutes(app, router, routeVersion, routes = []) {
-  console.log('register routes', routes.length);
   routes.forEach((route) => {
     const middlewares = [dataValidation(route)];
     if (route.authType) {

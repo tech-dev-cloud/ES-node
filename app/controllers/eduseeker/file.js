@@ -15,7 +15,6 @@ let file = {
     let filename = `${Date.now()}${request.file.originalname}`;
     if (fileType == 'image') {
       file.uploadToS3(request.file.path, ContentType, filename);
-      console.log(request.body, filename);
       if (!request.query.original) {
         filename = `${filename.split('.')[0]}.webp`;
         await webp.cwebp(request.file.path, filename, '-q 80');
@@ -110,7 +109,6 @@ let file = {
         },
         function (bytesUploaded, bytesTotal) {
           var percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(2);
-          console.log(bytesUploaded, bytesTotal, percentage + '%');
         },
         function (error) {
           reject(error);

@@ -55,7 +55,6 @@ let controller = {
     const user = await UserModel.findOne({
       email: request.body.email.toLowerCase(),
     }).lean();
-    console.log(user);
     if (
       !user ||
       !commonFunctions.compareHash(request.body.password, user.password)
@@ -112,7 +111,6 @@ let controller = {
           message: 'Please check you email to reset password',
         });
       } catch (err) {
-        console.log(err);
         throw UNAUTHORIZED;
       }
     }

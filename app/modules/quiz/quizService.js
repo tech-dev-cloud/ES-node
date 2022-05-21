@@ -51,9 +51,7 @@ service.findResource = async (payload, quizIds = []) => {
   if (quizIds.length == 0) {
     try {
       quizIds = await QuizModel.find({ status: true }, { _id: 1 }).lean();
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
     quizIds = quizIds.map((obj) => obj._id);
   }
   for (let i = 0; i < quizIds.length; i++) {

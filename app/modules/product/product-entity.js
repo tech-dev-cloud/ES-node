@@ -5,7 +5,6 @@ async function searchProducts(searchString) {
     { $text: { $search: searchString } },
     { _id: 1, name: 1, cover_image: 1 }
   ).lean();
-  console.log(data);
   return data;
 }
 module.exports = { searchProducts };

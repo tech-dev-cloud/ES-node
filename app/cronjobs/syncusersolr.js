@@ -7,7 +7,6 @@ module.exports = async function (req, res) {
   });
   try {
     // const data = await update(users, null, SOLR_CORES.products);
-    // console.log(data);
   } catch (err) {
     console.error('error===', err);
   }

@@ -219,7 +219,6 @@ class Swagger {
   }
 }
 function createSwaggerUIForRoutes(app, routes = []) {
-  console.log(routes.length);
   const swaggerDoc = Swagger.instance();
   const swaggerInfo = swaggerJson.info;
 
@@ -231,7 +230,6 @@ function createSwaggerUIForRoutes(app, routes = []) {
     } else {
       routePath = route.path;
     }
-    console.log(routePath);
     swaggerDoc.addNewRoute(
       route.joiSchemaForSwagger,
       routePath,

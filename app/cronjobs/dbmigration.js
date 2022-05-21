@@ -31,7 +31,6 @@ module.exports = async function (req, res) {
         product.type = PRODUCT_TYPE.test_series;
         break;
     }
-    console.log(product);
     await db.sequelize.query(
       'insert into eduseeker.products (name, description, strikeprice, price, validity, web_url, status,requirements,target_students, benefits, learning, cover_image, type) values(?,?,?,?,?,?,?,?,?,?,?,?,?)',
       {

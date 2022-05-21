@@ -112,9 +112,7 @@ let productController = {
           }).lean();
         }
       }
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
     response.status(200).json({
       success: true,
       message: 'Product fethed successfull',
@@ -144,9 +142,7 @@ let productController = {
       case PRODUCTS_TYPE.quiz: //Quiz
         try {
           commonF.updateQuiz(request.body, request.params.id);
-        } catch (err) {
-          console.log(err);
-        }
+        } catch (err) {}
         break;
       case PRODUCTS_TYPE.bulk: //Bulk
         break;
