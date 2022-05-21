@@ -1,19 +1,19 @@
 const controller = require('./product-controller');
-const Joi = require('joi');
-const { PRODUCT_TYPE } = require('../../utils/server-constant');
+const Joi = require('Joi');
+const { PRODUCTS_TYPE } = require('../../utils/constants');
 module.exports = [
   {
     path: '/products',
     method: 'GET',
-    joiSchemaForSwagger: {
+    JoiSchemaForSwagger: {
       query: Joi.object({
-        searchString: JOI.string(),
-        searchKey: JOI.string(),
-        limit: JOI.number().default(20),
-        index: JOI.number().min(0),
-        enrolled: JOI.boolean(),
-        product_ids: JOI.string(),
-        type: JOI.string().valid(PRODUCTS_TYPE),
+        searchString: Joi.string(),
+        searchKey: Joi.string(),
+        limit: Joi.number().default(20),
+        index: Joi.number().min(0),
+        enrolled: Joi.boolean(),
+        product_ids: Joi.string(),
+        type: Joi.string().valid(PRODUCTS_TYPE),
       }),
       group: 'Products',
       description: 'Api to get products',

@@ -1,9 +1,8 @@
-const { SubjectModel, Module } = require('../../mongo-models');
-const { subjectService } = require('../../services');
 const { MONGO_ERROR } = require('../../utils/constants');
 const { Topics } = require('../../mongo-models/topics');
-const SubjectService = require('./service');
-const controller = {
+const SubjectService = require('./subject-service');
+const Mongoose = require('mongoose');
+const subjectController = {
   /** Controller to create Subject */
   createSubject: async (request, response) => {
     const subjectService = new SubjectService();
@@ -40,7 +39,7 @@ const controller = {
   },
   /** Controller to find Subject by id */
   getSubjectById: async (request, response) => {
-    const match = { _id: request.params.id };
+    const match = { _id: Mongoose.Types.ObjectId(request.params.id) };
     const subjectService = new SubjectService();
     const data = await subjectService.getAllSubjects(match);
     response.status(200).json({
@@ -68,6 +67,37 @@ const controller = {
       data,
     });
   },
+
+  createTopic: async (request, response) => {
+    const data = await SubjectService.createTopic(
+      request.body,
+      request.user._id
+    );
+    response.status(200).json({
+      success: true,
+      message: 'Create topic',
+      data,
+    });
+  },
+  updateTopic: async (request, response) => {
+    const data = await SubjectService.updateTopic(
+      request.params.topicId,
+      request.body
+    );
+    response.status(200).json({
+      success: true,
+      message: 'topic updated',
+      data,
+    });
+  },
+  deleteTopic: async (request, response) => {
+    const data = await SubjectService.deleteTopic(request.params.topicId);
+    response.status(200).json({
+      success: true,
+      message: 'Delete topic',
+      data,
+    });
+  },
 };
 
-module.exports = { subjectController: controller };
+module.exports = { subjectController };

@@ -1,6 +1,6 @@
 module.exports = {
   ...require('./authService'),
-  ...require('../modules/subjects/service'),
+  ...require('../modules/subjects/subject-service'),
   ...require('./questionService'),
   ...require('./unitService'),
   ...require('./paymentService'),

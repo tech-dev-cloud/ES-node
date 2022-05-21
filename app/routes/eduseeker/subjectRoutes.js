@@ -1,7 +1,9 @@
 'use strict';
 
 const JOI = require('joi');
-const { subjectController } = require('../../modules/subjects/controller');
+const {
+  subjectController,
+} = require('../../modules/subjects/subject-controller');
 const { USER_ROLE } = require('../../utils/constants');
 const routeUtils = require('../../utils/routeUtils');
 

@@ -6,6 +6,9 @@ const schema = new Schema({
   subjectId: { type: Schema.Types.ObjectId, ref: 'subjects' },
   name: { type: String, required: true },
   status: { type: Boolean, default: true },
+  isDeleted: { type: Boolean, default: false },
+  createdBy: { type: Schema.Types.ObjectId, ref: 'user' },
+  updatedBy: { type: Schema.Types.ObjectId, ref: 'user' },
 });
 
 schema.set('timestamps', true);

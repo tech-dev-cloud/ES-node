@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const mongoose = require('mongoose');
 const {
   Module,
   SubjectModel,
@@ -64,6 +65,7 @@ module.exports = class SubjectService {
         },
       },
     ]);
+    console.log(data);
     this.formatSubjectData(data);
     return data;
   }
@@ -109,5 +111,27 @@ module.exports = class SubjectService {
   }
   static getExams() {
     return ExamModel.find({ status: true }).lean();
+  }
+  static async createTopic(dataToSave, userId) {
+    const obj = new Topics({
+      ...dataToSave,
+      createdBy: userId,
+      updatedBy: userId,
+    });
+    return obj.save();
+  }
+  static async deleteTopic(topicId) {
+    return Topics.findOneAndUpdate(
+      { _id: mongoose.Types.ObjectId(topicId) },
+      { isDeleted: true }
+    );
+  }
+  static async updateTopic(topicId, dataToUpdate) {
+    console.log(topicId, dataToUpdate);
+    return Topics.findOneAndUpdate(
+      { _id: mongoose.Types.ObjectId(topicId) },
+      dataToUpdate,
+      { new: true }
+    );
   }
 };

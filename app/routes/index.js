@@ -4,6 +4,7 @@ const { userAuthentication } = require('../middleware/api-auth');
 const callController = require('../middleware/api-controller');
 const createSwaggerUIForRoutes = require('../utils/swagger-util');
 const joiRequestValidation = require('../utils/validator');
+const { authService } = require('../services');
 
 const storage = multer.diskStorage({
   destination: 'uploads/',
@@ -17,6 +18,7 @@ const routes = [
   ...require('../modules/product/product-routes'),
   ...require('../modules/users/user-route'),
   ...require('../modules/product/product-routes'),
+  ...require('../modules/subjects/subject-route'),
 ];
 function initRoutes(app, express) {
   const v1Routes = [];
@@ -33,7 +35,6 @@ function initRoutes(app, express) {
         v1Routes.push(route);
     }
   }
-  console.log('init routes', routes.length, v1Routes.length);
   const routerV1 = express.Router();
   registerRoutes(app, routerV1, '/v1', v1Routes);
   cronjob(app);
@@ -45,7 +46,10 @@ function registerRoutes(app, router, routeVersion, routes = []) {
     const middlewares = [dataValidation(route)];
     if (route.authType) {
       middlewares.push(userAuthentication(route.authType));
+    } else if (route.auth && route.auth.length) {
+      middlewares.push(authService.userValidate(route.auth));
     }
+
     if (route.joiSchemaForSwagger && route.joiSchemaForSwagger.formData) {
       const keys = Object.keys(route.joiSchemaForSwagger.formData);
       keys.forEach((key) => {
@@ -54,9 +58,14 @@ function registerRoutes(app, router, routeVersion, routes = []) {
     }
     middlewares.push(callController(route));
     app.use(routeVersion, router);
-    app
-      .route(`${routeVersion}${route.path}`)
-      [route.method.toLowerCase()](...middlewares);
+    let routePath = '';
+    if (route.version) {
+      routePath = `/${route.version}${route.path}`;
+    } else {
+      routePath = route.path;
+    }
+
+    app.route(routePath)[route.method.toLowerCase()](...middlewares);
   });
   createSwaggerUIForRoutes(app, routes);
 }

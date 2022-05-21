@@ -231,7 +231,6 @@ function createSwaggerUIForRoutes(app, routes = []) {
     } else {
       routePath = route.path;
     }
-    console.log(routePath);
     swaggerDoc.addNewRoute(
       route.joiSchemaForSwagger,
       routePath,
