@@ -52,7 +52,7 @@ let productController = {
   getAdminProducts: async (request, response) => {
     let productMetaData;
     let responseData;
-    let limit = request.query.limit || 10;
+    let limit = parseInt(request.query.limit || 10);
     let skip =
       (parseInt(request.query.skip || 1) - 1) * request.query.limit || 0;
     let match = {
@@ -104,6 +104,7 @@ let productController = {
         { $addFields: { items: { $slice: ['$items', skip, limit] } } },
       ]);
       responseData = { ...data[0] };
+      console.log(data);
       if (request.query.product_id) {
         productMetaData = await productService.getProductMeta(data[0].items[0]);
         responseData = { ...responseData, productMetaData };
@@ -114,7 +115,7 @@ let productController = {
         }
       }
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
     response.status(200).json({
       success: true,
