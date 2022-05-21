@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const moment = require('moment');
-const config = require('../../config/config');
+const { config } = require('../../config/config');
 const params = require(`../../config/env/${config.NODE_ENV}_params.json`);
 const redis = require('../../config/redisConnection');
 const dbQuery = require('./dbQuery/product');
