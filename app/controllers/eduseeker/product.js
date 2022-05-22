@@ -14,7 +14,7 @@ let params = require(`../../../config/env/${config.NODE_ENV}_params.json`);
 const redis = require('../../../config/redisConnection');
 const { aws } = require('../../services/aws');
 const { productService, ProductService } = require('../../services');
-// let { Product } = require('../../models/shop');
+let { Product } = require('../../models/shop');
 const {
   review_type,
   order_status,
