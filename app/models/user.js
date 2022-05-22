@@ -1,36 +1,21 @@
-// /* jshint indent: 2 */
+const { LOGIN_TYPE } = require('../utils/constants');
 
-// module.exports = function (sequelize, DataTypes) {
-//   return sequelize.define(
-//     'users',
-//     {
-//       id: {
-//         type: DataTypes.INTEGER(11),
-//         allowNull: false,
-//         primaryKey: true,
-//         autoIncrement: true,
-//       },
-//       email: {
-//         type: DataTypes.STRING,
-//         allowNull: false,
-//       },
-//       password: {
-//         type: DataTypes.STRING,
-//         allowNull: true,
-//       },
-//       register_type: {
-//         type: DataTypes.ENUM('1', '2'),
-//       },
-//       created_at: {
-//         type: DataTypes.DATE,
-//       },
-//       updated_at: {
-//         type: DataTypes.DATE,
-//       },
-//     },
-//     {
-//       tableName: 'users',
-//       timestamps: false,
-//     }
-//   );
-// };
+class User {
+  constructor(obj, user_type, socailObj) {
+    this.name = obj.name;
+    this.email = obj.email;
+    this.phoneNumber = obj.phoneNumber;
+    this.registerType = obj.registerType;
+    this.profile_pic = obj.profile_pic
+      ? obj.profile_pic
+      : socailObj.profile_pic;
+    this.role = [2];
+    if (user_type == LOGIN_TYPE.FACEBOOK) {
+      this.fbDetails = socailObj;
+    } else if (user_type == LOGIN_TYPE.GOOGLE) {
+      this.googleDetails = socailObj;
+    }
+  }
+}
+
+module.exports = { User };
