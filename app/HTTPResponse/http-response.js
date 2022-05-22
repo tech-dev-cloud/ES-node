@@ -5,7 +5,7 @@ module.exports = class HTTPResponse {
     return {
       success: false,
       message,
-      code: 403,
+      statusCode: 403,
       errorCode,
       data,
     };
@@ -14,14 +14,14 @@ module.exports = class HTTPResponse {
     return {
       success: false,
       message: 'Session Expired',
-      code: 401,
+      statusCode: 401,
     };
   }
   static BadRequest(message, errorCode, data) {
     return {
       success: false,
       message,
-      code: 400,
+      statusCode: 400,
       errorCode,
       data,
     };
@@ -30,20 +30,20 @@ module.exports = class HTTPResponse {
     return {
       success: false,
       message,
-      code: 409,
+      statusCode: 409,
     };
   }
   static get InternalServerError() {
     return {
       success: false,
       message: 'Something went wrong',
-      code: 500,
+      statusCode: 500,
     };
   }
   static success(res, data, message = 'success') {
     res.status(200).json({
       success: true,
-      code: 200,
+      statusCode: 200,
       message,
       ...(data ? { data } : {}),
     });
