@@ -6,10 +6,10 @@ module.exports = function callController(route) {
   return async (request, response, next) => {
     try {
       await handler(request, response);
+      Logger.info(`${route.method}: ${route.path}`);
     } catch (err) {
-      console.log(err);
+      Logger.error(`${route.method}: ${route.path}` + err);
       if (err.statusCode) {
-        Logger.error(err);
         response.status(err.statusCode).json({
           success: false,
           message: err.message,
@@ -18,7 +18,6 @@ module.exports = function callController(route) {
       } else {
         response.status(500).json(responseHelper.error.SOMETHING_WENT_WRONG());
       }
-      Logger.error(err);
     }
   };
 };
