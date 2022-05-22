@@ -1,5 +1,5 @@
 const { ProductService } = require('../services/product');
-const config = require('../../config/config');
+const { config } = require('../../config/config');
 const Mongoose = require('mongoose');
 const params = require(`../../config/env/${config.NODE_ENV}_params.json`);
 
