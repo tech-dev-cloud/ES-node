@@ -9,7 +9,6 @@ const responseHelper = require('../utils/responseHelper');
 const commonFunctions = require('../utils/commonFunctions');
 const util = require('../utils/utils');
 const mongoose = require('mongoose');
-const config = require('../../config/config');
 const {
   UNAUTHORIZED,
   DEVICE_LOGIN_LIMIT_EXCEED,

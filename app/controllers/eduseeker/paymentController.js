@@ -7,7 +7,6 @@ const params = require(`../../../config/env/${config.NODE_ENV}_params.json`);
 const product = require('../../services/product');
 const { order_status } = require('../../utils/constants');
 const { SOMETHING_WENT_WRONG } = require('../../utils/errorCodes');
-const Email = require('../../modules/notification/email-service');
 const debug = require('../../../config/debugger');
 
 const paymentController = {

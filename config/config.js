@@ -92,9 +92,17 @@ const dbConfig = {
 };
 
 const config = {
-  NODE_ENV: 'development',
+  NODE_ENV: process.env.NODE_ENV,
   env: process.env.NODE_ENV,
   serverPort: process.env.PORT,
+  PORT: process.env.PORT,
+  PRIVATE_SALT: process.env.PRIVATE_SALT,
+  PRIVATE_SALT: process.env.PRIVATE_SALT,
+  PRIVATE_AUTH_TOKEN: process.env.PRIVATE_AUTH_TOKEN,
+  PRIVATE_API_KEY: process.env.PRIVATE_API_KEY,
+  TEST_PRIVATE_SALT: process.env.TEST_PRIVATE_SALT,
+  TEST_PRIVATE_AUTH_TOKEN: process.env.TEST_PRIVATE_AUTH_TOKEN,
+  TEST_PRIVATE_API_KEY: process.env.TEST_PRIVATE_API_KEY,
 };
 
 module.exports = {

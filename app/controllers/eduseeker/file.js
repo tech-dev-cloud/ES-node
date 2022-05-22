@@ -3,9 +3,8 @@ const { File, Document } = require('../../mongo-models');
 const vimeoClient = require('../../../config/vimeo');
 const webp = require('webp-converter');
 const { aws } = require('../../services');
-const config = require('../../../config/config');
+const { config } = require('../../../config/config');
 const common = require('../../utils/common');
-const logger = require('../../../config/winston');
 const { SOMETHING_WENT_WRONG } = require('../../utils/errorCodes');
 
 let file = {

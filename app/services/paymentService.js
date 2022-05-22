@@ -1,5 +1,5 @@
 const InstaMojo = require('instamojo-nodejs');
-const config = require('../../config/config');
+const { config } = require('../../config/config');
 const Logger = require('../../config/winston');
 const { Order } = require('../mongo-models');
 
