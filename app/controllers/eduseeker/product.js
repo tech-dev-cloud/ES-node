@@ -60,7 +60,7 @@ let productController = {
     };
     let prodcut_type = request.query.type;
     if (request.query.product_id) {
-      match['_id'] = request.query.product_id;
+      match['_id'] = Mongoose.Types.ObjectId(request.query.product_id);
     }
     if (prodcut_type) {
       match['type'] = prodcut_type;
@@ -70,7 +70,6 @@ let productController = {
       match['$text'] = { $search: request.query.searchString };
     }
     try {
-      console.log(skip, limit);
       let data = await ProductModel.aggregate([
         { $match: match },
         {
@@ -256,32 +255,12 @@ let productController = {
       let obj = result[1];
       product['purchaseStatus'] = obj.purchased;
       await prodService.getProductMetaData(product);
-      // if (product.type == PRODUCTS_TYPE.bulk) {
-      //   product['sub_products'] = await Promise.all(
-      //     product.sub_products.map(async (product_id) => {
-      //       let obj = await productService.getProduct(product_id);
-      //       return obj;
-      //     })
-      //   );
-      // } else if (
-      //   product.type == PRODUCTS_TYPE.notes &&
-      //   request.query.enrolled
-      // ) {
-      //   let docs = await Document.find(
-      //     { product_id: product._id, status: true },
-      //     { _id: 1, filename: 1, url: 1, size: 1, mime_type: 1 }
-      //   ).lean();
-      //   product['docs'] = docs;
-      // }
       if (enrolled) {
         if (!product.purchaseStatus) {
           throw NOT_ENROLLED;
         }
         await product.userRatingReview(request.user._id);
       }
-      // if (product.type == PRODUCTS_TYPE.course) {
-      //   responsePayload.contents = await product.videoContent(enrolled);
-      // }
       response.status(200).json({
         success: true,
         message: 'Product fetched successfully',

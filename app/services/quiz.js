@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const {
   QuizModel,
   ProductQuestionMap,
@@ -7,7 +8,7 @@ const { DB } = require('../utils/constants');
 
 function getQuizQuestions(quizId) {
   return QuizModel.aggregate([
-    { $match: { _id: quizId } },
+    { $match: { _id: mongoose.Types.ObjectId(quizId) } },
     {
       $lookup: {
         from: 'questions',
@@ -20,7 +21,7 @@ function getQuizQuestions(quizId) {
 }
 function getProductMapQuestion(product_id) {
   return ProductQuestionMap.aggregate([
-    { $match: { product_id } },
+    { $match: { product_id: mongoose.Types.ObjectId(product_id) } },
     {
       $lookup: {
         from: 'questions',

@@ -34,6 +34,7 @@ class Product {
     this.image = obj.image;
     this.updatedAt = obj.updatedAt;
     this.quizId = obj.quizId;
+    this.docs = obj.docs;
     this.initRedirectUrl();
   }
   initRedirectUrl() {

@@ -21,6 +21,7 @@ const {
   DB,
 } = require('../utils/constants');
 const { getProductOffers } = require('../modules/offer/service');
+const mongoose = require('mongoose');
 
 class ProductService {
   constructor() {}
@@ -77,13 +78,18 @@ class ProductService {
     const data = await Comment.find({ object_id, created_by, type }).lean();
     return data;
   }
-  async getDocuments(product_id, status) {
-    return await Document.find({
-      product_id,
-      status,
-    }).lean();
+  async getDocuments(product_id, document_ids = [], status) {
+    const cond = {
+      ...(product_id ? { product_id, status } : {}),
+      ...(document_ids && document_ids.length
+        ? { _id: { $in: document_ids }, status }
+        : {}),
+    };
+    console.log(cond);
+    return await Document.find(cond).lean();
   }
   getQuizzes(quizIds) {
+    quizIds = quizIds.map((id) => mongoose.Types.ObjectId(id));
     return QuizModel.find({ _id: { $in: quizIds } });
   }
   async getProductMetaData(product, user_id) {
@@ -97,7 +103,7 @@ class ProductService {
         product.sub_products = await Promise.all(sub_products);
         break;
       case PRODUCTS_TYPE.notes:
-        product['docs'] = await this.getDocuments(product._id, true);
+        product['docs'] = await this.getDocuments(product._id, [], true);
         break;
       case PRODUCTS_TYPE.course:
         product.contents = await this.getCourseContent(product._id, true);
@@ -123,6 +129,9 @@ class ProductService {
               : { pending: true }),
           };
         });
+        if (product.docs) {
+          product['docs'] = await this.getDocuments(null, product.docs, true);
+        }
         const playStatus = await this.getHoldQuiz(
           user_id,
           quizzes.map((obj) => obj._id)
@@ -177,7 +186,7 @@ class ProductService {
         let product;
         if (err || !someData) {
           const match = {};
-          match['_id'] = product_id;
+          match['_id'] = mongoose.Types.ObjectId(product_id);
           const data = await Product.aggregate([
             { $match: match },
             {
@@ -273,17 +282,17 @@ const service = {
   createProduct: async (productPayload) => {
     switch (productPayload.type) {
       case PRODUCTS_TYPE.bulk:
-        productPayload['sub_products'] = request.body.product_map_data.map(
-          (product_id) => Mongoose.Types.ObjectId(product_id)
+        productPayload['sub_products'] = productPayload.product_map_data.map(
+          (product_id) => mongoose.Types.ObjectId(product_id)
         );
         break;
       case PRODUCTS_TYPE.quiz:
         productPayload.product_meta['totalQuestions'] =
-          request.body.product_map_data.length;
+          productPayload.product_map_data.length;
         break;
       case PRODUCTS_TYPE.test_series:
-        productPayload['quizId'] = request.body.product_map_data.map((quizId) =>
-          Mongoose.Types.ObjectId(quizId)
+        productPayload['quizId'] = productPayload.product_map_data.map(
+          (quizId) => mongoose.Types.ObjectId(quizId)
         );
         break;
     }
@@ -393,7 +402,7 @@ const service = {
       $match._id = { $gt: last_doc_id };
     }
     if (object_id) {
-      $match.object_id = object_id;
+      $match.object_id = mongoose.Types.ObjectId(object_id);
     }
     $match.parent_id = parent_comment_id || null;
     const $sort =
@@ -452,7 +461,7 @@ const service = {
         let product;
         if (!err && !someData) {
           const match = {};
-          match['_id'] = product_id;
+          match['_id'] = mongoose.Types.ObjectId(product_id);
           // Get Product Images, mentor info, and product data
           const data = await Product.aggregate([
             { $match: match },

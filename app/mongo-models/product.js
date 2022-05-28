@@ -35,6 +35,7 @@ const schema = new Schema({
   created_by: { type: Schema.Types.ObjectId, ref: 'user' },
   sub_products: [{ type: Schema.Types.ObjectId, ref: 'products' }],
   quizId: [{ type: Schema.Types.ObjectId, ref: 'quiz' }],
+  docs: [{ type: Schema.Types.ObjectId, ref: 'document' }],
 });
 
 schema.set('timestamps', true);

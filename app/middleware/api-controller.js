@@ -8,7 +8,7 @@ module.exports = function callController(route) {
       await handler(request, response);
       Logger.info(`${route.method}: ${route.path}`);
     } catch (err) {
-      Logger.error(`${route.method}: ${route.path}` + err);
+      Logger.error(`${route.method}: ${route.path} ` + err.stack);
       if (err.statusCode) {
         response.status(err.statusCode).json({
           success: false,

@@ -100,6 +100,7 @@ let controller = {
         {
           $set: {
             resetPasswordToken: commonFunctions.encryptJwt(resetPayload),
+            registerType: REGISTER_TYPE.signup,
           },
         }
       );
