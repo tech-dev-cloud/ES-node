@@ -202,7 +202,7 @@ const controller = {
     let userRanking = await PerformanceModel.aggregate([
       {
         $match: {
-          product_id: request.params.quizID,
+          product_id: mongoose.Types.ObjectId(request.params.quizID),
           status: DB.QUIZ_PLAY_STATUS.COMPLETED,
         },
       },
