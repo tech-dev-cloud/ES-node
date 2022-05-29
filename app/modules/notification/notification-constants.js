@@ -6,5 +6,6 @@ module.exports = {
   EMAIL_SUBJECTS: {
     EMAIL_VERIFICATION: 'Email Verification',
     OTP_VERIFICATION: 'OTP Verification',
+    FORGOT_PASSWORD: 'Forgot password alert',
   },
 };

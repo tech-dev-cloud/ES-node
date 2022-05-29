@@ -19,6 +19,7 @@ const {
   UNAUTHORIZED,
   SESSION_EXPIRE,
 } = require('../../utils/errorCodes');
+const Email = require('../../modules/notification/email-service');
 
 let controller = {
   userRegister: async (request, response) => {
@@ -85,7 +86,7 @@ let controller = {
     }
   },
   forgotPassword: async (request, response) => {
-    const user = await UserModel.findOne({ email: request.body.email }).lean();
+    let user = await UserModel.findOne({ email: request.body.email }).lean();
     if (!user) {
       throw EMAIL_NOT_FOUND;
     } else {
@@ -95,17 +96,20 @@ let controller = {
         expireTime: expireTime.setHours(expireTime.getHours() + 5),
       };
       const token = commonFunctions.encryptJwt(resetPayload);
-      const data = await UserModel.findOneAndUpdate(
+      user = await UserModel.findOneAndUpdate(
         { email: request.body.email },
         {
           resetPasswordToken: token,
           registerType: REGISTER_TYPE.signup,
         },
         { new: true }
-      );
-      // await user.save();
+      ).lean();
+      console.log(token);
+      console.log(user.resetPasswordToken);
       try {
-        await util.sendEmailSES(user, EMAIL_TYPES.FORGOT_PASSWORD);
+        const email = new Email();
+        await email.forgotPasswordEmail(user);
+        // await util.sendEmailSES(user, EMAIL_TYPES.FORGOT_PASSWORD);
         response.status(200).json({
           success: true,
           message: 'Please check you email to reset password',

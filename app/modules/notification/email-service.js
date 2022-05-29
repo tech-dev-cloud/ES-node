@@ -143,4 +143,14 @@ module.exports = class Email {
     this.data['otp'] = otp;
     return this.sendEmail(email);
   }
+  forgotPasswordEmail(user) {
+    this.subject = EMAIL_SUBJECTS.FORGOT_PASSWORD;
+    this.template = fs
+      .readFileSync(path.resolve(EMAIL_TEMPLATE.FORGOT_PASSWORD), 'utf8')
+      .toString();
+    this.data['fullName'] = user.name;
+    this.data['resetPasswordLink'] = user.resetPasswordToken;
+    this.data['FE_SERVER'] = process.env.FE_SERVER_URL;
+    return this.sendEmail(user.email);
+  }
 };
