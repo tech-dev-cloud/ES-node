@@ -129,7 +129,7 @@ class ProductService {
               : { pending: true }),
           };
         });
-        if (product.docs) {
+        if (product.docs && product.docs.length) {
           product['docs'] = await this.getDocuments(null, product.docs, true);
         }
         const playStatus = await this.getHoldQuiz(
