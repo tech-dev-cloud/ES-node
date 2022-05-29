@@ -94,15 +94,14 @@ let controller = {
         _id: user._id,
         expireTime: expireTime.setHours(expireTime.getHours() + 5),
       };
-      // user.resetPasswordToken = commonFunctions.encryptJwt(resetPayload);
-      await UserModel.updateOne(
+      const token = commonFunctions.encryptJwt(resetPayload);
+      const data = await UserModel.findOneAndUpdate(
         { email: request.body.email },
         {
-          $set: {
-            resetPasswordToken: commonFunctions.encryptJwt(resetPayload),
-            registerType: REGISTER_TYPE.signup,
-          },
-        }
+          resetPasswordToken: token,
+          registerType: REGISTER_TYPE.signup,
+        },
+        { new: true }
       );
       // await user.save();
       try {
@@ -123,18 +122,10 @@ let controller = {
     }).lean();
     if (!user) {
       throw SESSION_EXPIRE;
-      // response.status(400).json({
-      //   success: false,
-      //   message: "Invalid Token"
-      // })
     } else {
       let obj = commonFunctions.decryptJwt(user.resetPasswordToken);
       if (obj.expireTime < Date.now()) {
         throw SESSION_EXPIRE;
-        // response.status(400).json({
-        //   success: false,
-        //   message: "Token expired"
-        // })
       } else {
         let updateData = {
           password: commonFunctions.hashPassword(request.body.password),
