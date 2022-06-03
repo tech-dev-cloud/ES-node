@@ -13,12 +13,12 @@ let file = {
     let ContentType = request.file.mimetype;
     let filename = `${Date.now()}${request.file.originalname}`;
     if (fileType == 'image') {
-      file.uploadToS3(request.file.path, ContentType, filename);
-      if (!request.query.original) {
+      if (request.query.original == 'false') {
         filename = `${filename.split('.')[0]}.webp`;
         await webp.cwebp(request.file.path, filename, '-q 80');
         ContentType = 'image/webp';
       }
+      // file.uploadToS3(request.file.path, ContentType, filename);
     }
     file
       .uploadToS3(request.file.path, ContentType, filename)
