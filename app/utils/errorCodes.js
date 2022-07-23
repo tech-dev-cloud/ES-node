@@ -134,6 +134,11 @@ const errorCodes = {
     statusCode: 'ST_400',
     message: 'You have already subscribed for Updates',
   },
+  FORBIDDEN: {
+    statusCode: 403,
+    message: 'You can\'t do this action',
+    type: 'FORBIDDEN',
+  },
 };
 
 module.exports = errorCodes;

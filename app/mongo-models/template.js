@@ -5,6 +5,7 @@ const schema = new Schema({
   title: { type: String },
   subject: { type: String, required: true },
   type: { type: String, enum: Object.values(EMAIL_TYPE) },
+  // notificationType: { type: String, enum: Object.values() },
   userGroup: {
     type: String,
     enum: Object.values(USER_GROUP),
@@ -14,6 +15,9 @@ const schema = new Schema({
     type: String,
     required: true,
   },
+  // action:  {
+    
+  // },
   status: { type: Boolean, default: false },
   createdBy: { type: Schema.Types.ObjectId, ref: 'users' },
 });

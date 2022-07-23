@@ -2,7 +2,7 @@ const MONGOOSE = require('mongoose');
 const { PRODUCTS_TYPE } = require('../utils/constants');
 const Schema = MONGOOSE.Schema;
 
-const schema = new Schema({
+const productSchema = new Schema({
   name: { type: String },
   heading: { type: String },
   strikeprice: { type: Number },
@@ -38,10 +38,10 @@ const schema = new Schema({
   docs: [{ type: Schema.Types.ObjectId, ref: 'document' }],
 });
 
-schema.set('timestamps', true);
-schema.index({ name: 'text', heading: 'text' });
-schema.index({ status: 1 }, { unique: false });
-schema.index({ type: 1 }, { unique: false });
-schema.index({ created_by: 1 }, { unique: false });
-const Product = MONGOOSE.model('product', schema);
+productSchema.set('timestamps', true);
+productSchema.index({ name: 'text', heading: 'text' });
+productSchema.index({ status: 1 }, { unique: false });
+productSchema.index({ type: 1 }, { unique: false });
+productSchema.index({ created_by: 1 }, { unique: false });
+const Product = MONGOOSE.model('product', productSchema);
 module.exports = { Product };

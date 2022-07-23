@@ -106,6 +106,11 @@ const CONSTANTS = {
     LAUNCH: 'launch',
     THANKS_FOR_PURCHASE: 'thankyou',
   },
+  NOTIFICATION_TYPE: {
+    EMAIL: 'email',
+    IN_APP: 'in_app',
+    WEB_PUSH: 'web_push',
+  },
   USER_GROUP: {
     subscribers: 'subscribers',
     registerd: 'registered',
@@ -118,6 +123,16 @@ const CONSTANTS = {
     TEST_SERIES: '/profile?redirect=true&q=test_series',
     BULK: '/products/bulk-2/{{id}}?redirect=true',
     EMAIL_VERIFICATION: '/auth/email-verified/{{verificationToken}}',
+  },
+  NOTIFICATION_ACTION: {
+    VIEW: 'view',
+  },
+  NOTIFICATION_CATEGORY: {
+    OFFER: 'offer',
+    LAUNCH: 'new_launch',
+    ENROLLMENT: 'new_enrollment',
+    PRODUCT_REVIEW: 'product_review',
+    COURSE_QUESTION: 'course_question',
   },
 };
 

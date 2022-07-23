@@ -15,4 +15,12 @@ module.exports = {
     message: 'Ftech all templates successfully',
     serverCode: 'NT_104',
   },
+  getNotifications: {
+    message: 'Fetch user notificationd',
+    serverCode: 'NT_105'
+  },
+  success: {
+    message: 'Success',
+    serverCode: 'NT_106'
+  }
 };

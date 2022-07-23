@@ -1,7 +1,9 @@
 const Logger = require('../../../config/winston');
 const { Subscriber, Template, UserModel } = require('../../mongo-models');
 const { USER_GROUP } = require('../../utils/constants');
+const WebPush = require('../../utils/webpush');
 const Email = require('./email-service');
+const SUBSCRIBERS = require('../notification/in-memory');
 const service = {
   addNewSubscriber: async (userData) => {
     const data = new Subscriber(userData);

@@ -14,6 +14,10 @@ const {
   getTemplateById,
   updateTemplate,
   tempEmail,
+  addNotificationSubscriber,
+  sendNotification,
+  getUserNotification,
+  updateUserNotification,
 } = require('./notification-controller');
 
 module.exports = [
@@ -160,13 +164,62 @@ module.exports = [
     handler: sendEmailNotification,
   },
   {
-    path: '/api/temp-email',
+    path: '/api/notifications',
     method: 'POST',
     joiSchemaForSwagger: {
+      body: JOI.object({}),
       group: MODULES.notification,
-      description: 'Api to send email notification',
-      model: 'TempEmail',
+      description: 'API to add Push Notification subscriber',
+      model: 'NotificationSubscriber',
     },
-    handler: tempEmail,
+    handler: addNotificationSubscriber,
+  },
+  {
+    path: '/api/news-letter',
+    method: 'POST',
+    joiSchemaForSwagger: {
+      body: JOI.object({}),
+      group: MODULES.notification,
+      description: 'API to send Push Notification',
+      model: 'SendNotification',
+    },
+    handler: sendNotification,
+  },
+  {
+    path: '/api/notifications',
+    method: 'GET',
+    joiSchemaForSwagger: {
+      headers: JOI.object({
+        authorization: JOI.string().required(),
+      }).unknown(),
+      query: {
+        unseen:JOI.boolean(),
+        limit: JOI.number(),
+        lastId: routeUtils.validation.mongooseId
+      },
+      group: MODULES.notification,
+      description: 'API to get user notification',
+      model: 'GetUserNotification',
+    },
+    auth: [USER_ROLE.TEACHER, USER_ROLE.STUDENT, USER_ROLE.ADMIN],
+    handler: getUserNotification,
+  },
+  {
+    path: '/api/notifications/:notificationId',
+    method: 'PUT',
+    joiSchemaForSwagger: {
+      headers: JOI.object({
+        authorization: JOI.string().required(),
+      }).unknown(),
+      params: {
+        notificationId: routeUtils.validation.mongooseId
+      },
+      body: {},
+      group: MODULES.notification,
+      description: 'API to get user notification',
+      model: 'UpdateUserNotification',
+    },
+    auth: [USER_ROLE.TEACHER, USER_ROLE.STUDENT, USER_ROLE.ADMIN],
+    handler: updateUserNotification,
   },
 ];

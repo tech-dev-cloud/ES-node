@@ -2,7 +2,7 @@ const MONGOOSE = require('mongoose');
 const { PRODUCTS_TYPE } = require('../utils/constants');
 const Schema = MONGOOSE.Schema;
 
-const schema = new Schema({
+const orderSchema = new Schema({
   user_id: { type: Schema.Types.ObjectId, ref: 'user' },
   instructor_id: { type: Schema.Types.ObjectId, ref: 'user' },
   parent_product_id: { type: Schema.Types.ObjectId, ref: 'product' },
@@ -16,12 +16,20 @@ const schema = new Schema({
   validity: { type: Date },
   expire: { type: Boolean, default: false },
 });
-schema.index({ user_id: 1 }, { unique: false });
-schema.index({ instructor_id: 1 }, { unique: false });
-schema.index({ product_id: 1 }, { unique: false });
-schema.index({ product_type: 1 }, { unique: false });
-schema.index({ order_status: 1 }, { unique: false });
-schema.index({ payment_request_id: 1 }, { unique: false });
-schema.set('timestamps', true);
-const Order = MONGOOSE.model('order', schema);
+orderSchema.index({ user_id: 1 }, { unique: false });
+orderSchema.index({ instructor_id: 1 }, { unique: false });
+orderSchema.index({ product_id: 1 }, { unique: false });
+orderSchema.index({ product_type: 1 }, { unique: false });
+orderSchema.index({ order_status: 1 }, { unique: false });
+orderSchema.index({ payment_request_id: 1 }, { unique: false });
+orderSchema.set('timestamps', true);
+orderSchema.statics.isOrders = async (product_id, user_id)=>{
+  console.log(product_id, user_id)
+  return Order.findOne({ 
+    product_id,
+    user_id: user_id,
+    order_status: { $in: ['Credit', 'Free'] }
+  }).lean()
+}
+const Order = MONGOOSE.model('order', orderSchema);
 module.exports = { Order };

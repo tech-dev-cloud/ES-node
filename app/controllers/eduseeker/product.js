@@ -8,6 +8,7 @@ const {
   Document,
   Comment,
   UserModel,
+  Order,
 } = require('../../mongo-models');
 const { config } = require('../../../config/config');
 let params = require(`../../../config/env/${config.NODE_ENV}_params.json`);
@@ -22,6 +23,8 @@ const {
 } = require('../../utils/constants');
 const logger = require('../../../config/winston');
 const { NOT_ENROLLED } = require('../../utils/errorCodes');
+const { Notification } = require('../../mongo-models/notification');
+const notificationService = require('../../modules/notification/notification-service');
 
 let productController = {
   createProduct: async (request, response) => {
@@ -303,37 +306,33 @@ let productController = {
     });
   },
   addReview: async (request, response) => {
-    let reviewType = request.body.type;
-    let obj;
+    const {object_id, type, message, parent_id, rating} = request.body;
+    const created_by = request.user._id;
     try {
-      if (reviewType == review_type.product_review) {
-        let data = await productService.isProductPurchased(
-          request.body.object_id,
-          request.user._id
-        );
-        if (data) {
-          const data = await Comment.findOneAndUpdate(
-            { object_id: request.body.object_id, created_by: request.user._id },
-            request.body,
-            { new: true, upsert: true, setDefaultsOnInsert: true }
-          ).lean();
-          response.status(200).json({
-            success: true,
-            data,
-          });
-          return;
+        const enrolled = await Order.isOrders(object_id, created_by);
+        if(!enrolled){
+          throw NOT_ENROLLED
         }
-        throw NOT_ENROLLED;
-      } else {
-        obj = new Comment({ ...request.body, created_by: request.user._id });
-      }
-      let comment = (await obj.save()).toObject();
-      comment.user = request.user;
-      response.status(200).json({
-        success: true,
-        data: comment,
-      });
+        const comment = await Comment.insertComment(object_id, type, created_by, message, parent_id, rating);
+        let usersList = new Set();
+        if(parent_id){
+          let users = await Comment.findRepliedUsers(parent_id, created_by);
+          users.forEach(comment=>{
+            usersList.add(comment.created_by)
+          });
+        }
+        if(enrolled.instructor_id.toString()!==created_by.toString()){
+          usersList.add(enrolled.instructor_id);
+        }
+        let notificationRedirectUrl = await notificationService.getNotificationRedirectURL(type, object_id)
+        await Notification.broadcastNotification([...usersList], request.user, type, comment._id, notificationRedirectUrl);
+        return response.status(200).json({
+          success: true,
+          data:{...comment, user: request.user},
+        });
+
     } catch (err) {
+      console.log(err);
       throw err;
     }
   },

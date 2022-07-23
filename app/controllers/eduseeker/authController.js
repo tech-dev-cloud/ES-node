@@ -78,6 +78,7 @@ let controller = {
         success: true,
         message: 'Login successfull',
         data: {
+          id: user._id,
           accessToken: token,
           name: user.name,
           ...(user.profile_pic ? { profile_pic: user.profile_pic } : {}),
@@ -160,6 +161,7 @@ let controller = {
     let existingUser = await UserModel.findOne({ email }).lean();
     let user = {};
     let userResponseData = {
+      id: existingUser._id,
       name: request.body.name,
       email,
       profile_pic: request.body.profile_pic,

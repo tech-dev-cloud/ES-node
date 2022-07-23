@@ -4,7 +4,7 @@ const { USER_ROLE, REGISTER_TYPE } = require('../utils/constants');
 const { GENDER } = require('../utils/server-constant');
 const schema = MONGOOSE.Schema;
 
-const user = new schema({
+const userSchema = new schema({
   name: { type: String, require: true, trim: true },
   email: { type: String, require: true, unique: true, trim: true },
   phoneNumber: { type: String },
@@ -34,8 +34,7 @@ const user = new schema({
     profile_pic: { type: String },
     id: { type: String },
   },
-});
+}, {timestamps:true});
 
-user.set('timestamps', true);
-const UserModel = MONGOOSE.model('user', user);
+const UserModel = MONGOOSE.model('user', userSchema);
 module.exports = { UserModel };

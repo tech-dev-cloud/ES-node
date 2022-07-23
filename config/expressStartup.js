@@ -7,7 +7,7 @@ const utils = require('../app/utils/routeUtils');
 const routes = require('../app/routes');
 const Logger = require('../config/winston');
 const initRoutes = require('../app/routes');
-
+const socket = require('../app/utils/socket');
 const expressStartup = async () => {
   // app.use(bodyParser.json({ limit: '50mb' }));
   // app.use(bodyParser.urlencoded({ limit: '50mb', extended: false }));
@@ -49,9 +49,9 @@ const expressStartup = async () => {
     process.exit(1);
   });
   initRoutes(app, EXPRESS);
-  // await utils.initRoutes(app, routes);
-  app.listen(process.env.PORT || 4000, '0.0.0.0', () => {
+  app.listen(process.env.PORT || 4000, () => {
     Logger.info('server is start at port ' + (process.env.PORT || 4000));
   });
+  // socket.init(server);
 };
 module.exports = expressStartup;
