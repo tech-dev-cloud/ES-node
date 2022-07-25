@@ -6,7 +6,6 @@ const { USER_GROUP } = require('../../utils/constants');
 const { FORBIDDEN } = require('../../utils/errorCodes');
 const WebPush = require('../../utils/webpush');
 const Email = require('./email-service');
-const SUBSCRIBERS = require('./in-memory');
 const notificationService = {
   addNewSubscriber: async (userData) => {
     const data = new Subscriber(userData);
