@@ -168,18 +168,14 @@ let controller = {
     };
     try {
       if (!existingUser) {
-        user = new User(request.body, request.body.login_type, request.body);
+        user = new User(request.body, request.body.login_type);
       } else {
         user ={
-          profile_pic: obj.profile_pic
-          ? obj.profile_pic
-          : socailObj.profile_pic,
-          ...((user_type == LOGIN_TYPE.FACEBOOK)? {fbDetails: request.body}: {googleDetails: socailObj})
+          profile_pic: request.body.profile_pic
+          ? request.body.profile_pic
+          : request.body.profile_pic,
+          ...((request.body.login_type == LOGIN_TYPE.FACEBOOK)? {fbDetails: request.body}: {googleDetails: request.body})
         }
-        // user = new User(existingUser, request.body.login_type, request.body);
-        // if (existingUser.registerType == REGISTER_TYPE.subscribe) {
-        //   user.registerType = REGISTER_TYPE.signup;
-        // }
       }
       UserModel.findOneAndUpdate({ email }, user, { upsert: true, new: true })
         .then(async (saved_user) => {
@@ -198,7 +194,7 @@ let controller = {
           throw err;
         });
     } catch (err) {
-      logger.err(err);
+      logger.error(err);
       throw SOMETHING_WENT_WRONG;
     }
   },
