@@ -51,8 +51,10 @@ const controller = {
         ? { owner: MONGOOSE.Types.ObjectId(request.user._id) }
         : { createdBy: MONGOOSE.Types.ObjectId(request.user._id) }),
     };
+    const itemPerPage = parseInt(request.query.limit || '0') || 10;
+    const skip = parseInt(request.query.index || '0') * itemPerPage;
     match = _.pickBy(match, (val) => ![undefined, null, ''].includes(val));
-    let query = [{ $match: match }];
+    let query = [{ $match: match }, { $skip: skip }, { $limit: itemPerPage },];
     console.log(JSON.stringify(match));
     if (request.query.unique) {
       query = query.concat(
@@ -66,9 +68,10 @@ const controller = {
         },
         {
           $match: { $or: [{ quiz: [] }, { 'quiz._id': request.query.quizId }] },
-        }
+        },
       );
     }
+    console.log(skip, itemPerPage);
     const data = await QuestionModel.aggregate(query);
     response.status(200).json({
       success: true,

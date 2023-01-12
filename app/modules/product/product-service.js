@@ -9,15 +9,15 @@ const service = {
   getHomeBanners: () => {
     return [
       {
-        url: 'https://eduseeker-image-bucket.s3.amazonaws.com/dev/1646196895504e-BOOKS_EduSeeker%20%20TABLET.png',
+        url: 'https://eduseeker-image-bucket.s3.amazonaws.com/s1/1654263059525e-books.webp',
         link: params.homeBannerRedirection.ebooksBulk,
       },
       {
-        url: 'https://eduseeker-image-bucket.s3.ap-south-1.amazonaws.com/dev/1646197006090IR_EduSeeker%20-%20LAPTOP%20SCREEN.png',
+        url: 'https://eduseeker-image-bucket.s3.ap-south-1.amazonaws.com/s1/1654263447386IR_EduSeeker%20-%20LAPTOP%20SCREEN-min.webp',
         link: params.homeBannerRedirection.course,
       },
       {
-        url: 'https://eduseeker-image-bucket.s3.ap-south-1.amazonaws.com/dev/1646197129807testimonials%20eduseeker%20-%203.png',
+        url: 'https://eduseeker-image-bucket.s3.ap-south-1.amazonaws.com/s1/1654263415156testimonials%20eduseeker%20-%203-min.webp',
         link: '.',
       },
     ];

@@ -1,4 +1,5 @@
 const { config } = require('../../../config/config');
+const Mongoose = require('mongoose');
 const logger = require('../../../config/winston');
 const { Product, VideoContentModel } = require('../../mongo-models');
 const { SOMETHING_WENT_WRONG } = require('../../utils/errorCodes');
@@ -66,7 +67,7 @@ const controller = {
   getCourseByID: async (request, response) => {
     let product = await Product.aggregate([
       {
-        $match: { _id: request.params.courseId, created_by: request.user._id },
+        $match: { _id: Mongoose.Types.ObjectId(request.params.courseId), created_by: Mongoose.Types.ObjectId(request.user._id) },
       },
       {
         $lookup: {
