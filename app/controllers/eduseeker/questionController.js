@@ -33,29 +33,23 @@ const controller = {
   },
   /** Function to find Question */
   getQuestions: async (request, response) => {
-    console.log(request.query);
     let match = {
-      subjectId: request.query.subjectId
-        ? MONGOOSE.Types.ObjectId(request.query.subjectId)
-        : '',
-      moduleId: request.query.moduleId
-        ? MONGOOSE.Types.ObjectId(request.query.moduleId)
-        : '',
-      examId: request.query.examId
-        ? MONGOOSE.Types.ObjectId(request.query.examId)
-        : '',
-      topicId: request.query.topicId
-        ? MONGOOSE.Types.ObjectId(request.query.topicId)
-        : '',
+      ...( request.query.subjectId
+        ? {subjectId: MONGOOSE.Types.ObjectId(request.query.subjectId)}: {}),
+      ...(request.query.moduleId
+        ? {moduleId: MONGOOSE.Types.ObjectId(request.query.moduleId)}: {}),
+      ...(request.query.examId
+        ? {examId: MONGOOSE.Types.ObjectId(request.query.examId)}: {}),
+      ...(request.query.topicId
+        ? {topicId: MONGOOSE.Types.ObjectId(request.query.topicId)}: {}),
       ...(request.user.role.some((role) => role == USER_ROLE.ADMIN)
-        ? { owner: MONGOOSE.Types.ObjectId(request.user._id) }
+        ? {}
         : { createdBy: MONGOOSE.Types.ObjectId(request.user._id) }),
     };
     const itemPerPage = parseInt(request.query.limit || '0') || 10;
     const skip = parseInt(request.query.index || '0') * itemPerPage;
-    match = _.pickBy(match, (val) => ![undefined, null, ''].includes(val));
+    // match = _.pickBy(match, (val) => ![undefined, null, ''].includes(val));
     let query = [{ $match: match }, { $skip: skip }, { $limit: itemPerPage },];
-    console.log(JSON.stringify(match));
     if (request.query.unique) {
       query = query.concat(
         {
@@ -67,11 +61,10 @@ const controller = {
           },
         },
         {
-          $match: { $or: [{ quiz: [] }, { 'quiz._id': request.query.quizId }] },
+          $match: { $or: [{ quiz: [] }, { 'quiz._id': MONGOOSE.Types.ObjectId(request.query.quizId) }] },
         },
       );
     }
-    console.log(skip, itemPerPage);
     const data = await QuestionModel.aggregate(query);
     response.status(200).json({
       success: true,
