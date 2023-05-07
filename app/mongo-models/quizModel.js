@@ -15,6 +15,9 @@ const schema = new Schema({
   questionList: [{ type: Schema.Types.ObjectId, ref: 'question' }],
   totalQuestions: { type: Number },
   attemptTime: { type: Number },
+  correctMarks: {type: Number},
+  incorrectMarks: {type: Number},
+  note: {type: String},
   isDeleted: { type: Boolean, default: false },
 });
 
