@@ -39,9 +39,9 @@
         "VAULT": "pr"
       },
       "env": {
-        "NODE_ENV": "development",
+        "NODE_ENV": "production",
         "PORT": 4001,
-        "VAULT": "loc",
+        "VAULT": "pr",
         "CLIENT_ID": "",
         "CLIENT_SECRET": "",
         "TENANT_ID": ""

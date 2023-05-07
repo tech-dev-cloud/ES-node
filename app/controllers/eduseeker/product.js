@@ -30,7 +30,7 @@ let productController = {
   createProduct: async (request, response) => {
     let product_payload = { ...request.body, created_by: request.user._id };
     productService
-      .createProduct(product_payload)
+      .createProduct(product_payload,request.user)
       .then((res) => {
         response.status(200).json({
           success: true,

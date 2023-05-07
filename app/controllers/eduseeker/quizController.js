@@ -4,7 +4,7 @@ const { quizService } = require('../../services');
 const {  PaymentModel, ProductQuestionMap, Order } = require('../../models');
 const common = require('../../utils/common');
 
-let controller = {}
+const controller = {}
 
 controller.createQuiz =async (payload)=>{
   const data = await quizService.createQuiz(payload);

@@ -184,12 +184,15 @@ const controller = {
           attemptData.remainingTime.minutes);
       timeTaken.seconds = 60 - attemptData.remainingTime.seconds;
     }
-    cutOffMeet = attemptData.percentage >= 65;
+    const cutOff = questionsData.cutOff || 65;
+    cutOffMeet = attemptData.percentage >= cutOff;
 
     responseObject = {
+      cutOff,
       ...(cutOffMeet ? { ...quiz_result.pass } : { ...quiz_result.fail }),
       ...(strength.length || weakness.length ? { strength, weakness } : {}),
       ...attemptData,
+      note: questionsData.note,
       timeTaken,
       product,
     };

@@ -7,7 +7,7 @@ let service = {};
 
 service.createPayment = async (paymentObject, product, user) => {
   if (config.NODE_ENV == 'development') {
-    InstaMojo.isSandboxMode(true);
+    // InstaMojo.isSandboxMode(true);
   }
   InstaMojo.setKeys(config.PRIVATE_API_KEY, config.PRIVATE_AUTH_TOKEN);
   return new Promise((resolve, reject) => {

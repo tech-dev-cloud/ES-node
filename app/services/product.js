@@ -279,7 +279,7 @@ class ProductService {
 }
 
 const service = {
-  createProduct: async (productPayload) => {
+  createProduct: async (productPayload, user) => {
     switch (productPayload.type) {
       case PRODUCTS_TYPE.bulk:
         productPayload['sub_products'] = productPayload.product_map_data.map(
@@ -305,7 +305,7 @@ const service = {
         case PRODUCTS_TYPE.notes:
           data = productPayload.product_map_data.map((obj) => ({
             ...obj,
-            user_id: request.user._id,
+            user_id: user._id,
             product_id: product._id,
           }));
           await dbQuery.insertMultipleDocuments(data);

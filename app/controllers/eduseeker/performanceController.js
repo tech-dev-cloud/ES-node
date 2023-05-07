@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const { PerformanceModel } = require('../../mongo-models');
+const { PerformanceModel, Product } = require('../../mongo-models');
 const { DB } = require('../../utils/constants');
 const {
   getQuizQuestions,
@@ -97,6 +97,7 @@ controller.submitQuiz = async (request, response) => {
         product_id: request.body.product_id,
         user_id: request.user._id,
       };
+  const product = await Product.findById(request.body.product_id);
   const attemtQuiz = (await getUserAttemptingQuiz(criteria))[0];
   attemtQuiz.type = attemtQuiz.type ? attemtQuiz.type : 'quiz';
   const questions =
@@ -109,15 +110,14 @@ controller.submitQuiz = async (request, response) => {
   let quizQuestions = questions.length ? questions : questions.questionData;
 
   const { counts } = checkUserAnswer(quizQuestions, userAnswers, _);
-  counts.notAnswered =
-    quizQuestions.length - (counts.correct + counts.incorrect);
+  counts.notAnswered = quizQuestions.length - (counts.correct + counts.incorrect);
 
   let dataToUpdate = {
     status: DB.QUIZ_PLAY_STATUS.COMPLETED,
     userAnswers,
     ...counts,
-    finalScore: counts.correct * 2,
-    totalScore: quizQuestions.length * 2,
+    finalScore: (counts.correct * (questions?.correctMarks || 2) + counts.incorrect * (questions.incorrectMarks || 0)),
+    totalScore: quizQuestions.length * (questions?.correctMarks || 2),
     questionsWithAns: _.keyBy(quizQuestions, '_id'),
   };
   let data = await PerformanceModel.findOneAndUpdate(
