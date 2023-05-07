@@ -116,8 +116,8 @@ controller.submitQuiz = async (request, response) => {
     status: DB.QUIZ_PLAY_STATUS.COMPLETED,
     userAnswers,
     ...counts,
-    finalScore: (counts.correct * (questions?.correctMarks || 2) + counts.incorrect * (questions.incorrectMarks || 0)),
-    totalScore: quizQuestions.length * (questions?.correctMarks || 2),
+    finalScore: (counts.correct * (questions.correctMarks || 2) + counts.incorrect * (questions.incorrectMarks || 0)),
+    totalScore: quizQuestions.length * (questions.correctMarks || 2),
     questionsWithAns: _.keyBy(quizQuestions, '_id'),
   };
   let data = await PerformanceModel.findOneAndUpdate(
