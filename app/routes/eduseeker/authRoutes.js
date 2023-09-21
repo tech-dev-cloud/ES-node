@@ -1,5 +1,5 @@
 const JOI = require('joi');
-const {USER_ROLE}=require('../../utils/constants');
+const { USER_ROLE, LOGIN_TYPE } = require('../../utils/constants');
 const { authController } = require('../../controllers');
 
 const routes = [
@@ -9,16 +9,18 @@ const routes = [
     joiSchemaForSwagger: {
       body: JOI.object({
         name: JOI.string().required().description('User name'),
-        // role: JOI.array().items(JOI.number().valid(Object.values(USER_ROLE))).required(),
-        email: JOI.string().email().required().description('User email for registration'),
-        phoneNumber: JOI.string().optional('Phone number'),
-        password: JOI.string().description('Password')
+        email: JOI.string()
+          .email()
+          .required()
+          .description('User email for registration'),
+        phoneNumber: JOI.string().required().description('User phone number'),
+        password: JOI.string().description('Password'),
       }),
       group: 'Authentication',
       description: 'Api to register user',
-      model: 'RegisterUser'
+      model: 'RegisterUser',
     },
-    handler: authController.userRegister
+    handler: authController.userRegister,
   },
   {
     path: '/login',
@@ -27,26 +29,30 @@ const routes = [
       body: {
         deviceToken: JOI.string(),
         email: JOI.string().email().required(),
-        password: JOI.string().required()
+        login_type: JOI.string(),
+        password: JOI.string().required(),
       },
       group: 'Authentication',
       description: 'Api to login',
-      model: 'UserLogin'
+      model: 'UserLogin',
     },
-    handler: authController.userLogin
+    handler: authController.userLogin,
   },
   {
     path: '/forgot-password',
     method: 'POST',
     joiSchemaForSwagger: {
       body: {
-        email: JOI.string().email().required().description('User registered email'),
+        email: JOI.string()
+          .email()
+          .required()
+          .description('User registered email'),
       },
       group: 'Authentication',
       description: 'Api to forgot-passwod',
-      model: 'ForgotPassword'
+      model: 'ForgotPassword',
     },
-    handler: authController.forgotPassword
+    handler: authController.forgotPassword,
   },
   {
     path: '/verify-reset-token',
@@ -54,28 +60,46 @@ const routes = [
     joiSchemaForSwagger: {
       body: {
         token: JOI.string().required(),
-        password: JOI.string().required()
+        password: JOI.string().required(),
       },
       group: 'Authentication',
       description: 'Api to rest password',
-      model: 'ResetPassword'
+      model: 'ResetPassword',
     },
-    handler: authController.resetTokenVerification
+    handler: authController.resetTokenVerification,
   },
   {
     path: '/logout',
     method: 'GET',
     joiSchemaForSwagger: {
       headers: JOI.object({
-        'authorization': JOI.string().required()
+        authorization: JOI.string().required(),
       }).unknown(),
       group: 'Authentication',
       description: 'Api to logout password',
-      model: 'logout'
+      model: 'logout',
     },
     auth: [USER_ROLE.TEACHER, USER_ROLE.STUDENT, USER_ROLE.ADMIN],
-    handler: authController.logoutSession
-  }
+    handler: authController.logoutSession,
+  },
+  {
+    path: '/socail/login',
+    method: 'POST',
+    joiSchemaForSwagger: {
+      body: {
+        login_type: JOI.string().valid(Object.values(LOGIN_TYPE)).required(),
+        email: JOI.string().required(),
+        name: JOI.string().required(),
+        profile_pic: JOI.string(),
+        phoneNumber: JOI.string(),
+        id: JOI.string(),
+      },
+      group: 'Authentication',
+      description: 'Api socail login',
+      model: 'socailLogin',
+    },
+    handler: authController.socailLogin,
+  },
 ];
 
 module.exports = routes;

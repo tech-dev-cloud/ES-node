@@ -1,118 +1,122 @@
 const JOI = require('joi');
-const { USER_ROLE, DEFAULT,DB } = require('../../utils/constants');
+const { USER_ROLE, DEFAULT, DB } = require('../../utils/constants');
 const { questionController } = require('../../controllers');
 const routeUtils = require('../../utils/routeUtils');
 
-const MODULE = {
-  name: 'question'
-}
 const routes = [
   {
-    path: `/api/${MODULE.name}`,
+    path: '/api/question',
     method: 'POST',
     joiSchemaForSwagger: {
       headers: JOI.object({
-        'authorization': JOI.string().required()
+        authorization: JOI.string().required(),
       }).unknown(),
       body: {
         subjectId: routeUtils.validation.mongooseId,
         moduleId: routeUtils.validation.mongooseId,
-        type:JOI.number().valid(Object.values(DB.QUESTION_TYPE)),
-        image:JOI.string(),
+        topicId: routeUtils.validation.mongooseId,
+        examId: routeUtils.validation.mongooseId,
+        type: JOI.number().valid(Object.values(DB.QUESTION_TYPE)),
+        image: JOI.string(),
         question: JOI.string().required(),
         options: JOI.array().items(JOI.string().required()),
         correctOption: JOI.array().items(JOI.number().required()),
-        description: JOI.string()
+        description: JOI.string(),
       },
       group: 'Question',
       description: 'Api to create question',
-      model: 'CreateQuestion'
+      model: 'CreateQuestion',
     },
     auth: [USER_ROLE.TEACHER],
-    handler: questionController.createQuestion
+    handler: questionController.createQuestion,
   },
   {
-    path: `/api/${MODULE.name}/:id`,
+    path: '/api/question/:id',
     method: 'PUT',
     joiSchemaForSwagger: {
       headers: JOI.object({
-        'authorization': JOI.string().required()
+        authorization: JOI.string().required(),
       }).unknown(),
       params: {
-        id: routeUtils.validation.mongooseId
+        id: routeUtils.validation.mongooseId,
       },
       body: {
         subjectId: routeUtils.validation.mongooseId,
         moduleId: routeUtils.validation.mongooseId,
-        type:JOI.number().valid(Object.values(DB.QUESTION_TYPE)),
-        image:JOI.string(),
+        topicId: routeUtils.validation.mongooseId,
+        examId: routeUtils.validation.mongooseId,
+        type: JOI.number().valid(Object.values(DB.QUESTION_TYPE)),
+        image: JOI.string(),
         question: JOI.string(),
         options: JOI.array().items(JOI.string()),
         correctOption: JOI.array().items(JOI.number()),
-        description: JOI.string()
+        description: JOI.string(),
       },
       group: 'Question',
       description: 'Api to update question',
-      model: 'UpdateQuestion'
+      model: 'UpdateQuestion',
     },
     auth: [USER_ROLE.TEACHER, USER_ROLE.ADMIN],
-    handler: questionController.updateQuestion
+    handler: questionController.updateQuestion,
   },
   {
-    path: `/api/question`,
+    path: '/api/question',
     method: 'GET',
     joiSchemaForSwagger: {
       headers: JOI.object({
-        'authorization': JOI.string().required()
+        authorization: JOI.string().required(),
       }).unknown(),
       query: {
-        subjectId:routeUtils.validation.mongooseId.required(),
-        moduleId:routeUtils.validation.mongooseId,
+        subjectId: routeUtils.validation.mongooseId.required(),
+        moduleId: routeUtils.validation.mongooseId,
+        topicId: routeUtils.validation.mongooseId,
+        examId: routeUtils.validation.mongooseId,
+        quizId: routeUtils.validation.mongooseId,
+        unique: JOI.boolean(),
         index: JOI.number().default(DEFAULT.INDEX).min(DEFAULT.INDEX),
-        limit: JOI.number().min(DEFAULT.LIMIT).min(0)
+        limit: JOI.number().min(DEFAULT.LIMIT).min(0),
       },
       group: 'Question',
       description: 'Api to get questions',
-      model: 'GetQuestion'
+      model: 'GetQuestion',
     },
     auth: [USER_ROLE.TEACHER, USER_ROLE.ADMIN],
-    handler: questionController.getQuestions
+    handler: questionController.getQuestions,
   },
   {
-    path: `/api/question/:id`,
+    path: '/api/question/:id',
     method: 'GET',
     joiSchemaForSwagger: {
       headers: JOI.object({
-        'authorization': JOI.string().required()
+        authorization: JOI.string().required(),
       }).unknown(),
       params: {
-        id: routeUtils.validation.mongooseId
+        id: routeUtils.validation.mongooseId,
       },
       group: 'Question',
       description: 'Api to get questions By ID',
-      model: 'GetQuestionByID'
+      model: 'GetQuestionByID',
     },
     auth: [USER_ROLE.TEACHER],
-    handler: questionController.getQuestionById
+    handler: questionController.getQuestionById,
   },
   {
-    path: `/api/question/:id`,
+    path: '/api/question/:id',
     method: 'DELETE',
     joiSchemaForSwagger: {
       headers: JOI.object({
-        'authorization': JOI.string().required()
+        authorization: JOI.string().required(),
       }).unknown(),
       params: {
-        id: routeUtils.validation.mongooseId
+        id: routeUtils.validation.mongooseId,
       },
       group: 'Question',
       description: 'Api to delete question By ID',
-      model: 'DeleteQuestionByID'
+      model: 'DeleteQuestionByID',
     },
     auth: [USER_ROLE.TEACHER, USER_ROLE.ADMIN],
-    handler: questionController.deleteQuestion
+    handler: questionController.deleteQuestion,
   },
-
-]
+];
 
 module.exports = routes;

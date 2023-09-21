@@ -1,11 +1,10 @@
-let redis=require('redis');
+const redis = require('redis');
 
-
-let client=redis.createClient({
-    port: process.env.redis_port,
-    host: process.env.redis_host
-})
+const client = redis.createClient({
+  port: process.env.redis_port,
+  host: process.env.redis_host,
+});
 
 // client.auth(process.env.redis_password);
 
-module.exports=client;
+module.exports = client;

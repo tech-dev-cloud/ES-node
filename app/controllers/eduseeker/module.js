@@ -1,10 +1,10 @@
-const {Module}=require('../../models');
+const { Module } = require('../../mongo-models');
 let controller = {
-    GetModuleList:async(request,response)=>{
-        let data= await Module.find({subjectId:request.query.subjectId}).select(["name","_id"]).lean();
+    GetModuleList: async (request, response) => {
+        let data = await Module.find({ subjectId: request.query.subjectId }).select(["name", "_id"]).lean();
         response.status(200).json({
-            success:true,
-            message:"Modules fetched successfully",
+            success: true,
+            message: "Modules fetched successfully",
             data
         })
     }

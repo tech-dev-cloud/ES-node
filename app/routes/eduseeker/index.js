@@ -8,5 +8,8 @@ module.exports = [
   ...require('./questionRoutes'),
   ...require('./quizRoutes'),
   ...require('./modules'),
-  ...require('./dashboard')
-]
+  ...require('./dashboard'),
+  ...require('./course'),
+  ...require('./terms'),
+  ...require('./userRoutes'),
+];

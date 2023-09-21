@@ -28,17 +28,16 @@
 //     }
 //   }
 // };
-'use strict';
+// 'use strict';
 
-var nconf = require('nconf');
-	// json5 = require('json5'),
-	// _ = require('lodash'),
-	// glob = require('glob'),
-	// path = require('path'),
-
+// var nconf = require('nconf');
+// json5 = require('json5'),
+// _ = require('lodash'),
+// glob = require('glob'),
+// path = require('path'),
 
 // variable to import to nconf from process.env
-const envVariables = ['PORT', 'NODE_ENV', 'PRIVATE_SALT','PRIVATE_SALT','PRIVATE_AUTH_TOKEN','PRIVATE_API_KEY','TEST_PRIVATE_SALT','TEST_PRIVATE_AUTH_TOKEN','TEST_PRIVATE_API_KEY'];
+// const envVariables = ['PORT', 'NODE_ENV', 'PRIVATE_SALT','PRIVATE_SALT','PRIVATE_AUTH_TOKEN','PRIVATE_API_KEY','TEST_PRIVATE_SALT','TEST_PRIVATE_AUTH_TOKEN','TEST_PRIVATE_API_KEY'];
 
 // var rootPath = path.normalize(__dirname + '/..');
 
@@ -58,15 +57,15 @@ const envVariables = ['PORT', 'NODE_ENV', 'PRIVATE_SALT','PRIVATE_SALT','PRIVATE
 //   5. Environment specific config file located at './env/<NODE_ENV>.json'
 //   6. Shared config file located at './env/all.json'
 //
-nconf.argv()
-	.env(envVariables)// Load select environment variables
-	.defaults({
-		store: {
-			NODE_ENV: 'development'
-		}
-	});
+// nconf.argv()
+// 	.env(envVariables)// Load select environment variables
+// 	.defaults({
+// 		store: {
+// 			NODE_ENV: 'development'
+// 		}
+// 	});
 
-module.exports = nconf.get();
+// module.exports = nconf.get();
 /**
  * Get files by glob patterns
  */
@@ -80,5 +79,33 @@ module.exports = nconf.get();
 // 			nconf.get('CLIENT_ID'),
 // 			nconf.get('CLIENT_SECRET'))).overrides({ store: computedConfig })
 // 	module.exports.config = nconf.get();
-	// return nconf.get()
+// return nconf.get()
 // }
+const dbConfig = {
+  mysql: {
+    username: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME,
+    host: process.env.DB_HOST,
+    dialect: process.env.DB_DIALECT,
+  },
+};
+
+const config = {
+  NODE_ENV: process.env.NODE_ENV,
+  env: process.env.NODE_ENV,
+  serverPort: process.env.PORT,
+  PORT: process.env.PORT,
+  PRIVATE_SALT: process.env.PRIVATE_SALT,
+  PRIVATE_SALT: process.env.PRIVATE_SALT,
+  PRIVATE_AUTH_TOKEN: process.env.PRIVATE_AUTH_TOKEN,
+  PRIVATE_API_KEY: process.env.PRIVATE_API_KEY,
+  TEST_PRIVATE_SALT: process.env.TEST_PRIVATE_SALT,
+  TEST_PRIVATE_AUTH_TOKEN: process.env.TEST_PRIVATE_AUTH_TOKEN,
+  TEST_PRIVATE_API_KEY: process.env.TEST_PRIVATE_API_KEY,
+};
+
+module.exports = {
+  dbConfig,
+  config,
+};
