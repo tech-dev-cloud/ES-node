@@ -11,9 +11,9 @@ module.exports = async function (req, res) {
     // product.description = JSON.stringify(product.description);
     product.web_url = product.name.toLowerCase().replaceAll(' ', '-');
     product.status = product.status ? '1' : '2';
-    product.requirements = product.requirements?.join(',') || null;
-    product.benefits = product.benefits?.join(',') || null;
-    product.target_students = product.targetStudents?.join(',') || null;
+    product.requirements = product.requirements.join(',') || null;
+    product.benefits = product.benefits.join(',') || null;
+    product.target_students = product.targetStudents.join(',') || null;
     switch (product.type) {
       case 'notes':
         product.type = PRODUCT_TYPE.notes;
