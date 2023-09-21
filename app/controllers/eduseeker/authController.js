@@ -160,12 +160,7 @@ let controller = {
     let { email } = request.body;
     let existingUser = await UserModel.findOne({ email }).lean();
     let user = {};
-    let userResponseData = {
-      id: existingUser._id,
-      name: request.body.name,
-      email,
-      profile_pic: request.body.profile_pic,
-    };
+    
     try {
       if (!existingUser) {
         user = new User(request.body, request.body.login_type);
@@ -177,8 +172,15 @@ let controller = {
           ...((request.body.login_type == LOGIN_TYPE.FACEBOOK)? {fbDetails: request.body}: {googleDetails: request.body})
         }
       }
+     
       UserModel.findOneAndUpdate({ email }, user, { upsert: true, new: true })
         .then(async (saved_user) => {
+          let userResponseData = {
+            id: existingUser?._id || user?._id,
+            name: request.body.name,
+            email,
+            profile_pic: request.body.profile_pic,
+          };
           userResponseData['accessToken'] = await authService.createUserSession(
             saved_user.toObject(),
             request.body.login_type,

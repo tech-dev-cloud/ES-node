@@ -22,6 +22,7 @@ const {
 } = require('../utils/constants');
 const { getProductOffers } = require('../modules/offer/service');
 const mongoose = require('mongoose');
+const { encrypt } = require('../utils/cryptoUtil');
 
 class ProductService {
   constructor() {}
@@ -42,14 +43,18 @@ class ProductService {
     contents = contents.map((content) => {
       if (!enrolled) {
         content = _.pick(content, selectedContentFields);
-        content.lectures = content.lectures.map((lecture) => {
+      }
+      content.lectures = content.lectures.map((lecture) => {
+        if (!enrolled) {
           lecture = _.pick(lecture, lectureFields);
           if (!lecture.isPreview) {
             delete lecture.url;
           }
-          return lecture;
-        });
-      }
+        } else {
+          lecture.url = encrypt(lecture._id.toString(), lecture.url);
+        }
+        return lecture;
+      });
       content.lectureCounts = content.lectures.length;
       content.duration = content.lectures.reduce(
         (accum, currentValue) => accum + currentValue.duration,
@@ -85,8 +90,13 @@ class ProductService {
         ? { _id: { $in: document_ids }, status }
         : {}),
     };
-    console.log(cond);
-    return await Document.find(cond).lean();
+    const docs = (await Document.find(cond).lean())
+    .map(obj=>{
+      obj.url = encrypt(obj._id.toString(), obj.url);
+      return obj;
+    });
+
+    return docs;
   }
   getQuizzes(quizIds) {
     quizIds = quizIds.map((id) => mongoose.Types.ObjectId(id));

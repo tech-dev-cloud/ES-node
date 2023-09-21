@@ -184,7 +184,7 @@ const controller = {
           attemptData.remainingTime.minutes);
       timeTaken.seconds = 60 - attemptData.remainingTime.seconds;
     }
-    const cutOff = questionsData.cutOff || 65;
+    const cutOff = questionsData?.cutOff || 65;
     cutOffMeet = attemptData.percentage >= cutOff;
 
     responseObject = {

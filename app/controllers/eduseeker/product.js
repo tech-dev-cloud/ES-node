@@ -25,6 +25,7 @@ const logger = require('../../../config/winston');
 const { NOT_ENROLLED } = require('../../utils/errorCodes');
 const { Notification } = require('../../mongo-models/notification');
 const notificationService = require('../../modules/notification/notification-service');
+const { encrypt } = require('../../utils/cryptoUtil');
 
 let productController = {
   createProduct: async (request, response) => {

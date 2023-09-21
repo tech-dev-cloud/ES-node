@@ -2,7 +2,7 @@ const MONGOOSE = require('mongoose');
 const Logger = require('./winston');
 
 module.exports = {
-  URL: `mongodb://localhost:27017/${process.env.DB_NAME || 'eduseeker'}`,
+  URL: `mongodb://0.0.0.0:27017/${process.env.DB_NAME || 'eduseeker'}`,
   options: {
     useNewUrlParser: true,
     useUnifiedTopology: true,
