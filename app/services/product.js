@@ -50,9 +50,10 @@ class ProductService {
           if (!lecture.isPreview) {
             delete lecture.url;
           }
-        } else {
-          lecture.url = encrypt(lecture._id.toString(), lecture.url);
         }
+        // else {
+        //   lecture.url = encrypt(lecture._id.toString(), lecture.url);
+        // }
         return lecture;
       });
       content.lectureCounts = content.lectures.length;
@@ -91,10 +92,10 @@ class ProductService {
         : {}),
     };
     const docs = (await Document.find(cond).lean())
-    .map(obj=>{
-      obj.url = encrypt(obj._id.toString(), obj.url);
-      return obj;
-    });
+    // .map(obj=>{
+    //   obj.url = encrypt(obj._id.toString(), obj.url);
+    //   return obj;
+    // });
 
     return docs;
   }
