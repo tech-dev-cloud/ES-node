@@ -3,11 +3,9 @@ const app = EXPRESS();
 const compression = require('shrink-ray-current');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const utils = require('../app/utils/routeUtils');
-const routes = require('../app/routes');
 const Logger = require('../config/winston');
 const initRoutes = require('../app/routes');
-const socket = require('../app/utils/socket');
+console.log('szdvnlf vlkdfj l');
 const expressStartup = async () => {
   // app.use(bodyParser.json({ limit: '50mb' }));
   // app.use(bodyParser.urlencoded({ limit: '50mb', extended: false }));
