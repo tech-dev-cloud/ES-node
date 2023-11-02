@@ -45,7 +45,7 @@ const controller = {
   },
   async getQuiz(request, response) {
     const limit = parseInt(request.query.limit) || 20;
-    const skip = (parseInt(request.query.page) - 1) * limit;
+    const skip = (parseInt(request.query.page || '1') - 1) * limit;
     const search = request.query.searchString;
     const quizService = new QuizService();
     const match = { createdBy: request.user._id };
@@ -57,6 +57,7 @@ const controller = {
       skip,
       limit
     );
+
     response.status(200).json({
       success: true,
       message: 'Quiz created successfully',
