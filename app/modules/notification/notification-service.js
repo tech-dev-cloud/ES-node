@@ -27,12 +27,13 @@ const notificationService = {
     const emailObj = new Email(templateObject);
     for (const user of users) {
       emailObj.mapKeys(user);
-      emailObj
+      try{
+        await emailObj
         .sendEmail(user.email)
-        .then((res) => {})
-        .catch((err) => {
-          Logger.error(err);
-        });
+      } catch (err) {
+        Logger.error(err)
+      }
+
     }
   },
   tempEmail: async () => {
@@ -43,7 +44,7 @@ const notificationService = {
     let users;
     switch (userGroup) {
       case USER_GROUP.subscribers:
-        users = await Subscriber.find({}, { email: 1, name: 1 }).lean();
+        users = await Subscriber.find({status: true}, { email: 1, name: 1 }).lean();
         break;
       case USER_GROUP.registerd:
         users = await UserModel.find({}, { email: 1, name: 1 }).lean();

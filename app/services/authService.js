@@ -38,14 +38,15 @@ const authService = {
       userActiveSession.length >= params.userSessionLimit
     ) {
       const expiredSessionIds = userActiveSession.map((session) => session._id);
-      expiredSessionIds.splice(expiredSessionIds.length - 1, 1);
+      // expiredSessionIds.splice(expiredSessionIds.length - 1, 1);
       // SessionModel.deleteMany({ _id: { $in: expiredSessionIds } }).then(res => {
       //   console.log("done")
       // });
-      SessionModel.updateMany(
-        { _id: { $in: expiredSessionIds } },
-        { $set: { loginLimitExceed: true } }
-      ).then((res) => {});
+      await SessionModel.deleteMany({ _id: { $in: expiredSessionIds } })
+      // SessionModel.updateMany(
+      //   { _id: { $in: expiredSessionIds } },
+      //   { $set: { loginLimitExceed: true } }
+      // ).then((res) => {});
     }
     const session = await new SessionModel(sessionPayload).save();
     return session.accessToken;
@@ -96,9 +97,9 @@ const validateUser = async (request, authType) => {
       }).lean();
       if (authenticatedUser) {
         if (authType && authType.length) {
-          if (authenticatedUser.loginLimitExceed) {
-            throw DEVICE_LOGIN_LIMIT_EXCEED;
-          }
+          // if (authenticatedUser.loginLimitExceed) {
+          //   throw DEVICE_LOGIN_LIMIT_EXCEED;
+          // }
           if (
             authType.some((role) => authenticatedUser.role.includes(role)) ||
             authenticatedUser.role[0] == 0

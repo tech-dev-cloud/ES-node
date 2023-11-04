@@ -21,7 +21,7 @@
     "lecture_query": "lecture_query",
     "feedback": "feedback"
   },
-  "userSessionLimit": 2,
+  "userSessionLimit": 1,
   "mongo": {
     "db": "eduseeker",
     "host": "localhost",
