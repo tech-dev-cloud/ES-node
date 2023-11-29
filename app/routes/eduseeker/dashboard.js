@@ -14,7 +14,7 @@ const routes = [
       description: 'API to get Dashboard stats',
       model: 'GetStats',
     },
-    auth: [USER_ROLE.ADMIN],
+    auth: [USER_ROLE.ADMIN, USER_ROLE.TEACHER],
     handler: dashboardController.getStats,
   },
 ];

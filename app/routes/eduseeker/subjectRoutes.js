@@ -34,7 +34,7 @@ const routes = [
       description: 'Api to add new Subject',
       model: 'CreateSubject',
     },
-    auth: [USER_ROLE.ADMIN],
+    auth: [USER_ROLE.ADMIN, USER_ROLE.TEACHER],
     handler: subjectController.createSubject,
   },
   {
@@ -70,7 +70,7 @@ const routes = [
       description: 'Api to update new Subject',
       model: 'UpdateSubject',
     },
-    auth: [USER_ROLE.ADMIN],
+    auth: [USER_ROLE.ADMIN, USER_ROLE.TEACHER],
     handler: subjectController.updateSubject,
   },
   {
@@ -116,7 +116,7 @@ const routes = [
       description: 'Api to update Subject',
       model: 'UpdateSuabject',
     },
-    auth: [USER_ROLE.ADMIN],
+    auth: [USER_ROLE.ADMIN, USER_ROLE.TEACHER],
     handler: subjectController.updateSubject,
   },
   {
@@ -130,7 +130,7 @@ const routes = [
       description: 'Api to Get all Exams',
       model: 'GetExams',
     },
-    auth: [USER_ROLE.ADMIN],
+    auth: [USER_ROLE.ADMIN, USER_ROLE.TEACHER],
     handler: subjectController.getExams,
   },
 ];
