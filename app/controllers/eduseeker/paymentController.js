@@ -200,11 +200,6 @@ const paymentController = {
       })
       .catch((err) => {
         throw SOMETHING_WENT_WRONG;
-        // response.status(500).json({
-        //   success: false,
-        //   message: 'something went wrong',
-        //   err
-        // })
       });
   },
   async addOrderAfterPayment(request, response) {

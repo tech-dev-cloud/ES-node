@@ -176,7 +176,7 @@ let controller = {
       UserModel.findOneAndUpdate({ email }, user, { upsert: true, new: true })
         .then(async (saved_user) => {
           let userResponseData = {
-            id: existingUser._id || user._id,
+            id: saved_user._id || existingUser._id || user._id,
             name: request.body.name,
             email,
             profile_pic: request.body.profile_pic,
