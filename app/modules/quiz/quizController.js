@@ -255,5 +255,16 @@ const controller = {
       data: userRanking,
     });
   },
+
+  async lastAttempt(request, response) {
+    let data = await PerformanceModel.find({product_id: request.params.testId, user_id: request.user._id, status:'completed'}).sort({_id:-1}).limit(1);
+    if(data && data.length) {
+      data = data[0];
+    }
+    response.status(200).json({
+      success: true,
+      data,
+    });
+  }
 };
 module.exports = { quizController: controller };

@@ -154,5 +154,23 @@ const routes = [
     auth: [USER_ROLE.STUDENT],
     handler: quizController.getLeaderBoard,
   },
+  
+  {
+    path: '/api/lastAttempt/:testId',
+    method: 'GET',
+    joiSchemaForSwagger: {
+      params: JOI.object({
+        testId: routeUtils.validation.mongooseId,
+      }),
+      headers: JOI.object({
+        authorization: JOI.string().required(),
+      }).unknown(),
+      group: 'QUIZ',
+      description: 'API to get last attempt',
+      model: 'GetLastAttempt',
+    },
+    auth: [USER_ROLE.STUDENT],
+    handler: quizController.lastAttempt,
+  },
 ];
 module.exports = routes;
