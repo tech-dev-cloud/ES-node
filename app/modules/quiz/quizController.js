@@ -260,6 +260,8 @@ const controller = {
     let data = await PerformanceModel.find({product_id: request.params.testId, user_id: request.user._id, status:'completed'}).sort({_id:-1}).limit(1);
     if(data && data.length) {
       data = data[0];
+    } else {
+      data = undefined;
     }
     response.status(200).json({
       success: true,
