@@ -39,6 +39,7 @@ controller.saveAnswer = async (request, response) => {
         $set: {
           [`userAnswers.${index}`]: request.body.userAnswers,
           remainingTime: request.body.remainingTime,
+          ...(request.body.type ? {type: request.body.type}: {})
         },
       };
     } else {
@@ -46,7 +47,7 @@ controller.saveAnswer = async (request, response) => {
         $push: {
           userAnswers: request.body.userAnswers,
         },
-        $set: { remainingTime: request.body.remainingTime },
+        $set: { remainingTime: request.body.remainingTime, ...(request.body.type ? {type: request.body.type}: {}) },
       };
     }
     responseObject = await PerformanceModel.findOneAndUpdate(
@@ -63,7 +64,7 @@ controller.saveAnswer = async (request, response) => {
       user_id: request.user._id,
       remainingTime: request.body.remainingTime,
       userAnswers: request.body.userAnswers,
-      type: request.body.type,
+      ...(request.body.type ? {type: request.body.type}: {}),
       status: DB.QUIZ_PLAY_STATUS.IN_PROGRESS,
     };
     const data = new PerformanceModel(dataToUpdate);
