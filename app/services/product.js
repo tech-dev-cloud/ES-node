@@ -243,22 +243,24 @@ class ProductService {
           );
           product['weburl'] = service.getRedirectUrl(product.type);
           let obj = service.getProductRating(product_id);
-          const promise = [obj];
-          if (
-            (product.type == params.product_types.course ||
-              product.type == params.product_types.test_series) &&
-            product.early_birds_offer &&
-            product.early_birds_offer.length
-          ) {
-            promise.push(
-              this.totalEnrolled(product._id, [order_status.credit])
-            );
-          }
+          const promise = [obj, this.totalEnrolled(product._id, [order_status.credit])];
+          // if (
+          //   (product.type == params.product_types.course ||
+          //     product.type == params.product_types.test_series) &&
+          //   product.early_birds_offer &&
+          //   product.early_birds_offer.length
+          // ) {
+          //   promise.push(
+          //     this.totalEnrolled(product._id, [order_status.credit])
+          //   );
+          // }
           const result = await Promise.all(promise);
           obj = result[0];
           if (result[1] >= 0) {
             product['totalEnrolled'] = result[1];
-            service.applyEarlyBirdOffer(product);
+            if(product.early_birds_offer){
+              service.applyEarlyBirdOffer(product);
+            }
           }
           product['rating'] = obj.rating;
           product['reviews'] = obj.counts;
@@ -541,7 +543,9 @@ const service = {
           product['offers'] = result[1];
           if (result[2] >= 0) {
             product['totalEnrolled'] = result[1];
-            service.applyEarlyBirdOffer(product);
+            if(product.early_birds_offer){
+              service.applyEarlyBirdOffer(product);
+            }
           }
           product['rating'] = obj.rating;
           product['reviews'] = obj.counts;

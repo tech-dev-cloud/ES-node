@@ -35,6 +35,7 @@ class Product {
     this.updatedAt = obj.updatedAt;
     this.quizId = obj.quizId;
     this.docs = obj.docs;
+    this.totalEnrolled = obj.totalEnrolled;
     this.initRedirectUrl();
   }
   initRedirectUrl() {

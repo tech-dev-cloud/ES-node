@@ -246,15 +246,15 @@ let productController = {
         prodService.isProductPurchased(product_id, request.user),
       ]);
       let product = new Product(result[0]);
-      const enrolledStatus = [];
-      if (
-        product.type == PRODUCTS_TYPE.course ||
-        product.type == PRODUCTS_TYPE.test_series
-      ) {
-        enrolledStatus.push(order_status.credit);
-      }
-      let count = await prodService.totalEnrolled(product_id, enrolledStatus);
-      product['totalEnrolled'] = enrolledStatus.length ? count : count * 2;
+      // const enrolledStatus = [order_status.credit];
+      // if (
+      //   product.type == PRODUCTS_TYPE.course ||
+      //   product.type == PRODUCTS_TYPE.test_series
+      // ) {
+      //   enrolledStatus.push(order_status.credit);
+      // }
+      // product['totalEnrolled'] = await prodService.totalEnrolled(product_id, enrolledStatus);
+      // product['totalEnrolled'] = enrolledStatus.length ? count : count * 2;
 
       let obj = result[1];
       product['purchaseStatus'] = obj.purchased;
