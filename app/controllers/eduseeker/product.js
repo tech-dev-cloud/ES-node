@@ -139,12 +139,17 @@ let productController = {
     await ProductModel.updateOne({ _id: request.params.id }, request.body);
     switch (request.body.type) {
       case PRODUCTS_TYPE.notes: //Document Update
-        const data = request.body.product_map_data.map((obj) => ({
-          ...obj,
-          user_id: request.user._id,
-          product_id: request.params.id,
-        }));
+      const data = [];
+      for(const obj of request.body.product_map_data) {
+        if(obj._id) {
+          await Document.updateOne({_id:  Mongoose.Types.ObjectId(obj.id)}, obj)
+        } else {
+          data.push({...obj,  user_id: request.user._id,  product_id: request.params.id,})
+        }
+      }
+      if(data.length){
         await Document.insertMany(data);
+      }
         break;
       case PRODUCTS_TYPE.quiz: //Quiz
         try {
