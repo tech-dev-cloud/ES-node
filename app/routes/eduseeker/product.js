@@ -160,6 +160,24 @@ const routes = [
     handler: productController.updateProductByID,
   },
   {
+    path: '/api/document/:productId/:docId',
+    method: 'DELETE',
+    joiSchemaForSwagger: {
+      headers: JOI.object({
+        authorization: JOI.string().required(),
+      }).unknown(),
+      params: {
+        productId: routeUtils.validation.mongooseId,
+        docId: routeUtils.validation.mongooseId,
+      },
+      group: 'Product',
+      description: 'Api to delete the document for a product',
+      model: 'DeleteProdDocument',
+    },
+    auth: [USER_ROLE.ADMIN],
+    handler: productController.deleteDocument,
+  },
+  {
     path: '/api/getProduct/:product_id',
     method: 'GET',
     joiSchemaForSwagger: {

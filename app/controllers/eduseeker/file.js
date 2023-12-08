@@ -79,6 +79,7 @@ let file = {
         $match: {
           user_id: req.user._id,
           $text: { $search: req.query.searchString },
+          is_deleted: false,
         },
       },
       // {$skip:req.}

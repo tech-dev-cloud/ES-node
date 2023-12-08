@@ -166,6 +166,16 @@ let productController = {
       message: 'Product updated successfully',
     });
   },
+  deleteDocument: async (request, response)=>{
+    const productId = request.params.productId;
+    const docId = request.params.productId;
+
+    await Document.updateOne({_id: docId, product_id: productId}, {is_deleted: true});
+    response.status(200).json({
+      success: true,
+      message: 'Documented deleted successfull',
+    });
+  },
   async getProducts(request, response) {
     let data = [];
     let product_ids = [];

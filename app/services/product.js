@@ -86,6 +86,7 @@ class ProductService {
   }
   async getDocuments(product_id, document_ids = [], status) {
     const cond = {
+      is_deleted: false,
       ...(product_id ? { product_id, status } : {}),
       ...(document_ids && document_ids.length
         ? { _id: { $in: document_ids }, status }
@@ -561,6 +562,7 @@ const service = {
         data = await Document.find({
           product_id: product._id,
           status: true,
+          is_deleted: false
         }).lean();
         break;
       case PRODUCTS_TYPE.quiz:

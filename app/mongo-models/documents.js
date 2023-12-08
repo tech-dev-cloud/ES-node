@@ -11,6 +11,7 @@ const schema = new Schema({
   type: { type: String, enum: ['ppt', 'pdf', 'video'] }, //1-> default Image, 2-> Video, 3-> GIF, 4-> pdf, 5->doc
   // priority:{type:Number, default:1},
   user_id: { type: Schema.Types.ObjectId, ref: 'users' },
+  is_deleted: {type: Boolean, default: false},
 });
 
 schema.set('timestamps', true);
