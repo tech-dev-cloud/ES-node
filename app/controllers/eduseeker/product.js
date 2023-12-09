@@ -100,7 +100,7 @@ let productController = {
             'quizData.createdBy': 0,
           },
         },
-        { $sort: { _id: -1 } },
+        { $sort: { createdAt: -1 } },
         {
           $group: { _id: null, count: { $sum: 1 }, items: { $push: '$$ROOT' } },
         },
@@ -142,7 +142,7 @@ let productController = {
       const data = [];
       for(const obj of request.body.product_map_data) {
         if(obj._id) {
-          await Document.updateOne({_id:  Mongoose.Types.ObjectId(obj.id)}, obj)
+          await Document.updateOne({_id:  Mongoose.Types.ObjectId(obj._id)}, obj)
         } else {
           data.push({...obj,  user_id: request.user._id,  product_id: request.params.id,})
         }
@@ -168,9 +168,9 @@ let productController = {
   },
   deleteDocument: async (request, response)=>{
     const productId = request.params.productId;
-    const docId = request.params.productId;
+    const docId = request.params.docId;
 
-    await Document.updateOne({_id: docId, product_id: productId}, {is_deleted: true});
+    await Document.updateOne({_id: Mongoose.Types.ObjectId(docId), product_id: Mongoose.Types.ObjectId(productId)}, {is_deleted: true});
     response.status(200).json({
       success: true,
       message: 'Documented deleted successfull',
